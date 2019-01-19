@@ -29,8 +29,8 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef __WAUDIOPLAYER_H__
-#define __WAUDIOPLAYER_H__
+#ifndef WAUDIOPLAYER_H
+#define WAUDIOPLAYER_H
 
 #include <QtMultimedia/QMediaPlayer>
 #include <QtWidgets/QWidget>
@@ -42,7 +42,7 @@ namespace Ui {
 class WAudioPlayer : public QWidget {
   Q_OBJECT
 public:
-  WAudioPlayer(QWidget *parent = 0, Qt::WindowFlags f = 0);
+  WAudioPlayer(QWidget *parent = nullptr, Qt::WindowFlags f = 0);
   ~WAudioPlayer();
 
   void setFiles(const QStringList& files);
@@ -67,4 +67,4 @@ signals:
   void fileNameChanged(const QString&);
 };
 
-#endif // __WAUDIOPLAYER_H__
+#endif // WAUDIOPLAYER_H

@@ -29,8 +29,8 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef __CHAPTER_H__
-#define __CHAPTER_H__
+#ifndef CHAPTER_H
+#define CHAPTER_H
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QString>
@@ -96,4 +96,4 @@ private:
   QString _fileName;
 };
 
-#endif // __CHAPTER_H__
+#endif // CHAPTER_H

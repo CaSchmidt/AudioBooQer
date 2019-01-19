@@ -40,8 +40,8 @@
 WAudioPlayer::WAudioPlayer(QWidget *parent, Qt::WindowFlags f)
   : QWidget(parent, f)
   , ui(new Ui::WAudioPlayer)
-  , _player(0)
-  , _playlist(0)
+  , _player(nullptr)
+  , _playlist(nullptr)
 {
   ui->setupUi(this);
 

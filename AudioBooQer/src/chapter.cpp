@@ -37,23 +37,23 @@
 
 bool isRoot(csAbstractTreeItem *item)
 {
-  return dynamic_cast<ChapterRoot*>(item) != 0;
+  return dynamic_cast<ChapterRoot*>(item) != nullptr;
 }
 
 bool isNode(csAbstractTreeItem *item)
 {
-  return dynamic_cast<ChapterNode*>(item) != 0;
+  return dynamic_cast<ChapterNode*>(item) != nullptr;
 }
 
 bool isFile(csAbstractTreeItem *item)
 {
-  return dynamic_cast<ChapterFile*>(item) != 0;
+  return dynamic_cast<ChapterFile*>(item) != nullptr;
 }
 
 ////// ChapterRoot ///////////////////////////////////////////////////////////
 
 ChapterRoot::ChapterRoot()
-  : csAbstractTreeItem(0)
+  : csAbstractTreeItem(nullptr)
 {
 }
 

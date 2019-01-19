@@ -134,7 +134,7 @@ void WMainWindow::createNewChapter()
     return;
   }
   ChapterModel *model = dynamic_cast<ChapterModel*>(ui->chaptersView->model());
-  if( model != 0 ) {
+  if( model != nullptr ) {
     const QModelIndex index = model->createNewChapter(indexes.front());
     if( index.isValid() ) {
       ui->chaptersView->expand(index);
@@ -171,7 +171,7 @@ void WMainWindow::openDirectory()
   sources->setFiles(fileNames);
 
   ChapterModel *model = dynamic_cast<ChapterModel*>(ui->chaptersView->model());
-  if( model != 0 ) {
+  if( model != nullptr ) {
     model->setData(root);
   }
 
@@ -236,7 +236,7 @@ void WMainWindow::processJobs()
   }
 
   ChapterModel *model = dynamic_cast<ChapterModel*>(ui->chaptersView->model());
-  if( model == 0 ) {
+  if( model == nullptr ) {
     return;
   }
 

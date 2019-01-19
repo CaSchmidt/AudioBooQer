@@ -41,7 +41,7 @@
 WJobInfo::WJobInfo(QWidget *parent, Qt::WindowFlags f)
   : QDialog(parent, f)
   , ui(new Ui::WJobInfo)
-  , watcher(0)
+  , watcher(nullptr)
 {
   ui->setupUi(this);
 

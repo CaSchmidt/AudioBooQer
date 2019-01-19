@@ -29,8 +29,8 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef __CHAPTERMODEL_H__
-#define __CHAPTERMODEL_H__
+#ifndef CHAPTERMODEL_H
+#define CHAPTERMODEL_H
 
 #include <QtCore/QAbstractItemModel>
 
@@ -41,7 +41,7 @@ class csAbstractTreeItem;
 class ChapterModel : public QAbstractItemModel {
   Q_OBJECT
 public:
-  ChapterModel(QObject *parent = 0);
+  ChapterModel(QObject *parent = nullptr);
   ~ChapterModel();
 
   QModelIndex createNewChapter(const QModelIndex& index);
@@ -82,4 +82,4 @@ private:
   QString _playingFileName;
 };
 
-#endif // __CHAPTERMODEL_H__
+#endif // CHAPTERMODEL_H

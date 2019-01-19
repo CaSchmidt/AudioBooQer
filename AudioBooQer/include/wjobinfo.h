@@ -29,8 +29,8 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef __WJOBINFO_H__
-#define __WJOBINFO_H__
+#ifndef WJOBINFO_H
+#define WJOBINFO_H
 
 #include <QtCore/QFutureWatcher>
 #include <QtWidgets/QDialog>
@@ -68,4 +68,4 @@ private:
   QFutureWatcher<QByteArray> *watcher;
 };
 
-#endif // __WJOBINFO_H__
+#endif // WJOBINFO_H

@@ -53,7 +53,7 @@ namespace priv {
 
 ChapterModel::ChapterModel(QObject *parent)
   : QAbstractItemModel(parent)
-  , _root(0)
+  , _root(nullptr)
   , _showChapterNo(true)
   , _firstChapterNo(1)
   , _widthChapterNo(2)
@@ -70,11 +70,11 @@ ChapterModel::~ChapterModel()
 QModelIndex ChapterModel::createNewChapter(const QModelIndex& index)
 {
   ChapterFile *file = dynamic_cast<ChapterFile*>(priv::treeItem(index));
-  if( file == 0 ) {
+  if( file == nullptr ) {
     return QModelIndex();
   }
   ChapterNode *sources = dynamic_cast<ChapterNode*>(file->parentItem());
-  if( sources == 0  ||  !sources->isSource() ) {
+  if( sources == nullptr  ||  !sources->isSource() ) {
     return QModelIndex();
   }
 
@@ -104,7 +104,7 @@ void ChapterModel::setData(csAbstractTreeItem *data)
 
   delete _root;
 
-  if( data != 0 ) {
+  if( data != nullptr ) {
     _root = data;
   } else {
     _root = new ChapterRoot();
@@ -189,7 +189,7 @@ QVariant ChapterModel::data(const QModelIndex& index, int role) const
   csAbstractTreeItem *item = priv::treeItem(index);
   if(        role == Qt::DisplayRole ) {
     ChapterNode *node = dynamic_cast<ChapterNode*>(priv::treeItem(index));
-    if( node != 0  &&  !node->isSource() ) {
+    if( node != nullptr  &&  !node->isSource() ) {
       return chapterTitle(node);
     } else {
       return item->data(index.column());
@@ -223,7 +223,7 @@ Qt::ItemFlags ChapterModel::flags(const QModelIndex& index) const
   ChapterNode    *nodeItem = dynamic_cast<ChapterNode*>(item);
   if( isFile(item) ) {
     f |= Qt::ItemIsSelectable;
-  } else if( nodeItem != 0  &&  !nodeItem->isSource() ) {
+  } else if( nodeItem != nullptr  &&  !nodeItem->isSource() ) {
     f |= Qt::ItemIsEditable;
   }
 
@@ -237,7 +237,7 @@ QModelIndex ChapterModel::index(int row, int column,
     return QModelIndex();
   }
 
-  csAbstractTreeItem *parentItem(0);
+  csAbstractTreeItem *parentItem(nullptr);
   if( !parent.isValid() ) {
     parentItem = _root;
   } else {
@@ -245,7 +245,7 @@ QModelIndex ChapterModel::index(int row, int column,
   }
 
   csAbstractTreeItem *childItem = parentItem->childItem(row);
-  if( childItem != 0 ) {
+  if( childItem != nullptr ) {
     return createIndex(row, column, childItem);
   }
 
@@ -274,7 +274,7 @@ int ChapterModel::rowCount(const QModelIndex& parent) const
     return 0;
   }
 
-  csAbstractTreeItem *parentItem(0);
+  csAbstractTreeItem *parentItem(nullptr);
   if( !parent.isValid() ) {
     parentItem = _root;
   } else {
@@ -288,7 +288,7 @@ bool ChapterModel::setData(const QModelIndex& index, const QVariant& value,
                            int role)
 {
   ChapterNode *node = dynamic_cast<ChapterNode*>(priv::treeItem(index));
-  if(     node == 0                           ||  node->isSource()
+  if(     node == nullptr                     ||  node->isSource()
       ||  value.type() != QMetaType::QString  ||  role != Qt::EditRole ) {
     return false;
   }

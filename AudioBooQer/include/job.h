@@ -29,8 +29,8 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef __JOB_H__
-#define __JOB_H__
+#ifndef JOB_H
+#define JOB_H
 
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
@@ -59,4 +59,4 @@ typedef QList<Job> Jobs;
 
 QByteArray executeJob(const Job& job);
 
-#endif // __JOB_H__
+#endif // JOB_H
