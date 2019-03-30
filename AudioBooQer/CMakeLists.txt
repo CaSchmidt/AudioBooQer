@@ -25,6 +25,12 @@ add_subdirectory(../csQt/csQt
 
 ### AudioBooQer ##############################################################
 
+set(AudioBooQer_FORMS
+  forms/waudioplayer.ui
+  forms/wjobinfo.ui
+  forms/wmainwindow.ui
+  )
+
 set(AudioBooQer_HEADERS
   include/chapter.h
   include/chaptermodel.h
@@ -49,7 +55,9 @@ set(AudioBooQer_SOURCES
 add_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_TO_ASCII)
 
 add_executable(AudioBooQer
-  ${AudioBooQer_HEADERS} ${AudioBooQer_SOURCES}
+  ${AudioBooQer_FORMS}
+  ${AudioBooQer_HEADERS}
+  ${AudioBooQer_SOURCES}
   )
 
 if(WIN32)
