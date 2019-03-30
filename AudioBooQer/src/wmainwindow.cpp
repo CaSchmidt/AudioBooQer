@@ -155,12 +155,12 @@ void WMainWindow::openDirectory()
   ui->playerWidget->reset();
 
   const QDir dir(dirPath);
-  const QList<QFileInfo> wavFiles =
-      dir.entryInfoList(QStringList() << _L1("*.wav"),
+  const QList<QFileInfo> audioFiles =
+      dir.entryInfoList({QStringLiteral("*.mp3"), QStringLiteral("*.wav")},
                         QDir::Files, QDir::Name);
 
   QStringList fileNames;
-  foreach(const QFileInfo& fileInfo, wavFiles) {
+  foreach(const QFileInfo& fileInfo, audioFiles) {
     fileNames.push_back(fileInfo.absoluteFilePath());
   }
 
