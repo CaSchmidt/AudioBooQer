@@ -26,6 +26,7 @@ add_subdirectory(../csQt/csQt
 ### AudioBooQer ##############################################################
 
 set(AudioBooQer_FORMS
+  forms/waudioformat.ui
   forms/waudioplayer.ui
   forms/wjobinfo.ui
   forms/wmainwindow.ui
@@ -35,6 +36,7 @@ set(AudioBooQer_HEADERS
   include/chapter.h
   include/chaptermodel.h
   include/job.h
+  include/waudioformat.h
   include/waudioplayer.h
   include/wjobinfo.h
   include/wmainwindow.h
@@ -45,6 +47,7 @@ set(AudioBooQer_SOURCES
   src/chaptermodel.cpp
   src/job.cpp
   src/main.cpp
+  src/waudioformat.cpp
   src/waudioplayer.cpp
   src/wjobinfo.cpp
   src/wmainwindow.cpp
