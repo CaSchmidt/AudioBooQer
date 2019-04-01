@@ -41,14 +41,13 @@ namespace Ui {
 class WMainWindow : public QMainWindow {
   Q_OBJECT
 public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
+  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
   ~WMainWindow();
 
 private slots:
   void createNewChapter();
   void openDirectory();
   void processJobs();
-  void selectTool();
 
 private:
   void loadSettings();

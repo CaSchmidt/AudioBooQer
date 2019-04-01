@@ -37,22 +37,11 @@
 #include <QtCore/QStringList>
 
 struct Job {
-  Job()
-    : inputFiles()
-    , outputFile()
-    , renameInput(false)
-    , soxExe()
-    , lameExe()
-    , lameOptions()
-  {
-  }
+  Job() = default;
 
-  QStringList inputFiles;
-  QString outputFile;
-  bool renameInput;
-  QString soxExe;
-  QString lameExe;
-  QString lameOptions;
+  QStringList inputFiles{};
+  QString outputFile{};
+  bool renameInput{false};
 };
 
 typedef QList<Job> Jobs;

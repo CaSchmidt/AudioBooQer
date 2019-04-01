@@ -78,8 +78,6 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   // Buttons /////////////////////////////////////////////////////////////////
 
   connect(ui->goButton, SIGNAL(clicked()), SLOT(processJobs()));
-  connect(ui->toolSoxButton,  SIGNAL(clicked()), SLOT(selectTool()));
-  connect(ui->toolLameButton, SIGNAL(clicked()), SLOT(selectTool()));
 
   // File Menu ///////////////////////////////////////////////////////////////
 
@@ -180,61 +178,22 @@ void WMainWindow::openDirectory()
   QDir::setCurrent(dirPath);
 }
 
-void WMainWindow::selectTool()
-{
-  QString caption;
-  if(        sender() == ui->toolSoxButton ) {
-    caption = tr("Select tool \"SoX\"");
-  } else if( sender() == ui->toolLameButton ) {
-    caption = tr("Select tool \"LAME\"");
-  }
-
-  const QString fileName =
-      QFileDialog::getOpenFileName(this, caption);
-  if( fileName.isEmpty() ) {
-    return;
-  }
-
-  if(        sender() == ui->toolSoxButton ) {
-    ui->toolSoxEdit->setText(fileName);
-  } else if( sender() == ui->toolLameButton ) {
-    ui->toolLameEdit->setText(fileName);
-  }
-}
-
 ////// private ///////////////////////////////////////////////////////////////
 
 void WMainWindow::loadSettings()
 {
   QSettings settings(settingsFileName(), QSettings::IniFormat);
-
-  settings.beginGroup(_L1("tools"));
-  ui->toolSoxEdit->setText(settings.value(_L1("sox")).toString());
-  ui->toolLameEdit->setText(settings.value(_L1("lame")).toString());
-  ui->lameOptionsEdit->setText(settings.value(_L1("lame_options")).toString());
-  settings.endGroup();
 }
 
 void WMainWindow::saveSettings() const
 {
   QSettings settings(settingsFileName(), QSettings::IniFormat);
 
-  settings.beginGroup(_L1("tools"));
-  settings.setValue(_L1("sox"), ui->toolSoxEdit->text());
-  settings.setValue(_L1("lame"), ui->toolLameEdit->text());
-  settings.setValue(_L1("lame_options"), ui->lameOptionsEdit->text());
-  settings.endGroup();
-
   settings.sync();
 }
 
 void WMainWindow::processJobs()
 {
-  if(     ui->toolSoxEdit->text().isEmpty()
-      ||  ui->toolLameEdit->text().isEmpty() ) {
-    return;
-  }
-
   ChapterModel *model = dynamic_cast<ChapterModel*>(ui->chaptersView->model());
   if( model == nullptr ) {
     return;
@@ -249,10 +208,6 @@ void WMainWindow::processJobs()
 
   for(int i = 0; i < jobs.size(); i++) {
     jobs[i].renameInput = ui->renameCheck->isChecked();
-
-    jobs[i].soxExe      = ui->toolSoxEdit->text();
-    jobs[i].lameExe     = ui->toolLameEdit->text();
-    jobs[i].lameOptions = ui->lameOptionsEdit->text();
   }
 
   WJobInfo jobInfo(this);

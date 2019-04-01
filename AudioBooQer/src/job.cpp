@@ -30,7 +30,6 @@
 *****************************************************************************/
 
 #include <QtCore/QFile>
-#include <QtCore/QProcess>
 
 #include <csQt/csQtUtil.h>
 
@@ -40,67 +39,11 @@
 
 QByteArray executeJob(const Job& job)
 {
-  QProcess sox;
-  QProcess lame;
-
-  // (1) SoX /////////////////////////////////////////////////////////////////
-
-  sox.setProgram(job.soxExe);
-
-  // Command Line: sox <input1> ... <inputN> -t wav -
-#if defined(Q_OS_WIN)
-  QString sox_args;
-  foreach(const QString& input, job.inputFiles) {
-    sox_args += _L1C('"');
-    sox_args += input;
-    sox_args += _L1C('"');
-    sox_args += _L1C(' ');
-  }
-  sox_args += _L1("-t wav -"); // NOTE: Trailing <SPACE> Above!
-  sox.setNativeArguments(sox_args);
-#else
-  QStringList sox_args;
-  sox_args << job.inputFiles << _L1("-t") << _L1("wav") << _L1("-");
-  sox.setArguments(sox_args);
-#endif
-
-  // (2) LAME ////////////////////////////////////////////////////////////////
-
-  lame.setProgram(job.lameExe);
-
-  // Command Line: lame <options> -S - <output>
-#if defined(Q_OS_WIN)
-  QString lame_args;
-  lame_args += job.lameOptions;
-  lame_args += _L1(" -S - ");
-  lame_args += _L1C('"');
-  lame_args += job.outputFile;
-  lame_args += _L1C('"');
-  lame.setNativeArguments(lame_args);
-#else
-  QStringList lame_args;
-  lame_args << job.lameOptions << _L1("-S") << _L1("-") << job.outputFile;
-  lame.setArguments(lame_args);
-#endif
-
-  // (3) Execute /////////////////////////////////////////////////////////////
-
-  sox.setStandardOutputProcess(&lame);
-
-  sox.start();
-  lame.start();
-
-  sox.waitForFinished(-1);
-  lame.waitForFinished(-1);
-
   QByteArray result;
-  result += sox.readAllStandardError();
-  result += '\n';
-  result += lame.readAllStandardError();
 
   if( job.renameInput ) {
-    foreach(const QString& input, job.inputFiles) {
-      QFile::rename(input, input+_L1(".done"));
+    for(const QString& input : job.inputFiles) {
+      QFile::rename(input, input + QStringLiteral(".done"));
     }
   }
 
