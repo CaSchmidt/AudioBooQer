@@ -146,10 +146,9 @@ Jobs ChapterModel::buildJobs() const
     } // File
 
     ChapterNode *node = dynamic_cast<ChapterNode*>(priv::treeItem(nodeIndex));
-    const QString title = chapterTitle(node);
+    job.title = chapterTitle(node);
 
-    const QString outputDir = QFileInfo(job.inputFiles.front()).absolutePath();
-    job.outputFile = QFileInfo(QDir(outputDir), title+_L1(".mp3")).absoluteFilePath();
+    job.outputDirPath = QFileInfo(job.inputFiles.front()).absolutePath();
 
     jobs.push_back(job);
   } // Node

@@ -40,8 +40,9 @@ struct Job {
   Job() = default;
 
   QStringList inputFiles{};
-  QString outputFile{};
+  QString outputDirPath{};
   bool renameInput{false};
+  QString title{};
 };
 
 typedef QList<Job> Jobs;
