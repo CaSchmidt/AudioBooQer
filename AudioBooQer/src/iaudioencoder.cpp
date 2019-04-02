@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,43 +29,10 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WJOBINFO_H
-#define WJOBINFO_H
+#include "iaudioencoder.h"
 
-#include <QtCore/QFutureWatcher>
-#include <QtWidgets/QDialog>
+////// public ////////////////////////////////////////////////////////////////
 
-#include "job.h"
-
-namespace Ui {
-  class WJobInfo;
-};
-
-class WJobInfo : public QDialog {
-  Q_OBJECT
-public:
-  WJobInfo(QWidget *parent, Qt::WindowFlags f = Qt::WindowFlags());
-  ~WJobInfo();
-
-  void executeJobs(const Jobs& jobs);
-
-protected:
-  void keyPressEvent(QKeyEvent *event);
-
-private slots:
-  void accept();
-  void done(int r);
-  int exec();
-  void open();
-  void reject();
-  void enableClose();
-  void readResult(int index);
-  void setProgressRange(int min, int max);
-  void setProgressValue(int val);
-
-private:
-  Ui::WJobInfo *ui;
-  QFutureWatcher<QString> *watcher;
-};
-
-#endif // WJOBINFO_H
+IAudioEncoder::~IAudioEncoder()
+{
+}

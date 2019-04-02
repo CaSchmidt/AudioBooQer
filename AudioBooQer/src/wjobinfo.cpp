@@ -61,7 +61,7 @@ WJobInfo::WJobInfo(QWidget *parent, Qt::WindowFlags f)
 
   // Future Watcher //////////////////////////////////////////////////////////
 
-  watcher = new QFutureWatcher<QByteArray>(this);
+  watcher = new QFutureWatcher<QString>(this);
 
   connect(watcher, SIGNAL(finished()), SLOT(enableClose()));
   connect(watcher, SIGNAL(resultReadyAt(int)), SLOT(readResult(int)));
@@ -138,8 +138,7 @@ void WJobInfo::enableClose()
 
 void WJobInfo::readResult(int index)
 {
-  const QString result = QString::fromLocal8Bit(watcher->resultAt(index));
-  ui->outputBrowser->append(result);
+  ui->outputBrowser->append(watcher->resultAt(index));
 }
 
 void WJobInfo::setProgressRange(int min, int max)

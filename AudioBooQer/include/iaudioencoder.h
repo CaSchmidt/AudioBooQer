@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,43 +29,26 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WJOBINFO_H
-#define WJOBINFO_H
+#ifndef IAUDIOENCODER_H
+#define IAUDIOENCODER_H
 
-#include <QtCore/QFutureWatcher>
-#include <QtWidgets/QDialog>
+#include <memory>
 
-#include "job.h"
+#include <QtCore/QString>
+#include <QtMultimedia/QAudioBuffer>
+#include <QtMultimedia/QAudioFormat>
 
-namespace Ui {
-  class WJobInfo;
-};
-
-class WJobInfo : public QDialog {
-  Q_OBJECT
+class IAudioEncoder {
 public:
-  WJobInfo(QWidget *parent, Qt::WindowFlags f = Qt::WindowFlags());
-  ~WJobInfo();
+  virtual ~IAudioEncoder();
 
-  void executeJobs(const Jobs& jobs);
-
-protected:
-  void keyPressEvent(QKeyEvent *event);
-
-private slots:
-  void accept();
-  void done(int r);
-  int exec();
-  void open();
-  void reject();
-  void enableClose();
-  void readResult(int index);
-  void setProgressRange(int min, int max);
-  void setProgressValue(int val);
-
-private:
-  Ui::WJobInfo *ui;
-  QFutureWatcher<QString> *watcher;
+  virtual bool encode(const QAudioBuffer& buffer) = 0;
+  virtual bool initialize(const QAudioFormat& format,
+                          const QString& outputDirPath,
+                          const QString& title) = 0;
+  virtual QString outputFilename() const = 0;
 };
 
-#endif // WJOBINFO_H
+using AudioEncoderPtr = std::unique_ptr<IAudioEncoder>;
+
+#endif // IAUDIOENCODER_H

@@ -33,9 +33,12 @@ set(AudioBooQer_FORMS
   )
 
 set(AudioBooQer_HEADERS
+  include/audiojob.h
   include/chapter.h
   include/chaptermodel.h
+  include/iaudioencoder.h
   include/job.h
+  include/rawencoder.h
   include/waudioformat.h
   include/waudioplayer.h
   include/wjobinfo.h
@@ -43,10 +46,13 @@ set(AudioBooQer_HEADERS
   )
 
 set(AudioBooQer_SOURCES
+  src/audiojob.cpp
   src/chapter.cpp
   src/chaptermodel.cpp
+  src/iaudioencoder.cpp
   src/job.cpp
   src/main.cpp
+  src/rawencoder.cpp
   src/waudioformat.cpp
   src/waudioplayer.cpp
   src/wjobinfo.cpp

@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,43 +29,62 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WJOBINFO_H
-#define WJOBINFO_H
+#include <QtCore/QDir>
 
-#include <QtCore/QFutureWatcher>
-#include <QtWidgets/QDialog>
+#include "rawencoder.h"
 
-#include "job.h"
+////// public ////////////////////////////////////////////////////////////////
 
-namespace Ui {
-  class WJobInfo;
-};
+RawEncoder::RawEncoder()
+  : _file()
+{
+}
 
-class WJobInfo : public QDialog {
-  Q_OBJECT
-public:
-  WJobInfo(QWidget *parent, Qt::WindowFlags f = Qt::WindowFlags());
-  ~WJobInfo();
+RawEncoder::~RawEncoder()
+{
+  _file.close();
+}
 
-  void executeJobs(const Jobs& jobs);
+bool RawEncoder::encode(const QAudioBuffer& buffer)
+{
+  if( !buffer.isValid() ) {
+    return false;
+  }
+  const char *data = reinterpret_cast<const char *>(buffer.data());
+  return _file.write(data, buffer.byteCount()) == buffer.byteCount();
+}
 
-protected:
-  void keyPressEvent(QKeyEvent *event);
+bool RawEncoder::initialize(const QAudioFormat& format,
+                            const QString& outputDirPath,
+                            const QString& title)
+{
+  if( _file.isOpen() ) {
+    return false;
+  }
 
-private slots:
-  void accept();
-  void done(int r);
-  int exec();
-  void open();
-  void reject();
-  void enableClose();
-  void readResult(int index);
-  void setProgressRange(int min, int max);
-  void setProgressValue(int val);
+  QString filename;
+  {
+    QString basename(title);
+    basename.append(format.byteOrder() == QAudioFormat::BigEndian
+                    ? QStringLiteral(".be")
+                    : QStringLiteral(".le"));
+    basename.append(QStringLiteral(".%1ch").arg(format.channelCount()));
+    basename.append(QStringLiteral(".%1%2")
+                    .arg(format.sampleType() == QAudioFormat::UnSignedInt
+                         ? QStringLiteral("u")
+                         : QStringLiteral("s"))
+                    .arg(format.sampleSize()));
+    basename.append(QStringLiteral(".%1Hz").arg(format.sampleRate()));
+    basename.append(QStringLiteral(".raw"));
 
-private:
-  Ui::WJobInfo *ui;
-  QFutureWatcher<QString> *watcher;
-};
+    filename = QDir(outputDirPath).absoluteFilePath(basename);
+  }
 
-#endif // WJOBINFO_H
+  _file.setFileName(filename);
+  return _file.open(QIODevice::WriteOnly);
+}
+
+QString RawEncoder::outputFilename() const
+{
+  return _file.fileName();
+}

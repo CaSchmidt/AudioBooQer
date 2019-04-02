@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,43 +29,40 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WJOBINFO_H
-#define WJOBINFO_H
+#ifndef AUDIOJOB_H
+#define AUDIOJOB_H
 
-#include <QtCore/QFutureWatcher>
-#include <QtWidgets/QDialog>
+#include <QtMultimedia/QAudioDecoder>
 
+#include "iaudioencoder.h"
 #include "job.h"
 
-namespace Ui {
-  class WJobInfo;
-};
-
-class WJobInfo : public QDialog {
+class AudioJob : public QObject {
   Q_OBJECT
 public:
-  WJobInfo(QWidget *parent, Qt::WindowFlags f = Qt::WindowFlags());
-  ~WJobInfo();
+  AudioJob(AudioEncoderPtr& encoder, const Job& job, QObject *parent = nullptr);
+  ~AudioJob();
 
-  void executeJobs(const Jobs& jobs);
+  QString message() const;
 
-protected:
-  void keyPressEvent(QKeyEvent *event);
+  bool start();
 
 private slots:
-  void accept();
-  void done(int r);
-  int exec();
-  void open();
-  void reject();
-  void enableClose();
-  void readResult(int index);
-  void setProgressRange(int min, int max);
-  void setProgressValue(int val);
+  void decodingBufferReady();
+  void decodingError(QAudioDecoder::Error error);
+  void decodingFinished();
 
 private:
-  Ui::WJobInfo *ui;
-  QFutureWatcher<QString> *watcher;
+  void appendErrorMessage(const QString& msg);
+  void appendInfoMessage(const QString& msg);
+
+  QAudioDecoder _decoder;
+  AudioEncoderPtr _encoder;
+  Job _job;
+  QString _message;
+
+signals:
+  void done();
 };
 
-#endif // WJOBINFO_H
+#endif // AUDIOJOB_H

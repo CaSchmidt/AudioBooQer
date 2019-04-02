@@ -35,18 +35,20 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
+#include <QtMultimedia/QAudioFormat>
 
 struct Job {
   Job() = default;
 
+  QAudioFormat format{};
   QStringList inputFiles{};
   QString outputDirPath{};
   bool renameInput{false};
   QString title{};
 };
 
-typedef QList<Job> Jobs;
+using Jobs = QList<Job>;
 
-QByteArray executeJob(const Job& job);
+QString executeJob(const Job& job);
 
 #endif // JOB_H

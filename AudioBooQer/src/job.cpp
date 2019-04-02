@@ -29,23 +29,26 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtCore/QFile>
-
-#include <csQt/csQtUtil.h>
+#include <QtCore/QEventLoop>
 
 #include "job.h"
 
+#include "audiojob.h"
+#include "rawencoder.h"
+
 ////// Public ////////////////////////////////////////////////////////////////
 
-QByteArray executeJob(const Job& job)
-{
-  QByteArray result;
+QString executeJob(const Job& job)
+{  
+  AudioEncoderPtr         encoder = std::make_unique<RawEncoder>();
+  std::unique_ptr<AudioJob> audio = std::make_unique<AudioJob>(encoder, job);
 
-  if( job.renameInput ) {
-    for(const QString& input : job.inputFiles) {
-      QFile::rename(input, input + QStringLiteral(".done"));
-    }
+  QEventLoop loop;
+  QObject::connect(audio.get(), &AudioJob::done, &loop, &QEventLoop::quit);
+
+  if( audio->start() ) {
+    loop.exec();
   }
 
-  return result;
+  return audio->message();
 }

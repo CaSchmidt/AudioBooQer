@@ -206,8 +206,9 @@ void WMainWindow::processJobs()
 
   ui->playerWidget->stop();
 
-  for(int i = 0; i < jobs.size(); i++) {
-    jobs[i].renameInput = ui->renameCheck->isChecked();
+  for(Job& job : jobs) {
+    job.format      = ui->formatWidget->format();
+    job.renameInput = ui->renameCheck->isChecked();
   }
 
   WJobInfo jobInfo(this);
