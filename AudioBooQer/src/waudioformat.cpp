@@ -87,7 +87,7 @@ QAudioFormat WAudioFormat::format() const
                       ? QAudioFormat::LittleEndian
                       : QAudioFormat::BigEndian);
   result.setChannelCount(ui->channelsCombo->currentData().toInt());
-  result.setCodec(QStringLiteral("audio/x-raw"));
+  result.setCodec(QStringLiteral("audio/pcm"));
   result.setSampleRate(ui->rateCombo->currentData().toInt());
   result.setSampleSize(ui->bitsCombo->currentData().toInt());
   result.setSampleType(ui->typeCombo->currentText() == QStringLiteral("Unsigned")
