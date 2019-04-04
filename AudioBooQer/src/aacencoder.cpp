@@ -45,7 +45,7 @@
 
 /*
  * NOTE:
- * - FDK AAC seems to operate on native endian, signed 16bit integers.
+ * - FDK AAC seems to operate on native endian, signed 16bit integers ONLY!
  * - We support only Mono & Stereo.
  * - The bitrate is fixed to 64k.
  */
@@ -160,7 +160,13 @@ bool AacEncoder::encode(const QAudioBuffer& buffer)
 
 bool AacEncoder::flush()
 {
-  return encodeBlock(impl->zeros, 0);
+  bool eof = false;
+  while( !eof ) {
+    if( !encodeBlock(impl->zeros, 0, &eof) ) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool AacEncoder::initialize(const QAudioFormat& format,
@@ -244,7 +250,7 @@ QString AacEncoder::outputFilename() const
 
 ////// private ///////////////////////////////////////////////////////////////
 
-bool AacEncoder::encodeBlock(const void *data, const int size)
+bool AacEncoder::encodeBlock(const void *data, const int size, bool *eof)
 {
   impl->inDesc.assign(data, size);
   impl->outDesc.assign(impl->bitstream, sizeof(impl->bitstream));
@@ -257,6 +263,11 @@ bool AacEncoder::encodeBlock(const void *data, const int size)
   AACENC_OutArgs out_args;
   const AACENC_ERROR error =
       aacEncEncode(impl->handle, impl->inDesc, impl->outDesc, &in_args, &out_args);
+
+  if( eof != nullptr ) {
+    *eof = error == AACENC_ENCODE_EOF;
+  }
+
   if( error != AACENC_OK  &&  error != AACENC_ENCODE_EOF ) {
     return false;
   }
