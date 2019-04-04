@@ -160,7 +160,7 @@ bool AacEncoder::encode(const QAudioBuffer& buffer)
 
 bool AacEncoder::flush()
 {
-  return encodeBlock(impl->zeros, sizeof(impl->zeros));
+  return encodeBlock(impl->zeros, 0);
 }
 
 bool AacEncoder::initialize(const QAudioFormat& format,
