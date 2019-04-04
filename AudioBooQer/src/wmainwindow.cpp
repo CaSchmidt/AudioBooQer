@@ -194,6 +194,14 @@ void WMainWindow::saveSettings() const
 
 void WMainWindow::processJobs()
 {
+  const QString outputDirPath =
+      QFileDialog::getExistingDirectory(this,
+                                        tr("Open Directory"),
+                                        QDir::currentPath());
+  if( outputDirPath.isEmpty() ) {
+    return;
+  }
+
   ChapterModel *model = dynamic_cast<ChapterModel*>(ui->chaptersView->model());
   if( model == nullptr ) {
     return;
@@ -207,8 +215,9 @@ void WMainWindow::processJobs()
   ui->playerWidget->stop();
 
   for(Job& job : jobs) {
-    job.format      = ui->formatWidget->format();
-    job.renameInput = ui->renameCheck->isChecked();
+    job.format        = ui->formatWidget->format();
+    job.outputDirPath = outputDirPath;
+    job.renameInput   = ui->renameCheck->isChecked();
   }
 
   WJobInfo jobInfo(this);
