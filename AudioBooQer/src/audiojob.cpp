@@ -121,7 +121,11 @@ void AudioJob::decodingFinished()
   }
 
   if( _job.inputFiles.isEmpty() ) {
-    appendInfoMessage(QStringLiteral("= %1").arg(_encoder->outputFilename()));
+    if( !_encoder->flush() ) {
+      appendErrorMessage(QStringLiteral("IAudioEncoder::flush() failed!"));
+    } else {
+      appendInfoMessage(QStringLiteral("= %1").arg(_encoder->outputFilename()));
+    }
     emit done();
   } else {
     _decoder.setSourceFilename(_job.inputFiles.takeFirst());

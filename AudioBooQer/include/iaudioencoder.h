@@ -43,6 +43,7 @@ public:
   virtual ~IAudioEncoder();
 
   virtual bool encode(const QAudioBuffer& buffer) = 0;
+  virtual bool flush();
   virtual bool initialize(const QAudioFormat& format,
                           const QString& outputDirPath,
                           const QString& title) = 0;

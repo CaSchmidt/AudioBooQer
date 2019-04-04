@@ -36,3 +36,8 @@
 IAudioEncoder::~IAudioEncoder()
 {
 }
+
+bool IAudioEncoder::flush()
+{
+  return true;
+}
