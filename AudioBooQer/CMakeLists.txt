@@ -23,6 +23,8 @@ add_subdirectory(../csQt/csQt
   ${CMAKE_CURRENT_BINARY_DIR}/csQt
   )
 
+add_subdirectory(3rdparty/fdk-aac)
+
 ### AudioBooQer ##############################################################
 
 set(AudioBooQer_FORMS
@@ -33,6 +35,7 @@ set(AudioBooQer_FORMS
   )
 
 set(AudioBooQer_HEADERS
+  include/aacencoder.h
   include/audiojob.h
   include/chapter.h
   include/chaptermodel.h
@@ -46,6 +49,7 @@ set(AudioBooQer_HEADERS
   )
 
 set(AudioBooQer_SOURCES
+  src/aacencoder.cpp
   src/audiojob.cpp
   src/chapter.cpp
   src/chaptermodel.cpp
@@ -73,13 +77,17 @@ if(WIN32)
   set_target_properties(AudioBooQer PROPERTIES WIN32_EXECUTABLE ON)
 endif()
 
-target_link_libraries(AudioBooQer csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
+target_link_libraries(AudioBooQer fdk-aac csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
 
 format_output_name(AudioBooQer "AudioBooQer")
 
 target_include_directories(AudioBooQer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(AudioBooQer PRIVATE ${csQt_SOURCE_DIR}/include)
 target_include_directories(AudioBooQer PRIVATE ${csQt_BINARY_DIR}/include)
+target_include_directories(AudioBooQer PRIVATE
+  3rdparty/fdk-aac/fdk-aac-src/libAACenc/include
+  3rdparty/fdk-aac/fdk-aac-src/libSYS/include
+  )
 
 install(TARGETS AudioBooQer
   ARCHIVE DESTINATION lib

@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,37 +29,31 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtCore/QEventLoop>
+#ifndef AACENCODER_H
+#define AACENCODER_H
 
-#include "job.h"
+#include "iaudioencoder.h"
 
-#include "audiojob.h"
+class AacEncoderImpl;
 
-#define HAVE_AAC
+class AacEncoder : public IAudioEncoder {
+public:
+  AacEncoder();
+  ~AacEncoder();
 
-#ifdef HAVE_AAC
-# include "aacencoder.h"
-#else
-# include "rawencoder.h"
-#endif
+  bool isNull() const;
 
-////// Public ////////////////////////////////////////////////////////////////
+  bool encode(const QAudioBuffer& buffer);
+  bool flush();
+  bool initialize(const QAudioFormat& format,
+                  const QString& outputDirPath,
+                  const QString& title);
+  QString outputFilename() const;
 
-QString executeJob(const Job& job)
-{
-#ifdef HAVE_AAC
-  AudioEncoderPtr         encoder = std::make_unique<AacEncoder>();
-#else
-  AudioEncoderPtr         encoder = std::make_unique<RawEncoder>();
-#endif
-  std::unique_ptr<AudioJob> audio = std::make_unique<AudioJob>(encoder, job);
+private:
+  bool encodeBlock(const void *data, const int size);
 
-  QEventLoop loop;
-  QObject::connect(audio.get(), &AudioJob::done, &loop, &QEventLoop::quit);
+  std::unique_ptr<AacEncoderImpl> impl{};
+};
 
-  if( audio->start() ) {
-    loop.exec();
-  }
-
-  return audio->message();
-}
+#endif // AACENCODER_H
