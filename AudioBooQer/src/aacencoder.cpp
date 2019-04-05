@@ -131,31 +131,7 @@ bool AacEncoder::encode(const QAudioBuffer& buffer)
   if( !buffer.isValid() ) {
     return false;
   }
-
-  AACENC_InfoStruct info;
-  if( aacEncInfo(impl->handle, &info) != AACENC_OK ) {
-    return false;
-  }
-
-  const int blockSize = static_cast<int>(info.inputChannels*2*info.frameLength);
-  const int numBlocks = buffer.byteCount()/blockSize;
-  const int numRemain = buffer.byteCount()%blockSize;
-
-  const uint8_t *input = reinterpret_cast<const uint8_t*>(buffer.data());
-  for(int i = 0; i < numBlocks; i++) {
-    if( !encodeBlock(input, blockSize) ) {
-      return false;
-    }
-    input += blockSize;
-  }
-
-  if( numRemain > 0 ) {
-    if( !encodeBlock(input, numRemain) ) {
-      return false;
-    }
-  }
-
-  return true;
+  return encodeBlock(reinterpret_cast<const uint8_t*>(buffer.data()), buffer.byteCount());
 }
 
 bool AacEncoder::flush()
@@ -250,31 +226,40 @@ QString AacEncoder::outputFilename() const
 
 ////// private ///////////////////////////////////////////////////////////////
 
-bool AacEncoder::encodeBlock(const void *data, const int size, bool *eof)
-{
-  impl->inDesc.assign(data, size);
-  impl->outDesc.assign(impl->bitstream, sizeof(impl->bitstream));
+bool AacEncoder::encodeBlock(const uint8_t *data, int size, bool *eof)
+{  
+  while( true ) {
+    impl->inDesc.assign(data, size);
+    impl->outDesc.assign(impl->bitstream, sizeof(impl->bitstream));
 
-  AACENC_InArgs in_args;
-  in_args.numInSamples = size < 1
-      ? -1      // Flush encoder!
-      : size/2;
+    AACENC_InArgs in_args;
+    in_args.numInSamples = size < 1
+        ? -1      // Flush encoder!
+        : size/2;
 
-  AACENC_OutArgs out_args;
-  const AACENC_ERROR error =
-      aacEncEncode(impl->handle, impl->inDesc, impl->outDesc, &in_args, &out_args);
+    AACENC_OutArgs out_args;
+    const AACENC_ERROR error =
+        aacEncEncode(impl->handle, impl->inDesc, impl->outDesc, &in_args, &out_args);
 
-  if( eof != nullptr ) {
-    *eof = error == AACENC_ENCODE_EOF;
-  }
+    if( eof != nullptr ) {
+      *eof = error == AACENC_ENCODE_EOF;
+    }
 
-  if( error != AACENC_OK  &&  error != AACENC_ENCODE_EOF ) {
-    return false;
-  }
+    if( error != AACENC_OK  &&  error != AACENC_ENCODE_EOF ) {
+      return false;
+    }
 
-  if( out_args.numOutBytes > 0  &&
-      impl->file.write(reinterpret_cast<const char*>(impl->bitstream), out_args.numOutBytes) != out_args.numOutBytes ) {
-    return false;
+    if( out_args.numOutBytes > 0  &&
+        impl->file.write(reinterpret_cast<const char*>(impl->bitstream), out_args.numOutBytes) != out_args.numOutBytes ) {
+      return false;
+    }
+
+    if( in_args.numInSamples - out_args.numInSamples > 0 ) {
+      data += out_args.numInSamples*2;
+      size -= out_args.numInSamples*2;
+    } else {
+      break;
+    }
   }
 
   return true;

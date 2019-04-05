@@ -51,7 +51,7 @@ public:
   QString outputFilename() const;
 
 private:
-  bool encodeBlock(const void *data, const int size, bool *eof = nullptr);
+  bool encodeBlock(const uint8_t *data, int size, bool *eof = nullptr);
 
   std::unique_ptr<AacEncoderImpl> impl{};
 };
