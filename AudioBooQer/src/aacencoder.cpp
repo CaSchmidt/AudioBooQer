@@ -102,6 +102,8 @@ public:
   QFile             file{};
   HANDLE_AACENCODER handle{};
   BufferDesc        inDesc{};
+  AACENC_InfoStruct info{};
+  uint64_t          numDataSamples{};
   BufferDesc        outDesc{};
   uint8_t           zeros[64*1024];
 };
@@ -202,6 +204,10 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
+  if( aacEncInfo(result->handle, &result->info) != AACENC_OK ) {
+    return false;
+  }
+
   // (2) Create output file //////////////////////////////////////////////////
 
   result->file.setFileName(QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1.aac").arg(title)));
@@ -219,9 +225,19 @@ bool AacEncoder::initialize(const QAudioFormat& format,
   return true;
 }
 
+uint64_t AacEncoder::numTimeSamples() const
+{
+  return impl->numDataSamples/impl->info.inputChannels;
+}
+
 QString AacEncoder::outputFilename() const
 {
   return impl->file.fileName();
+}
+
+void AacEncoder::resetTimeSamples()
+{
+  impl->numDataSamples = 0;
 }
 
 ////// private ///////////////////////////////////////////////////////////////
@@ -248,6 +264,8 @@ bool AacEncoder::encodeBlock(const uint8_t *data, int size, bool *eof)
     if( error != AACENC_OK  &&  error != AACENC_ENCODE_EOF ) {
       return false;
     }
+
+    impl->numDataSamples += static_cast<uint64_t>(out_args.numInSamples);
 
     if( out_args.numOutBytes > 0  &&
         impl->file.write(reinterpret_cast<const char*>(impl->bitstream), out_args.numOutBytes) != out_args.numOutBytes ) {

@@ -41,3 +41,12 @@ bool IAudioEncoder::flush()
 {
   return true;
 }
+
+uint64_t IAudioEncoder::numTimeSamples() const
+{
+  return 0;
+}
+
+void IAudioEncoder::resetTimeSamples()
+{
+}

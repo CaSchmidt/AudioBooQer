@@ -58,7 +58,7 @@ bool RawEncoder::initialize(const QAudioFormat& format,
                             const QString& outputDirPath,
                             const QString& title)
 {
-  if( _file.isOpen() ) {
+  if( _file.isOpen()  ||  format.channelCount() > 2 ) {
     return false;
   }
 

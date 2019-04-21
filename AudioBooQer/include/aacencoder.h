@@ -48,7 +48,9 @@ public:
   bool initialize(const QAudioFormat& format,
                   const QString& outputDirPath,
                   const QString& title);
+  uint64_t numTimeSamples() const;
   QString outputFilename() const;
+  void resetTimeSamples();
 
 private:
   bool encodeBlock(const uint8_t *data, int size, bool *eof = nullptr);

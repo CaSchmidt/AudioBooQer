@@ -47,7 +47,9 @@ public:
   virtual bool initialize(const QAudioFormat& format,
                           const QString& outputDirPath,
                           const QString& title) = 0;
+  virtual uint64_t numTimeSamples() const;
   virtual QString outputFilename() const = 0;
+  virtual void resetTimeSamples();
 };
 
 using AudioEncoderPtr = std::unique_ptr<IAudioEncoder>;
