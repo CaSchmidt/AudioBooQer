@@ -84,7 +84,7 @@ bool RawEncoder::initialize(const QAudioFormat& format,
   return _file.open(QIODevice::WriteOnly);
 }
 
-QString RawEncoder::outputFilename() const
+QString RawEncoder::outputFileName() const
 {
   return _file.fileName();
 }

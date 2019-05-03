@@ -49,7 +49,7 @@ public:
                   const QString& outputDirPath,
                   const QString& nameHint);
   uint64_t numTimeSamples() const;
-  QString outputFilename() const;
+  QString outputFileName() const;
   void resetTimeSamples();
 
 private:

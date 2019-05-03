@@ -45,7 +45,7 @@ public:
   bool initialize(const QAudioFormat& format,
                   const QString& outputDirPath,
                   const QString& nameHint);
-  QString outputFilename() const;
+  QString outputFileName() const;
 
 private:
   QFile _file;

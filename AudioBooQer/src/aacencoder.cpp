@@ -230,7 +230,7 @@ uint64_t AacEncoder::numTimeSamples() const
   return impl->numDataSamples/impl->info.inputChannels;
 }
 
-QString AacEncoder::outputFilename() const
+QString AacEncoder::outputFileName() const
 {
   return impl->file.fileName();
 }

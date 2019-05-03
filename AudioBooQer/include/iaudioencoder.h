@@ -48,7 +48,7 @@ public:
                           const QString& outputDirPath,
                           const QString& nameHint) = 0;
   virtual uint64_t numTimeSamples() const;
-  virtual QString outputFilename() const = 0;
+  virtual QString outputFileName() const = 0;
   virtual void resetTimeSamples();
 };
 
