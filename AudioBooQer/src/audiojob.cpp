@@ -61,6 +61,11 @@ QString AudioJob::message() const
   return _message;
 }
 
+QString AudioJob::outputFilePath() const
+{
+  return _encoder->outputFileName();
+}
+
 bool AudioJob::start()
 {
   // (1) Initialize decoder //////////////////////////////////////////////////
@@ -124,7 +129,7 @@ void AudioJob::decodingFinished()
     if( !_encoder->flush() ) {
       appendErrorMessage(QStringLiteral("IAudioEncoder::flush() failed!"));
     } else {
-      appendInfoMessage(QStringLiteral("= %1").arg(_encoder->outputFilename()));
+      appendInfoMessage(QStringLiteral("= %1").arg(_encoder->outputFileName()));
     }
     emit done();
   } else {

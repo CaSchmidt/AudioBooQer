@@ -44,6 +44,7 @@ public:
   ~AudioJob();
 
   QString message() const;
+  QString outputFilePath() const;
 
   bool start();
 

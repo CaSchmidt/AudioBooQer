@@ -65,7 +65,7 @@ private slots:
 
 private:
   Ui::WJobInfo *ui;
-  QFutureWatcher<QString> *watcher;
+  QFutureWatcher<JobResult> _watcher;
 };
 
 #endif // WJOBINFO_H

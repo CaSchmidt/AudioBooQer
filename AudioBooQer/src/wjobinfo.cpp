@@ -41,7 +41,7 @@
 WJobInfo::WJobInfo(QWidget *parent, Qt::WindowFlags f)
   : QDialog(parent, f)
   , ui(new Ui::WJobInfo)
-  , watcher(nullptr)
+  , _watcher(this)
 {
   ui->setupUi(this);
 
@@ -61,13 +61,11 @@ WJobInfo::WJobInfo(QWidget *parent, Qt::WindowFlags f)
 
   // Future Watcher //////////////////////////////////////////////////////////
 
-  watcher = new QFutureWatcher<QString>(this);
-
-  connect(watcher, SIGNAL(finished()), SLOT(enableClose()));
-  connect(watcher, SIGNAL(resultReadyAt(int)), SLOT(readResult(int)));
-  connect(watcher, SIGNAL(progressRangeChanged(int,int)),
+  connect(&_watcher, SIGNAL(finished()), SLOT(enableClose()));
+  connect(&_watcher, SIGNAL(resultReadyAt(int)), SLOT(readResult(int)));
+  connect(&_watcher, SIGNAL(progressRangeChanged(int,int)),
           SLOT(setProgressRange(int,int)));
-  connect(watcher, SIGNAL(progressValueChanged(int)),
+  connect(&_watcher, SIGNAL(progressValueChanged(int)),
           SLOT(setProgressValue(int)));
 }
 
@@ -78,11 +76,11 @@ WJobInfo::~WJobInfo()
 
 void WJobInfo::executeJobs(const Jobs& jobs)
 {
-  watcher->setFuture(QtConcurrent::mapped(jobs, executeJob));
+  _watcher.setFuture(QtConcurrent::mapped(jobs, executeJob));
 
-  ui->progressBar->setMinimum(watcher->progressMinimum());
-  ui->progressBar->setMaximum(watcher->progressMaximum());
-  ui->progressBar->setValue(watcher->progressValue());
+  ui->progressBar->setMinimum(_watcher.progressMinimum());
+  ui->progressBar->setMaximum(_watcher.progressMaximum());
+  ui->progressBar->setValue(_watcher.progressValue());
 
   exec();
 }
@@ -91,7 +89,7 @@ void WJobInfo::executeJobs(const Jobs& jobs)
 
 void WJobInfo::keyPressEvent(QKeyEvent *event)
 {
-  if( watcher->isRunning() ) {
+  if( _watcher.isRunning() ) {
     event->ignore();
     return;
   }
@@ -138,7 +136,7 @@ void WJobInfo::enableClose()
 
 void WJobInfo::readResult(int index)
 {
-  ui->outputBrowser->append(watcher->resultAt(index));
+  ui->outputBrowser->append(_watcher.resultAt(index).message);
 }
 
 void WJobInfo::setProgressRange(int min, int max)

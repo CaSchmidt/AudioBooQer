@@ -43,12 +43,22 @@ struct Job {
   QAudioFormat format{};
   QStringList inputFiles{};
   QString outputDirPath{};
+  int position{};
   bool renameInput{false};
   QString title{};
 };
 
 using Jobs = QList<Job>;
 
-QString executeJob(const Job& job);
+struct JobResult {
+  JobResult() = default;
+
+  QString message{};
+  QString outputFilePath{};
+  int position{};
+  QString title{};
+};
+
+JobResult executeJob(const Job& job);
 
 #endif // JOB_H

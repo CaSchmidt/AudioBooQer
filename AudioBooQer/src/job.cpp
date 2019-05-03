@@ -45,7 +45,7 @@
 
 ////// Public ////////////////////////////////////////////////////////////////
 
-QString executeJob(const Job& job)
+JobResult executeJob(const Job& job)
 {
 #ifdef HAVE_AAC
   AudioEncoderPtr         encoder = std::make_unique<AacEncoder>();
@@ -61,5 +61,11 @@ QString executeJob(const Job& job)
     loop.exec();
   }
 
-  return audio->message();
+  JobResult result;
+  result.message        = audio->message();
+  result.outputFilePath = audio->outputFilePath();
+  result.position       = job.position;
+  result.title          = job.title;
+
+  return result;
 }

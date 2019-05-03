@@ -137,6 +137,7 @@ Jobs ChapterModel::buildJobs() const
     QModelIndex nodeIndex = index(cntNode, 0, QModelIndex());
 
     Job job;
+    job.position = cntNode;
 
     for(int cntFile = 0; cntFile < rowCount(nodeIndex); cntFile++) {
       QModelIndex fileIndex = index(cntFile, 0, nodeIndex);
