@@ -47,7 +47,7 @@ public:
   bool flush();
   bool initialize(const QAudioFormat& format,
                   const QString& outputDirPath,
-                  const QString& title);
+                  const QString& nameHint);
   uint64_t numTimeSamples() const;
   QString outputFilename() const;
   void resetTimeSamples();

@@ -44,7 +44,7 @@ public:
   bool encode(const QAudioBuffer& buffer);
   bool initialize(const QAudioFormat& format,
                   const QString& outputDirPath,
-                  const QString& title);
+                  const QString& nameHint);
   QString outputFilename() const;
 
 private:

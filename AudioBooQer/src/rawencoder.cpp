@@ -56,31 +56,31 @@ bool RawEncoder::encode(const QAudioBuffer& buffer)
 
 bool RawEncoder::initialize(const QAudioFormat& format,
                             const QString& outputDirPath,
-                            const QString& title)
+                            const QString& nameHint)
 {
   if( _file.isOpen()  ||  format.channelCount() > 2 ) {
     return false;
   }
 
-  QString filename;
+  QString filePath;
   {
-    QString basename(title);
-    basename.append(format.byteOrder() == QAudioFormat::BigEndian
+    QString fileName(nameHint);
+    fileName.append(format.byteOrder() == QAudioFormat::BigEndian
                     ? QStringLiteral(".be")
                     : QStringLiteral(".le"));
-    basename.append(QStringLiteral(".%1ch").arg(format.channelCount()));
-    basename.append(QStringLiteral(".%1%2")
+    fileName.append(QStringLiteral(".%1ch").arg(format.channelCount()));
+    fileName.append(QStringLiteral(".%1%2")
                     .arg(format.sampleType() == QAudioFormat::UnSignedInt
                          ? QStringLiteral("u")
                          : QStringLiteral("s"))
                     .arg(format.sampleSize()));
-    basename.append(QStringLiteral(".%1Hz").arg(format.sampleRate()));
-    basename.append(QStringLiteral(".raw"));
+    fileName.append(QStringLiteral(".%1Hz").arg(format.sampleRate()));
+    fileName.append(QStringLiteral(".raw"));
 
-    filename = QDir(outputDirPath).absoluteFilePath(basename);
+    filePath = QDir(outputDirPath).absoluteFilePath(fileName);
   }
 
-  _file.setFileName(filename);
+  _file.setFileName(filePath);
   return _file.open(QIODevice::WriteOnly);
 }
 

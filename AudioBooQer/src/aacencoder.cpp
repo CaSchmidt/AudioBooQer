@@ -149,7 +149,7 @@ bool AacEncoder::flush()
 
 bool AacEncoder::initialize(const QAudioFormat& format,
                             const QString& outputDirPath,
-                            const QString& title)
+                            const QString& nameHint)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
 
@@ -210,7 +210,7 @@ bool AacEncoder::initialize(const QAudioFormat& format,
 
   // (2) Create output file //////////////////////////////////////////////////
 
-  result->file.setFileName(QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1.aac").arg(title)));
+  result->file.setFileName(QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1.aac").arg(nameHint)));
   if( !result->file.open(QIODevice::WriteOnly) ) {
     return false;
   }
