@@ -24,6 +24,7 @@ add_subdirectory(../csQt/csQt
   )
 
 add_subdirectory(3rdparty/fdk-aac)
+add_subdirectory(3rdparty/mp4v2)
 
 ### AudioBooQer ##############################################################
 
