@@ -207,7 +207,7 @@ target_include_directories(mp4v2 PRIVATE
 
 ### Macros ###################################################################
 
-macro(cs_test target)
+macro(mp4_test target)
   set(sources ${ARGN})
   add_executable(${target} ${sources})
   format_output_name(${target} ${target})
@@ -224,5 +224,5 @@ endmacro()
 
 ### Tests ####################################################################
 
-cs_test(mp4create src/mp4create.cpp)
-cs_test(mp4info src/mp4info.cpp)
+mp4_test(mp4create src/mp4create.cpp)
+mp4_test(mp4info src/mp4info.cpp)
