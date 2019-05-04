@@ -63,6 +63,7 @@ JobResult executeJob(const Job& job)
 
   JobResult result;
   result.message        = audio->message();
+  result.numTimeSamples = audio->numTimeSamples();
   result.outputFilePath = audio->outputFilePath();
   result.position       = job.position;
   result.title          = job.title;

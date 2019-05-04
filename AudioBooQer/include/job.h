@@ -54,10 +54,18 @@ struct JobResult {
   JobResult() = default;
 
   QString message{};
+  uint64_t numTimeSamples{};
   QString outputFilePath{};
   int position{};
   QString title{};
+
+  constexpr bool operator<(const JobResult& other) const
+  {
+    return position < other.position;
+  }
 };
+
+using JobResults = QList<JobResult>;
 
 JobResult executeJob(const Job& job);
 

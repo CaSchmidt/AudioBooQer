@@ -44,6 +44,7 @@ public:
   ~AudioJob();
 
   QString message() const;
+  uint64_t numTimeSamples() const;
   QString outputFilePath() const;
 
   bool start();

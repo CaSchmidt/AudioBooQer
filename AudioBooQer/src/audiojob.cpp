@@ -61,6 +61,11 @@ QString AudioJob::message() const
   return _message;
 }
 
+uint64_t AudioJob::numTimeSamples() const
+{
+  return _encoder->numTimeSamples();
+}
+
 QString AudioJob::outputFilePath() const
 {
   return _encoder->outputFileName();
