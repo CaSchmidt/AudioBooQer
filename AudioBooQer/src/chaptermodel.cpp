@@ -134,13 +134,13 @@ Jobs ChapterModel::buildJobs() const
 
   // NOTE: Don't Build Job for <Files>!!! -> rowCount()-1
   for(int cntNode = 0; cntNode < rowCount(QModelIndex())-1; cntNode++) {
-    QModelIndex nodeIndex = index(cntNode, 0, QModelIndex());
+    const QModelIndex nodeIndex = index(cntNode, 0, QModelIndex());
 
     Job job;
-    job.position = cntNode;
+    job.position = nodeIndex.row();
 
     for(int cntFile = 0; cntFile < rowCount(nodeIndex); cntFile++) {
-      QModelIndex fileIndex = index(cntFile, 0, nodeIndex);
+      const QModelIndex fileIndex = index(cntFile, 0, nodeIndex);
 
       ChapterFile *file = dynamic_cast<ChapterFile*>(priv::treeItem(fileIndex));
       job.inputFiles.push_back(file->fileName());
