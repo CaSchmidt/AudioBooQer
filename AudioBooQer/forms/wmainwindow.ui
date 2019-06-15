@@ -70,7 +70,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <property name="spacing">
          <number>4</number>
@@ -120,9 +120,6 @@
             <widget class="QCheckBox" name="chapterNoCheck">
              <property name="text">
               <string>Insert chapter number</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
              </property>
             </widget>
            </item>

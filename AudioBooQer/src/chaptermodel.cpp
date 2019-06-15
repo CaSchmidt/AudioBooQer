@@ -54,7 +54,7 @@ namespace priv {
 ChapterModel::ChapterModel(QObject *parent)
   : QAbstractItemModel(parent)
   , _root(nullptr)
-  , _showChapterNo(true)
+  , _showChapterNo(false)
   , _firstChapterNo(1)
   , _widthChapterNo(2)
   , _playingFileName()
