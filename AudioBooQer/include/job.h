@@ -59,6 +59,11 @@ struct JobResult {
   int position{};
   QString title{};
 
+  constexpr bool isValid() const
+  {
+    return numTimeSamples > 0;
+  }
+
   constexpr bool operator<(const JobResult& other) const
   {
     return position < other.position;

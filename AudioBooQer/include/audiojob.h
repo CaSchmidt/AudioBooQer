@@ -40,7 +40,7 @@
 class AudioJob : public QObject {
   Q_OBJECT
 public:
-  AudioJob(AudioEncoderPtr& encoder, const Job& job, QObject *parent = nullptr);
+  AudioJob(const Job& job, QObject *parent = nullptr);
   ~AudioJob();
 
   QString message() const;

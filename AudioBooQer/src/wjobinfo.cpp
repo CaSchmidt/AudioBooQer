@@ -141,7 +141,9 @@ void WJobInfo::readResult(int index)
 {
   const JobResult result = _watcher.resultAt(index);
   ui->outputBrowser->append(result.message);
-  _results.push_back(result);
+  if( result.isValid() ) {
+    _results.push_back(result);
+  }
 }
 
 void WJobInfo::setProgressRange(int min, int max)

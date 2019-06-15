@@ -35,38 +35,35 @@
 
 #include "audiojob.h"
 
-#define HAVE_AAC
-
-#ifdef HAVE_AAC
-# include "aacencoder.h"
-#else
-# include "rawencoder.h"
-#endif
-
 ////// Public ////////////////////////////////////////////////////////////////
 
 JobResult executeJob(const Job& job)
 {
-#ifdef HAVE_AAC
-  AudioEncoderPtr         encoder = std::make_unique<AacEncoder>();
-#else
-  AudioEncoderPtr         encoder = std::make_unique<RawEncoder>();
-#endif
-  std::unique_ptr<AudioJob> audio = std::make_unique<AudioJob>(encoder, job);
+  JobResult result;
+
+  std::unique_ptr<AudioJob> audio;
+  try {
+    audio = std::make_unique<AudioJob>(job);
+  } catch(...) {
+    audio.reset();
+    result.message = QStringLiteral("ERROR: AudioJob is <nullptr>!\n");
+    return result;
+  }
 
   QEventLoop loop;
   QObject::connect(audio.get(), &AudioJob::done, &loop, &QEventLoop::quit);
 
   if( audio->start() ) {
     loop.exec();
-  }
 
-  JobResult result;
-  result.message        = audio->message();
-  result.numTimeSamples = audio->numTimeSamples();
-  result.outputFilePath = audio->outputFilePath();
-  result.position       = job.position;
-  result.title          = job.title;
+    result.message        = audio->message();
+    result.numTimeSamples = audio->numTimeSamples();
+    result.outputFilePath = audio->outputFilePath();
+    result.position       = job.position;
+    result.title          = job.title;
+  } else {
+    result.message = audio->message();
+  }
 
   return result;
 }

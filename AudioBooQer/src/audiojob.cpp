@@ -33,12 +33,20 @@
 
 #include "audiojob.h"
 
+#define HAVE_AAC
+
+#ifdef HAVE_AAC
+# include "aacencoder.h"
+#else
+# include "rawencoder.h"
+#endif
+
 ////// public ////////////////////////////////////////////////////////////////
 
-AudioJob::AudioJob(AudioEncoderPtr& encoder, const Job& job, QObject *parent)
+AudioJob::AudioJob(const Job& job, QObject *parent)
   : QObject(parent)
   , _decoder(this)
-  , _encoder(std::move(encoder))
+  , _encoder()
   , _job(job)
   , _message()
 {
@@ -82,6 +90,16 @@ bool AudioJob::start()
   }
 
   // (2) Initialize encoder //////////////////////////////////////////////////
+
+  try {
+#ifdef HAVE_AAC
+    _encoder = std::make_unique<AacEncoder>();
+#else
+    _encoder = std::make_unique<RawEncoder>();
+#endif
+  } catch(...) {
+    _encoder.reset();
+  }
 
   if( !_encoder ) {
     appendErrorMessage(QStringLiteral("IAudioEncoder is <nullptr>!"));
