@@ -98,6 +98,8 @@ public:
   AacEncoderImpl() = default;
   ~AacEncoderImpl() = default;
 
+  bool setParam(const AACENC_PARAM param, const UINT value);
+
   uint8_t           bitstream[64*1024];
   QFile             file{};
   HANDLE_AACENCODER handle{};
@@ -107,6 +109,11 @@ public:
   BufferDesc        outDesc{};
   uint8_t           zeros[64*1024];
 };
+
+bool AacEncoderImpl::setParam(const AACENC_PARAM param, const UINT value)
+{
+  return aacEncoder_SetParam(handle, param, value) == AACENC_OK;
+}
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -172,31 +179,35 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
-  if( aacEncoder_SetParam(result->handle, AACENC_AOT, AOT_AAC_LC) != AACENC_OK ) {
+  if( !result->setParam(AACENC_AOT, AOT_AAC_LC) ) {
     return false;
   }
 
-  if( aacEncoder_SetParam(result->handle, AACENC_SAMPLERATE, static_cast<UINT>(format.sampleRate())) != AACENC_OK ) {
+  if( !result->setParam(AACENC_SAMPLERATE, static_cast<UINT>(format.sampleRate())) ) {
     return false;
   }
 
-  if( aacEncoder_SetParam(result->handle, AACENC_CHANNELMODE, static_cast<UINT>(mode)) != AACENC_OK ) {
+  if( !result->setParam(AACENC_CHANNELMODE, static_cast<UINT>(mode)) ) {
     return false;
   }
 
-  if( aacEncoder_SetParam(result->handle, AACENC_CHANNELORDER, 1) != AACENC_OK ) {
+  if( !result->setParam(AACENC_CHANNELORDER, 1) ) {
     return false;
   }
 
-  if( aacEncoder_SetParam(result->handle, AACENC_BITRATE, 64000) != AACENC_OK ) {
+  if( !result->setParam(AACENC_BITRATE, 64000) ) {
     return false;
   }
 
-  if( aacEncoder_SetParam(result->handle, AACENC_TRANSMUX, TT_MP4_RAW) != AACENC_OK ) {
+  if( !result->setParam(AACENC_TRANSMUX, TT_MP4_RAW) ) {
     return false;
   }
 
-  if( aacEncoder_SetParam(result->handle, AACENC_AFTERBURNER, 1) != AACENC_OK ) {
+  if( !result->setParam(AACENC_AFTERBURNER, 1) ) {
+    return false;
+  }
+
+  if( !result->setParam(AACENC_GRANULE_LENGTH, 1024) ) {
     return false;
   }
 
@@ -207,6 +218,16 @@ bool AacEncoder::initialize(const QAudioFormat& format,
   if( aacEncInfo(result->handle, &result->info) != AACENC_OK ) {
     return false;
   }
+
+#if 0
+  printf("frame length = %d\n", result->info.frameLength);
+  printf("AudioSpecificConfig =");
+  for(UINT i = 0; i < result->info.confSize; i++) {
+    printf(" %02X", result->info.confBuf[i]);
+  }
+  printf("\n");
+  fflush(stdout);
+#endif
 
   // (2) Create output file //////////////////////////////////////////////////
 
