@@ -55,6 +55,57 @@ int main(int argc, char **argv)
     }
     printf("counted duration = %llu, min = %llu, max = %llu\n",
            cntDuration, minDuration, maxDuration);
+
+    uint8_t *config;
+    uint32_t numConfig;
+    if( MP4GetTrackESConfiguration(file, trackId, &config, &numConfig)  &&
+        config != nullptr ) {
+      printf("config:");
+      for(uint32_t i = 0; i < numConfig; i++) {
+        printf(" %02X", config[i]);
+      }
+      printf("\n");
+      MP4Free(config);
+    }
+
+#if 0
+    const MP4Tags *tags = MP4TagsAlloc();
+    if( MP4TagsFetch(tags, file) ) {
+      printf("name         = %s\n", tags->name);
+      printf("artist       = %s\n", tags->artist);
+      printf("album artist = %s\n", tags->albumArtist);
+      printf("album        = %s\n", tags->album);
+      printf("grouping     = %s\n", tags->grouping);
+      printf("composer     = %s\n", tags->composer);
+      printf("comments     = %s\n", tags->comments);
+      printf("genre        = %s\n", tags->genre);
+      printf("release date = %s\n", tags->releaseDate);
+      if( tags->track != nullptr ) {
+        printf("track        = %d/%d\n", tags->track->index, tags->track->total);
+      }
+      if( tags->disk != nullptr ) {
+        printf("disk         = %d/%d\n", tags->disk->index, tags->disk->total);
+      }
+      printf("description  = %s\n", tags->description);
+      printf("long descr.  = %s\n", tags->longDescription);
+      printf("lyrics       = %s\n", tags->lyrics);
+      printf("--- sorting ---\n");
+      printf("name         = %s\n", tags->sortName);
+      printf("artist       = %s\n", tags->sortArtist);
+      printf("album artist = %s\n", tags->sortAlbumArtist);
+      printf("album        = %s\n", tags->sortAlbum);
+      printf("composer     = %s\n", tags->sortComposer);
+      printf("copyright    = %s\n", tags->copyright);
+      printf("encoding tl. = %s\n", tags->encodingTool);
+      printf("encoded by   = %s\n", tags->encodedBy);
+      printf("purchase dt. = %s\n", tags->purchaseDate);
+      printf("keywords     = %s\n", tags->keywords);
+      printf("category     = %s\n", tags->category);
+      printf("iTunes acc.  = %s\n", tags->iTunesAccount);
+      printf("xid          = %s\n", tags->xid);
+    }
+    MP4TagsFree(tags); tags = nullptr;
+#endif
   }
 
   MP4Close(file);

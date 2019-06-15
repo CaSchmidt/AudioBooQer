@@ -42,6 +42,8 @@ set(AudioBooQer_HEADERS
   include/chaptermodel.h
   include/iaudioencoder.h
   include/job.h
+  include/mpeg4_asc.h
+  include/output.h
   include/rawencoder.h
   include/waudioformat.h
   include/waudioplayer.h
@@ -57,6 +59,7 @@ set(AudioBooQer_SOURCES
   src/iaudioencoder.cpp
   src/job.cpp
   src/main.cpp
+  src/output.cpp
   src/rawencoder.cpp
   src/waudioformat.cpp
   src/waudioplayer.cpp
@@ -78,9 +81,13 @@ if(WIN32)
   set_target_properties(AudioBooQer PROPERTIES WIN32_EXECUTABLE ON)
 endif()
 
-target_link_libraries(AudioBooQer fdk-aac csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
+target_link_libraries(AudioBooQer fdk-aac mp4v2 csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
 
 format_output_name(AudioBooQer "AudioBooQer")
+
+target_compile_definitions(AudioBooQer PRIVATE
+  MP4V2_USE_STATIC_LIB
+  )
 
 target_include_directories(AudioBooQer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(AudioBooQer PRIVATE ${csQt_SOURCE_DIR}/include)
@@ -88,6 +95,7 @@ target_include_directories(AudioBooQer PRIVATE ${csQt_BINARY_DIR}/include)
 target_include_directories(AudioBooQer PRIVATE
   3rdparty/fdk-aac/fdk-aac-src/libAACenc/include
   3rdparty/fdk-aac/fdk-aac-src/libSYS/include
+  3rdparty/mp4v2/mp4v2-src/include
   )
 
 install(TARGETS AudioBooQer

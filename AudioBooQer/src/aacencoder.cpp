@@ -192,7 +192,7 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
-  if( aacEncoder_SetParam(result->handle, AACENC_TRANSMUX, TT_MP4_ADTS) != AACENC_OK ) {
+  if( aacEncoder_SetParam(result->handle, AACENC_TRANSMUX, TT_MP4_RAW) != AACENC_OK ) {
     return false;
   }
 

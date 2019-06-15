@@ -42,6 +42,7 @@
 
 #include "chapter.h"
 #include "chaptermodel.h"
+#include "output.h"
 #include "wjobinfo.h"
 
 ////// public ////////////////////////////////////////////////////////////////
@@ -224,6 +225,14 @@ void WMainWindow::processJobs()
   jobInfo.executeJobs(jobs);
 
   model->deleteJobs();
+
+  const QString outputFileName =
+      QFileDialog::getSaveFileName(this, tr("Save"), outputDirPath, tr("Audiobooks (*.m4b)"));
+  if( outputFileName.isEmpty() ) {
+    return;
+  }
+
+  writeOutput(outputFileName, ui->formatWidget->format(), jobInfo.results());
 }
 
 QString WMainWindow::settingsFileName()
