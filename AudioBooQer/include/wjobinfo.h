@@ -48,6 +48,7 @@ public:
   ~WJobInfo();
 
   void executeJobs(const Jobs& jobs);
+  JobResults results() const;
 
 protected:
   void keyPressEvent(QKeyEvent *event);
@@ -64,8 +65,11 @@ private slots:
   void setProgressValue(int val);
 
 private:
-  Ui::WJobInfo *ui;
-  QFutureWatcher<JobResult> _watcher;
+  using JobWatcher = QFutureWatcher<JobResult>;
+
+  Ui::WJobInfo *ui{};
+  JobResults _results{};
+  JobWatcher _watcher{};
 };
 
 #endif // WJOBINFO_H

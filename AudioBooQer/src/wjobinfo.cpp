@@ -57,16 +57,19 @@ WJobInfo::WJobInfo(QWidget *parent, Qt::WindowFlags f)
   // Close Button ////////////////////////////////////////////////////////////
 
   ui->closeButton->setEnabled(false);
-  connect(ui->closeButton, SIGNAL(clicked()), SLOT(close()));
+  connect(ui->closeButton, &QPushButton::clicked,
+          this, &WJobInfo::close);
 
   // Future Watcher //////////////////////////////////////////////////////////
 
-  connect(&_watcher, SIGNAL(finished()), SLOT(enableClose()));
-  connect(&_watcher, SIGNAL(resultReadyAt(int)), SLOT(readResult(int)));
-  connect(&_watcher, SIGNAL(progressRangeChanged(int,int)),
-          SLOT(setProgressRange(int,int)));
-  connect(&_watcher, SIGNAL(progressValueChanged(int)),
-          SLOT(setProgressValue(int)));
+  connect(&_watcher, &JobWatcher::finished,
+          this, &WJobInfo::enableClose);
+  connect(&_watcher, &JobWatcher::resultReadyAt,
+          this, &WJobInfo::readResult);
+  connect(&_watcher, &JobWatcher::progressRangeChanged,
+          this, &WJobInfo::setProgressRange);
+  connect(&_watcher, &JobWatcher::progressValueChanged,
+          this, &WJobInfo::setProgressValue);
 }
 
 WJobInfo::~WJobInfo()
@@ -76,6 +79,7 @@ WJobInfo::~WJobInfo()
 
 void WJobInfo::executeJobs(const Jobs& jobs)
 {
+  _results.clear();
   _watcher.setFuture(QtConcurrent::mapped(jobs, executeJob));
 
   ui->progressBar->setMinimum(_watcher.progressMinimum());
@@ -83,6 +87,11 @@ void WJobInfo::executeJobs(const Jobs& jobs)
   ui->progressBar->setValue(_watcher.progressValue());
 
   exec();
+}
+
+JobResults WJobInfo::results() const
+{
+  return _results;
 }
 
 ////// protected /////////////////////////////////////////////////////////////
@@ -125,18 +134,14 @@ void WJobInfo::reject()
 
 void WJobInfo::enableClose()
 {
-#if 0
-  Qt::WindowFlags flags = windowFlags();
-  flags |= Qt::WindowCloseButtonHint;
-  setWindowFlags(flags);
-#endif
-
   ui->closeButton->setEnabled(true);
 }
 
 void WJobInfo::readResult(int index)
 {
-  ui->outputBrowser->append(_watcher.resultAt(index).message);
+  const JobResult result = _watcher.resultAt(index);
+  ui->outputBrowser->append(result.message);
+  _results.push_back(result);
 }
 
 void WJobInfo::setProgressRange(int min, int max)
