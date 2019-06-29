@@ -37,7 +37,7 @@ IAudioEncoder::~IAudioEncoder()
 {
 }
 
-bool IAudioEncoder::flush()
+bool IAudioEncoder::flush(const unsigned int /*fillTimeSamples*/)
 {
   return true;
 }

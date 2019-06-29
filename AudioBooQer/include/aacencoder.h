@@ -44,10 +44,11 @@ public:
   bool isNull() const;
 
   bool encode(const QAudioBuffer& buffer);
-  bool flush();
+  bool flush(const unsigned int fillTimeSamples);
   bool initialize(const QAudioFormat& format,
                   const QString& outputDirPath,
                   const QString& nameHint);
+  uint64_t numTimeSamples() const;
   QString outputFileName() const;
 
   static unsigned int frameLength();

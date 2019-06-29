@@ -143,8 +143,13 @@ bool AacEncoder::encode(const QAudioBuffer& buffer)
   return encodeBlock(reinterpret_cast<const uint8_t*>(buffer.data()), buffer.byteCount());
 }
 
-bool AacEncoder::flush()
+bool AacEncoder::flush(const unsigned int fillTimeSamples)
 {
+  if( 0 < fillTimeSamples  &&  fillTimeSamples < frameLength()  &&
+      !encodeBlock(impl->zeros, static_cast<int>(fillTimeSamples*impl->info.inputChannels*2)) ) {
+    return false;
+  }
+
   bool eof = false;
   while( !eof ) {
     if( !encodeBlock(impl->zeros, 0, &eof) ) {
@@ -244,6 +249,11 @@ bool AacEncoder::initialize(const QAudioFormat& format,
   std::memset(impl->zeros, 0, sizeof(impl->zeros));
 
   return true;
+}
+
+uint64_t AacEncoder::numTimeSamples() const
+{
+  return impl->numDataSamples/impl->info.inputChannels;
 }
 
 QString AacEncoder::outputFileName() const

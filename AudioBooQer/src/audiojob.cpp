@@ -158,10 +158,21 @@ void AudioJob::decodingFinished()
   }
 
   if( _job.inputFiles.isEmpty() ) {
-    if( !_encoder->flush() ) {
+    const unsigned int  mod = static_cast<unsigned int>(_numTimeSamples)%AacEncoder::frameLength();
+    const unsigned int fill = mod > 0
+        ? AacEncoder::frameLength() - mod
+        : 0;
+    if( !_encoder->flush(fill) ) {
       appendErrorMessage(QStringLiteral("IAudioEncoder::flush() failed!"));
     } else {
+      _numTimeSamples += fill;
       appendInfoMessage(QStringLiteral("= %1").arg(_encoder->outputFileName()));
+#if 0
+      AacEncoder *aac = dynamic_cast<AacEncoder*>(_encoder.get());
+      printf("AacEncoder::numTimeSamples = %llu\n", aac->numTimeSamples());
+      printf("AudioJob::numTimeSamples   = %llu\n", _numTimeSamples);
+      fflush(stdout);
+#endif
     }
     emit done();
   } else {
