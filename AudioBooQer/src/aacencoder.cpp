@@ -199,7 +199,7 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
-  if( !result->setParam(AACENC_TRANSMUX, TT_MP4_RAW) ) {
+  if( !result->setParam(AACENC_TRANSMUX, TT_MP4_ADTS) ) {
     return false;
   }
 
@@ -207,7 +207,7 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
-  if( !result->setParam(AACENC_GRANULE_LENGTH, 1024) ) {
+  if( !result->setParam(AACENC_GRANULE_LENGTH, frameLength()) ) {
     return false;
   }
 
@@ -246,19 +246,16 @@ bool AacEncoder::initialize(const QAudioFormat& format,
   return true;
 }
 
-uint64_t AacEncoder::numTimeSamples() const
-{
-  return impl->numDataSamples/impl->info.inputChannels;
-}
-
 QString AacEncoder::outputFileName() const
 {
   return impl->file.fileName();
 }
 
-void AacEncoder::resetTimeSamples()
+////// public static /////////////////////////////////////////////////////////
+
+unsigned int AacEncoder::frameLength()
 {
-  impl->numDataSamples = 0;
+  return 1024;
 }
 
 ////// private ///////////////////////////////////////////////////////////////

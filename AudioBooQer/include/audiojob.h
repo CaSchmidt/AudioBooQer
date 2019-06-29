@@ -62,6 +62,7 @@ private:
   AudioEncoderPtr _encoder;
   Job _job;
   QString _message;
+  uint64_t _numTimeSamples;
 
 signals:
   void done();

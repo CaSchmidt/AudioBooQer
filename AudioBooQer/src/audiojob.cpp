@@ -49,6 +49,7 @@ AudioJob::AudioJob(const Job& job, QObject *parent)
   , _encoder()
   , _job(job)
   , _message()
+  , _numTimeSamples{0}
 {
   // Signals & Slots /////////////////////////////////////////////////////////
 
@@ -71,7 +72,7 @@ QString AudioJob::message() const
 
 uint64_t AudioJob::numTimeSamples() const
 {
-  return _encoder->numTimeSamples();
+  return _numTimeSamples;
 }
 
 QString AudioJob::outputFilePath() const
@@ -124,11 +125,19 @@ bool AudioJob::start()
 void AudioJob::decodingBufferReady()
 {
   const QAudioBuffer buffer = _decoder.read();
+#if 0
+  printf("bytes   = %d\n", buffer.byteCount());
+  printf("frames  = %d\n", buffer.frameCount());
+  printf("samples = %d\n", buffer.sampleCount());
+  fflush(stdout);
+#endif
   if( !_encoder->encode(buffer) ) {
     _decoder.stop();
     appendErrorMessage(QStringLiteral("IAudioEncoder::encode() failed!"));
     emit done();
     return;
+  } else {
+    _numTimeSamples += static_cast<uint64_t>(buffer.frameCount());
   }
 }
 
