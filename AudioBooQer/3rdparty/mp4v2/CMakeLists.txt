@@ -219,7 +219,6 @@ macro(mp4_test target)
     mp4v2-src/include
     )
   target_link_libraries(${target} mp4v2)
-  set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${AudioBooQer_BINARY_DIR})
 endmacro()
 
 ### Tests ####################################################################
