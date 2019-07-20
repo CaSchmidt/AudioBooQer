@@ -34,6 +34,6 @@
 
 #include "job.h"
 
-void writeOutput(const QString& fileName, const QAudioFormat& format, JobResults results);
+void writeBook(const QString& fileName, const QAudioFormat& format, JobResults results);
 
 #endif // OUTPUT_H

@@ -38,6 +38,8 @@
 
 #include "output.h"
 
+#include "aacencoder.h"
+#include "adts.h"
 #include "mpeg4_asc.h"
 
 namespace priv {
@@ -99,9 +101,90 @@ namespace priv {
     return qToBigEndian(result);
   }
 
+  AdtsParser::Buffer readAdtsFile(const QString& filename)
+  {
+    using    Buffer = AdtsParser::Buffer;
+    using size_type = AdtsParser::size_type;
+
+    Buffer buffer;
+
+    QFile file(filename);
+    if( !file.open(QIODevice::ReadOnly) ) {
+      return Buffer();
+    }
+
+    try {
+      buffer.resize(static_cast<size_type>(file.size()), 0);
+    } catch(...) {
+      return Buffer();
+    }
+
+    const qint64 got = file.read(reinterpret_cast<char*>(buffer.data()), file.size());
+    if( got != file.size() ) {
+      return Buffer();
+    }
+
+    file.close();
+
+    return buffer;
+  }
+
+  bool writeChapter(const MP4FileHandle file, const MP4TrackId track, const JobResult& chapter)
+  {
+    if( chapter.numTimeSamples%AacEncoder::frameLength() != 0 ) {
+      return false;
+    }
+
+    AdtsParser::Buffer adtsBuffer = readAdtsFile(chapter.outputFilePath);
+    if( adtsBuffer.empty() ) {
+      return false;
+    }
+
+    AdtsParser adts(std::move(adtsBuffer));
+    if( !adts.hasFrame() ) {
+      return false;
+    }
+
+    const uint64_t numChapterFrames = chapter.numTimeSamples/AacEncoder::frameLength();
+
+    uint64_t numAdtsFrames = 0;
+    while( adts.hasFrame() ) {
+      numAdtsFrames++;
+      adts.nextFrame();
+    }
+    adts.reset();
+
+    if( numAdtsFrames < numChapterFrames  ||
+        numAdtsFrames - numChapterFrames > 3 ) {
+      return false;
+    }
+
+    for(uint64_t i = 0; i < numChapterFrames - 1; i++) {
+      MP4WriteSample(file, track,
+                     adts.frameData(), static_cast<uint32_t>(adts.frameSize()),
+                     AacEncoder::frameLength());
+      adts.nextFrame();
+    }
+
+    AdtsParser::Buffer remain;
+    while( adts.hasFrame() ) {
+      for(AdtsParser::size_type i = 0; i < adts.frameSize(); i++) {
+        remain.push_back(adts.frameData()[i]);
+      }
+
+      adts.nextFrame();
+    }
+
+    MP4WriteSample(file, track,
+                   remain.data(), static_cast<uint32_t>(remain.size()),
+                   AacEncoder::frameLength());
+
+    return true;
+  }
+
 } // namespace priv
 
-void writeOutput(const QString& fileName, const QAudioFormat& format, JobResults results)
+void writeBook(const QString& fileName, const QAudioFormat& format, JobResults results)
 {
   qSort(results);
 
@@ -110,7 +193,8 @@ void writeOutput(const QString& fileName, const QAudioFormat& format, JobResults
     duration += result.numTimeSamples;
   }
 
-  const uint32_t timeScale = static_cast<uint32_t>(format.sampleRate());
+  const MP4Duration fixedDuration = AacEncoder::frameLength();
+  const uint32_t        timeScale = static_cast<uint32_t>(format.sampleRate());
 
   const MP4FileHandle output = MP4CreateEx(fileName.toUtf8().constData(), 0,
                                            1, 0,
@@ -123,12 +207,12 @@ void writeOutput(const QString& fileName, const QAudioFormat& format, JobResults
   MP4SetTimeScale(output, timeScale);
 
   const MP4TrackId auTrackId = MP4AddAudioTrack(output,
-                                                timeScale, MP4_INVALID_DURATION,
+                                                timeScale, fixedDuration,
                                                 MP4_MPEG4_AUDIO_TYPE);
   if( auTrackId == MP4_INVALID_TRACK_ID ) {
     MP4Close(output);
   }
-  MP4SetTrackIntegerProperty(output, auTrackId, "tkhd.flags", 15);
+  // MP4SetTrackIntegerProperty(output, auTrackId, "tkhd.flags", 15);
 
   const uint16_t asc = priv::createASC(format);
   if( asc != 0 ) {
@@ -137,6 +221,9 @@ void writeOutput(const QString& fileName, const QAudioFormat& format, JobResults
   }
 
   for(const JobResult& result : results) {
+#if 1
+    priv::writeChapter(output, auTrackId, result);
+#else
     QFile file(result.outputFilePath);
     if( !file.open(QIODevice::ReadOnly) ) {
       continue;
@@ -148,6 +235,7 @@ void writeOutput(const QString& fileName, const QAudioFormat& format, JobResults
     MP4WriteSample(output, auTrackId,
                    reinterpret_cast<const uint8_t*>(data.constData()), static_cast<uint32_t>(data.size()),
                    result.numTimeSamples);
+#endif
   }
 
   const MP4TrackId chTrackId = MP4AddChapterTextTrack(output, auTrackId);
@@ -155,7 +243,7 @@ void writeOutput(const QString& fileName, const QAudioFormat& format, JobResults
     MP4Close(output);
     return;
   }
-  MP4SetTrackIntegerProperty(output, chTrackId, "tkhd.flags", 15);
+  // MP4SetTrackIntegerProperty(output, chTrackId, "tkhd.flags", 15);
 
   for(const JobResult& result : results) {
     MP4AddChapter(output, chTrackId,

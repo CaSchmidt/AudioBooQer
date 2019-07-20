@@ -37,6 +37,7 @@ set(AudioBooQer_FORMS
 
 set(AudioBooQer_HEADERS
   include/aacencoder.h
+  include/adts.h
   include/audiojob.h
   include/chapter.h
   include/chaptermodel.h
@@ -53,6 +54,7 @@ set(AudioBooQer_HEADERS
 
 set(AudioBooQer_SOURCES
   src/aacencoder.cpp
+  src/adts.cpp
   src/audiojob.cpp
   src/chapter.cpp
   src/chaptermodel.cpp

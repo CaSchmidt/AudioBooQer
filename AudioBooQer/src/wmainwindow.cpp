@@ -232,7 +232,7 @@ void WMainWindow::processJobs()
     return;
   }
 
-  writeOutput(outputFileName, ui->formatWidget->format(), jobInfo.results());
+  writeBook(outputFileName, ui->formatWidget->format(), jobInfo.results());
 }
 
 QString WMainWindow::settingsFileName()
