@@ -188,6 +188,14 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
+  if( !result->setParam(AACENC_BITRATE, 64000) ) {
+    return false;
+  }
+
+  if( !result->setParam(AACENC_BITRATEMODE, 0) ) {
+    return false;
+  }
+
   if( !result->setParam(AACENC_SAMPLERATE, static_cast<UINT>(format.sampleRate())) ) {
     return false;
   }
@@ -200,7 +208,11 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
-  if( !result->setParam(AACENC_BITRATE, 64000) ) {
+  if( !result->setParam(AACENC_AFTERBURNER, 1) ) {
+    return false;
+  }
+
+  if( !result->setParam(AACENC_GRANULE_LENGTH, frameLength()) ) {
     return false;
   }
 
@@ -208,11 +220,15 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
-  if( !result->setParam(AACENC_AFTERBURNER, 1) ) {
+  if( !result->setParam(AACENC_SIGNALING_MODE, 0) ) {
     return false;
   }
 
-  if( !result->setParam(AACENC_GRANULE_LENGTH, frameLength()) ) {
+  if( !result->setParam(AACENC_HEADER_PERIOD, 0) ) {
+    return false;
+  }
+
+  if( !result->setParam(AACENC_TPSUBFRAMES, 1) ) {
     return false;
   }
 
