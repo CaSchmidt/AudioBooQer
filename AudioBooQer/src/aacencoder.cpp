@@ -103,6 +103,7 @@ public:
 
   uint8_t           bitstream[64*1024];
   QFile             file{};
+  AacFormat         format{};
   HANDLE_AACENCODER handle{};
   BufferDesc        inDesc{};
   AACENC_InfoStruct info{};
@@ -146,10 +147,14 @@ bool AacEncoder::encode(const QAudioBuffer& buffer)
 
 bool AacEncoder::flush(const unsigned int fillTimeSamples)
 {
-  if( 0 < fillTimeSamples  &&  fillTimeSamples < frameLength()  &&
+  // (1) Fill remaining frame with zeros /////////////////////////////////////
+
+  if( 0 < fillTimeSamples  &&  fillTimeSamples < impl->format.numSamplesPerAacFrame  &&
       !encodeBlock(impl->zeros, static_cast<int>(fillTimeSamples*impl->info.inputChannels*2)) ) {
     return false;
   }
+
+  // (2) Flush data to disk //////////////////////////////////////////////////
 
   bool eof = false;
   while( !eof ) {
@@ -160,28 +165,32 @@ bool AacEncoder::flush(const unsigned int fillTimeSamples)
   return true;
 }
 
-bool AacEncoder::initialize(const QAudioFormat& format,
+bool AacEncoder::initialize(const AacFormat& format,
                             const QString& outputDirPath,
                             const QString& nameHint)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
 
   CHANNEL_MODE mode = MODE_INVALID;
-  if(        format.channelCount() == 1 ) {
+  if(        format.numChannels == 1 ) {
     mode = MODE_1;
-  } else if( format.channelCount() == 2 ) {
+  } else if( format.numChannels == 2 ) {
     mode = MODE_2;
   }
 
-  if( impl  ||  format.sampleSize() != 16  ||  mode == MODE_INVALID ) {
+  if( impl                            || // do not operate on existing instance
+      !format.isValid()               || // proper audio format passed in
+      sizeof(INT_PCM) != 2            || // explicitly check encoder config
+      mode == MODE_INVALID ) {           // support Mono/Stereo only
     return false;
   }
 
   std::unique_ptr<AacEncoderImpl> result = std::make_unique<AacEncoderImpl>();
+  result->format = format;
 
   // (1) Open encoder ////////////////////////////////////////////////////////
 
-  if( aacEncOpen(&result->handle, 0, static_cast<UINT>(format.channelCount())) != AACENC_OK ) {
+  if( aacEncOpen(&result->handle, 0, static_cast<UINT>(format.numChannels)) != AACENC_OK ) {
     return false;
   }
 
@@ -197,7 +206,7 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
-  if( !result->setParam(AACENC_SAMPLERATE, static_cast<UINT>(format.sampleRate())) ) {
+  if( !result->setParam(AACENC_SAMPLERATE, static_cast<UINT>(format.numSamplesPerSecond)) ) {
     return false;
   }
 
@@ -213,7 +222,7 @@ bool AacEncoder::initialize(const QAudioFormat& format,
     return false;
   }
 
-  if( !result->setParam(AACENC_GRANULE_LENGTH, frameLength()) ) {
+  if( !result->setParam(AACENC_GRANULE_LENGTH, format.numSamplesPerAacFrame) ) {
     return false;
   }
 
@@ -276,13 +285,6 @@ uint64_t AacEncoder::numTimeSamples() const
 QString AacEncoder::outputFileName() const
 {
   return impl->file.fileName();
-}
-
-////// public static /////////////////////////////////////////////////////////
-
-unsigned int AacEncoder::frameLength()
-{
-  return 1024;
 }
 
 ////// private ///////////////////////////////////////////////////////////////

@@ -83,12 +83,12 @@
       <item row="1" column="2">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Type:</string>
+         <string>Samples/Frame:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QComboBox" name="typeCombo"/>
+       <widget class="QComboBox" name="frameCombo"/>
       </item>
      </layout>
     </widget>
@@ -99,7 +99,7 @@
   <tabstop>channelsCombo</tabstop>
   <tabstop>rateCombo</tabstop>
   <tabstop>bitsCombo</tabstop>
-  <tabstop>typeCombo</tabstop>
+  <tabstop>frameCombo</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -45,13 +45,11 @@ public:
 
   bool encode(const QAudioBuffer& buffer);
   bool flush(const unsigned int fillTimeSamples);
-  bool initialize(const QAudioFormat& format,
+  bool initialize(const AacFormat& format,
                   const QString& outputDirPath,
                   const QString& nameHint);
   uint64_t numTimeSamples() const;
   QString outputFileName() const;
-
-  static unsigned int frameLength();
 
 private:
   bool encodeBlock(const uint8_t *data, int size, bool *eof = nullptr);

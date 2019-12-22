@@ -63,7 +63,7 @@ struct AacFormat {
 
   static constexpr unsigned int numSupportedRates()
   {
-    return sizeof(supportedRates);
+    return sizeof(supportedRates)/sizeof(unsigned int);
   }
 
   operator QAudioFormat() const;

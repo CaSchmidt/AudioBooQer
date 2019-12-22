@@ -35,12 +35,13 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
-#include <QtMultimedia/QAudioFormat>
+
+#include "aacformat.h"
 
 struct Job {
   Job() = default;
 
-  QAudioFormat format{};
+  AacFormat format{};
   QStringList inputFiles{};
   QString outputDirPath{};
   int position{};

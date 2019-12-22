@@ -54,45 +54,48 @@ namespace priv {
     return static_cast<if_enum_t<E>>(e);
   }
 
-  uint16_t createASC(const QAudioFormat& fmt)
-  {
+  uint16_t createASC(const AacFormat& fmt)
+  {    
     using namespace mpeg4_asc;
 
     uint16_t result = 0;
+    if( !fmt.isValid() ) {
+      return result;
+    }
 
     result |= toInt(AudioObjectType::AAC_LC);
 
-    if(        fmt.sampleRate() == 8000 ) {
+    if(        fmt.numSamplesPerSecond == 8000 ) {
       result |= toInt(SamplingFrequencyIndex::Index_8000);
-    } else if( fmt.sampleRate() == 11025 ) {
+    } else if( fmt.numSamplesPerSecond == 11025 ) {
       result |= toInt(SamplingFrequencyIndex::Index_11025);
-    } else if( fmt.sampleRate() == 12000 ) {
+    } else if( fmt.numSamplesPerSecond == 12000 ) {
       result |= toInt(SamplingFrequencyIndex::Index_12000);
-    } else if( fmt.sampleRate() == 16000 ) {
+    } else if( fmt.numSamplesPerSecond == 16000 ) {
       result |= toInt(SamplingFrequencyIndex::Index_16000);
-    } else if( fmt.sampleRate() == 22050 ) {
+    } else if( fmt.numSamplesPerSecond == 22050 ) {
       result |= toInt(SamplingFrequencyIndex::Index_22050);
-    } else if( fmt.sampleRate() == 24000 ) {
+    } else if( fmt.numSamplesPerSecond == 24000 ) {
       result |= toInt(SamplingFrequencyIndex::Index_24000);
-    } else if( fmt.sampleRate() == 32000 ) {
+    } else if( fmt.numSamplesPerSecond == 32000 ) {
       result |= toInt(SamplingFrequencyIndex::Index_32000);
-    } else if( fmt.sampleRate() == 44100 ) {
+    } else if( fmt.numSamplesPerSecond == 44100 ) {
       result |= toInt(SamplingFrequencyIndex::Index_44100);
-    } else if( fmt.sampleRate() == 48000 ) {
+    } else if( fmt.numSamplesPerSecond == 48000 ) {
       result |= toInt(SamplingFrequencyIndex::Index_48000);
-    } else if( fmt.sampleRate() == 64000 ) {
+    } else if( fmt.numSamplesPerSecond == 64000 ) {
       result |= toInt(SamplingFrequencyIndex::Index_64000);
-    } else if( fmt.sampleRate() == 88200 ) {
+    } else if( fmt.numSamplesPerSecond == 88200 ) {
       result |= toInt(SamplingFrequencyIndex::Index_88200);
-    } else if( fmt.sampleRate() == 96000 ) {
+    } else if( fmt.numSamplesPerSecond == 96000 ) {
       result |= toInt(SamplingFrequencyIndex::Index_96000);
     } else {
       return 0;
     }
 
-    if(        fmt.channelCount() == 1 ) {
+    if(        fmt.numChannels == 1 ) {
       result |= toInt(ChannelConfiguration::Config_1);
-    } else if( fmt.channelCount() == 2 ) {
+    } else if( fmt.numChannels == 2 ) {
       result |= toInt(ChannelConfiguration::Config_2);
     } else {
       return 0;
@@ -129,9 +132,12 @@ namespace priv {
     return buffer;
   }
 
-  bool writeChapter(const MP4FileHandle file, const MP4TrackId track, const JobResult& chapter)
+  bool writeChapter(const MP4FileHandle file, const MP4TrackId track, const JobResult& chapter,
+                    const AacFormat& format)
   {
-    if( chapter.numTimeSamples%AacEncoder::frameLength() != 0 ) {
+    const unsigned int frameLength = format.numSamplesPerAacFrame;
+
+    if( chapter.numTimeSamples%frameLength != 0 ) {
       return false;
     }
 
@@ -145,7 +151,7 @@ namespace priv {
       return false;
     }
 
-    const uint64_t numChapterFrames = chapter.numTimeSamples/AacEncoder::frameLength();
+    const uint64_t numChapterFrames = chapter.numTimeSamples/frameLength;
 
     uint64_t numAdtsFrames = 0;
     while( adts.hasFrame() ) {
@@ -162,7 +168,7 @@ namespace priv {
     for(uint64_t i = 0; i < numChapterFrames - 1; i++) {
       MP4WriteSample(file, track,
                      adts.frameData(), static_cast<uint32_t>(adts.frameSize()),
-                     AacEncoder::frameLength());
+                     frameLength);
       adts.nextFrame();
     }
 
@@ -177,14 +183,14 @@ namespace priv {
 
     MP4WriteSample(file, track,
                    remain.data(), static_cast<uint32_t>(remain.size()),
-                   AacEncoder::frameLength());
+                   frameLength);
 
     return true;
   }
 
 } // namespace priv
 
-void writeBook(const QString& fileName, const QAudioFormat& format, JobResults results)
+void writeBook(const QString& fileName, const AacFormat& format, JobResults results)
 {
   qSort(results);
 
@@ -193,8 +199,8 @@ void writeBook(const QString& fileName, const QAudioFormat& format, JobResults r
     duration += result.numTimeSamples;
   }
 
-  const MP4Duration fixedDuration = AacEncoder::frameLength();
-  const uint32_t        timeScale = static_cast<uint32_t>(format.sampleRate());
+  const MP4Duration fixedDuration = format.numSamplesPerAacFrame;
+  const uint32_t        timeScale = static_cast<uint32_t>(format.numSamplesPerSecond);
 
   const MP4FileHandle output = MP4CreateEx(fileName.toUtf8().constData(), 0,
                                            1, 0,
@@ -222,7 +228,7 @@ void writeBook(const QString& fileName, const QAudioFormat& format, JobResults r
 
   for(const JobResult& result : results) {
 #if 1
-    priv::writeChapter(output, auTrackId, result);
+    priv::writeChapter(output, auTrackId, result, format);
 #else
     QFile file(result.outputFilePath);
     if( !file.open(QIODevice::ReadOnly) ) {

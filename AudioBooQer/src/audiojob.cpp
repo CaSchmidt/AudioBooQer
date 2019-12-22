@@ -158,9 +158,10 @@ void AudioJob::decodingFinished()
   }
 
   if( _job.inputFiles.isEmpty() ) {
-    const unsigned int  mod = static_cast<unsigned int>(_numTimeSamples)%AacEncoder::frameLength();
+    const unsigned int frameLength = _job.format.numSamplesPerAacFrame;
+    const unsigned int  mod = static_cast<unsigned int>(_numTimeSamples)%frameLength;
     const unsigned int fill = mod > 0
-        ? AacEncoder::frameLength() - mod
+        ? frameLength - mod
         : 0;
     if( !_encoder->flush(fill) ) {
       appendErrorMessage(QStringLiteral("IAudioEncoder::flush() failed!"));

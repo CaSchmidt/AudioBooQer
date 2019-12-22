@@ -45,33 +45,31 @@ WAudioFormat::WAudioFormat(QWidget *parent, Qt::WindowFlags f)
   // Channels ////////////////////////////////////////////////////////////////
 
   ui->channelsCombo->clear();
-  ui->channelsCombo->addItem(QStringLiteral("Mono"), int(1));
-  ui->channelsCombo->addItem(QStringLiteral("Stereo"), int(2));
+  ui->channelsCombo->addItem(QStringLiteral("Mono"),   static_cast<unsigned int>(1));
+  ui->channelsCombo->addItem(QStringLiteral("Stereo"), static_cast<unsigned int>(2));
   ui->channelsCombo->setCurrentText(QStringLiteral("Stereo"));
 
   // Rate ////////////////////////////////////////////////////////////////////
 
   ui->rateCombo->clear();
-  ui->rateCombo->addItem(QStringLiteral("8000Hz"),  int(8000));
-  ui->rateCombo->addItem(QStringLiteral("11025Hz"), int(11025));
-  ui->rateCombo->addItem(QStringLiteral("22050Hz"), int(22050));
-  ui->rateCombo->addItem(QStringLiteral("44100Hz"), int(44100));
-  ui->rateCombo->addItem(QStringLiteral("48000Hz"), int(48000));
-  ui->rateCombo->setCurrentText(QStringLiteral("44100Hz"));
+  for(unsigned int i = 0; i < AacFormat::numSupportedRates(); i++) {
+    const unsigned int rate = AacFormat::supportedRates[i];
+    ui->rateCombo->addItem(QString::number(rate) + QStringLiteral("Hz"), rate);
+  }
+  ui->rateCombo->setCurrentText(QStringLiteral("22050Hz"));
 
   // Bits ////////////////////////////////////////////////////////////////////
 
   ui->bitsCombo->clear();
-  ui->bitsCombo->addItem(QStringLiteral("8"),  int(8));
-  ui->bitsCombo->addItem(QStringLiteral("16"), int(16));
+  ui->bitsCombo->addItem(QStringLiteral("8"),  static_cast<unsigned int>(8));
+  ui->bitsCombo->addItem(QStringLiteral("16"), static_cast<unsigned int>(16));
   ui->bitsCombo->setCurrentText(QStringLiteral("16"));
 
-  // Type ////////////////////////////////////////////////////////////////////
+  // Frame ///////////////////////////////////////////////////////////////////
 
-  ui->typeCombo->clear();
-  ui->typeCombo->addItem(QStringLiteral("Signed"));
-  ui->typeCombo->addItem(QStringLiteral("Unsigned"));
-  ui->typeCombo->setCurrentText(QStringLiteral("Signed"));
+  ui->frameCombo->clear();
+  ui->frameCombo->addItem(QStringLiteral("1024"), static_cast<unsigned int>(1024));
+  ui->frameCombo->setCurrentText(QStringLiteral("1024"));
 }
 
 WAudioFormat::~WAudioFormat()
@@ -79,20 +77,13 @@ WAudioFormat::~WAudioFormat()
   delete ui;
 }
 
-QAudioFormat WAudioFormat::format() const
+AacFormat WAudioFormat::format() const
 {
-  QAudioFormat result;
-
-  result.setByteOrder(QSysInfo::ByteOrder == QSysInfo::LittleEndian
-                      ? QAudioFormat::LittleEndian
-                      : QAudioFormat::BigEndian);
-  result.setChannelCount(ui->channelsCombo->currentData().toInt());
-  result.setCodec(QStringLiteral("audio/pcm"));
-  result.setSampleRate(ui->rateCombo->currentData().toInt());
-  result.setSampleSize(ui->bitsCombo->currentData().toInt());
-  result.setSampleType(ui->typeCombo->currentText() == QStringLiteral("Unsigned")
-                       ? QAudioFormat::UnSignedInt
-                       : QAudioFormat::SignedInt);
+  AacFormat result;
+  result.numBitsPerChannel     = ui->bitsCombo->currentData().toUInt();
+  result.numChannels           = ui->channelsCombo->currentData().toUInt();
+  result.numSamplesPerAacFrame = ui->frameCombo->currentData().toUInt();
+  result.numSamplesPerSecond   = ui->rateCombo->currentData().toUInt();
 
   return result;
 }

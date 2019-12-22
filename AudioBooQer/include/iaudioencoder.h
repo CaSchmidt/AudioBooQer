@@ -36,7 +36,8 @@
 
 #include <QtCore/QString>
 #include <QtMultimedia/QAudioBuffer>
-#include <QtMultimedia/QAudioFormat>
+
+#include "aacformat.h"
 
 class IAudioEncoder {
 public:
@@ -44,7 +45,7 @@ public:
 
   virtual bool encode(const QAudioBuffer& buffer) = 0;
   virtual bool flush(const unsigned int fillTimeSamples);
-  virtual bool initialize(const QAudioFormat& format,
+  virtual bool initialize(const AacFormat& format,
                           const QString& outputDirPath,
                           const QString& nameHint) = 0;
   virtual QString outputFileName() const = 0;

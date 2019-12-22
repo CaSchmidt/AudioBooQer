@@ -32,8 +32,9 @@
 #ifndef WAUDIOFORMAT_H
 #define WAUDIOFORMAT_H
 
-#include <QtMultimedia/QAudioFormat>
 #include <QtWidgets/QWidget>
+
+#include "aacformat.h"
 
 namespace Ui {
   class WAudioFormat;
@@ -45,7 +46,7 @@ public:
   WAudioFormat(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
   ~WAudioFormat();
 
-  QAudioFormat format() const;
+  AacFormat format() const;
 
 private:
   Ui::WAudioFormat *ui;

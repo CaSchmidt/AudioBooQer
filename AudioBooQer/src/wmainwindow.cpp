@@ -195,6 +195,10 @@ void WMainWindow::saveSettings() const
 
 void WMainWindow::processJobs()
 {
+  if( !ui->formatWidget->format().isValid() ) {
+    return;
+  }
+
   const QString outputDirPath =
       QFileDialog::getExistingDirectory(this,
                                         tr("Open Directory"),
