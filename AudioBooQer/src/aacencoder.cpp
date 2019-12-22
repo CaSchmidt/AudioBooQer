@@ -46,6 +46,7 @@
 /*
  * NOTE:
  * - FDK AAC seems to operate on native endian, signed 16bit integers ONLY!
+ *   (cf. INT_PCM, libSYS/include/machine_type.h)
  * - We support only Mono & Stereo.
  * - The bitrate is fixed to 64k.
  */
