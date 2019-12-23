@@ -50,6 +50,7 @@ public:
 public slots:
   void next();
   void play();
+  void playFile(const QString& filename);
   void previous();
   void stop();
   void reset();

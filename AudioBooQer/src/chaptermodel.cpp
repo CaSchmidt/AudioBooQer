@@ -321,6 +321,14 @@ bool ChapterModel::setData(const QModelIndex& index, const QVariant& value,
 
 ////// public slots //////////////////////////////////////////////////////////
 
+void ChapterModel::activateNode(const QModelIndex& nodeIndex)
+{
+  const ChapterFile *file = dynamic_cast<const ChapterFile*>(priv::treeItem(nodeIndex));
+  if( file != nullptr ) {
+    emit playedFile(file->fileName());
+  }
+}
+
 void ChapterModel::dissolveLastChapter()
 {
   if( rowCount(QModelIndex()) < 2 ) {

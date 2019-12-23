@@ -97,6 +97,18 @@ void WAudioPlayer::play()
   }
 }
 
+void WAudioPlayer::playFile(const QString& filename)
+{
+  const QMediaContent content(QUrl::fromLocalFile(filename));
+
+  for(int i = 0; i < _playlist->mediaCount(); i++) {
+    if( _playlist->media(i) == content ) {
+      _playlist->setCurrentIndex(i);
+      break;
+    }
+  }
+}
+
 void WAudioPlayer::previous()
 {
   _playlist->previous();

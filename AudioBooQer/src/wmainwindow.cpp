@@ -66,8 +66,13 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   connect(ui->dissolveChapterAction, SIGNAL(triggered()),
           model, SLOT(dissolveLastChapter()));
 
-  connect(ui->playerWidget, SIGNAL(fileNameChanged(const QString&)),
-          model, SLOT(setPlayingFileName(const QString&)));
+  connect(ui->chaptersView, &QTreeView::activated,
+          model, &ChapterModel::activateNode);
+
+  connect(model, &ChapterModel::playedFile,
+          ui->playerWidget, &WAudioPlayer::playFile);
+  connect(ui->playerWidget, &WAudioPlayer::fileNameChanged,
+          model, &ChapterModel::setPlayingFileName);
 
   connect(ui->chapterNoCheck, SIGNAL(toggled(bool)),
           model, SLOT(setShowChapterNo(bool)));

@@ -67,6 +67,7 @@ public:
                int role = Qt::EditRole);
 
 public slots:
+  void activateNode(const QModelIndex& nodeIndex);
   void dissolveLastChapter();
   void setFirstChapterNo(int no);
   void setShowChapterNo(bool state);
@@ -82,6 +83,9 @@ private:
   int _firstChapterNo;
   int _widthChapterNo;
   QString _playingFileName;
+
+signals:
+  void playedFile(const QString& filename);
 };
 
 #endif // CHAPTERMODEL_H
