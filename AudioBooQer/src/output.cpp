@@ -227,21 +227,7 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
   }
 
   for(const JobResult& result : results) {
-#if 1
     priv::writeChapter(output, auTrackId, result, format);
-#else
-    QFile file(result.outputFilePath);
-    if( !file.open(QIODevice::ReadOnly) ) {
-      continue;
-    }
-
-    const QByteArray data = file.readAll();
-    file.close();
-
-    MP4WriteSample(output, auTrackId,
-                   reinterpret_cast<const uint8_t*>(data.constData()), static_cast<uint32_t>(data.size()),
-                   result.numTimeSamples);
-#endif
   }
 
   const MP4TrackId chTrackId = MP4AddChapterTextTrack(output, auTrackId);

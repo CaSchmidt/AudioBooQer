@@ -125,12 +125,6 @@ bool AudioJob::start()
 void AudioJob::decodingBufferReady()
 {
   const QAudioBuffer buffer = _decoder.read();
-#if 0
-  printf("bytes   = %d\n", buffer.byteCount());
-  printf("frames  = %d\n", buffer.frameCount());
-  printf("samples = %d\n", buffer.sampleCount());
-  fflush(stdout);
-#endif
   if( !_encoder->encode(buffer) ) {
     _decoder.stop();
     appendErrorMessage(QStringLiteral("IAudioEncoder::encode() failed!"));
@@ -168,12 +162,6 @@ void AudioJob::decodingFinished()
     } else {
       _numTimeSamples += fill;
       appendInfoMessage(QStringLiteral("= %1").arg(_encoder->outputFileName()));
-#if 0
-      AacEncoder *aac = dynamic_cast<AacEncoder*>(_encoder.get());
-      printf("AacEncoder::numTimeSamples = %llu\n", aac->numTimeSamples());
-      printf("AudioJob::numTimeSamples   = %llu\n", _numTimeSamples);
-      fflush(stdout);
-#endif
     }
     emit done();
   } else {

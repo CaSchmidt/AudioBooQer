@@ -250,16 +250,6 @@ bool AacEncoder::initialize(const AacFormat& format,
     return false;
   }
 
-#if 0
-  printf("frame length = %d\n", result->info.frameLength);
-  printf("AudioSpecificConfig =");
-  for(UINT i = 0; i < result->info.confSize; i++) {
-    printf(" %02X", result->info.confBuf[i]);
-  }
-  printf("\n");
-  fflush(stdout);
-#endif
-
   // (2) Create output file //////////////////////////////////////////////////
 
   result->file.setFileName(QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1.aac").arg(nameHint)));
