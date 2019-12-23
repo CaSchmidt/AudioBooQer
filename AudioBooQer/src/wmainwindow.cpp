@@ -229,6 +229,7 @@ void WMainWindow::processJobs()
   jobInfo.executeJobs(jobs);
 
   model->deleteJobs();
+  ui->playerWidget->setFiles(model->files());
 
   const QString outputFileName =
       QFileDialog::getSaveFileName(this, tr("Save"), outputDirPath, tr("Audiobooks (*.m4b)"));
