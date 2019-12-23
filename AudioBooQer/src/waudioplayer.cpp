@@ -48,10 +48,10 @@ WAudioPlayer::WAudioPlayer(QWidget *parent, Qt::WindowFlags f)
   // Media Player ////////////////////////////////////////////////////////////
 
   _player = new QMediaPlayer(this);
-  connect(_player, SIGNAL(stateChanged(QMediaPlayer::State)),
-          SLOT(changeButtonState(QMediaPlayer::State)));
-  connect(_player, SIGNAL(currentMediaChanged(const QMediaContent&)),
-          SLOT(changeMediaInfo(const QMediaContent&)));
+  connect(_player, &QMediaPlayer::stateChanged,
+          this, &WAudioPlayer::changeButtonState);
+  connect(_player, &QMediaPlayer::currentMediaChanged,
+          this, &WAudioPlayer::changeMediaInfo);
 
   // Playlist ////////////////////////////////////////////////////////////////
 
@@ -61,10 +61,10 @@ WAudioPlayer::WAudioPlayer(QWidget *parent, Qt::WindowFlags f)
 
   // Buttons /////////////////////////////////////////////////////////////////
 
-  connect(ui->nextButton, SIGNAL(clicked()), SLOT(next()));
-  connect(ui->stopButton, SIGNAL(clicked()), SLOT(stop()));
-  connect(ui->playButton, SIGNAL(clicked()), SLOT(play()));
-  connect(ui->previousButton, SIGNAL(clicked()), SLOT(previous()));
+  connect(ui->nextButton, &QPushButton::clicked, this, &WAudioPlayer::next);
+  connect(ui->stopButton, &QPushButton::clicked, this, &WAudioPlayer::stop);
+  connect(ui->playButton, &QPushButton::clicked, this, &WAudioPlayer::play);
+  connect(ui->previousButton, &QPushButton::clicked, this, &WAudioPlayer::previous);
 }
 
 WAudioPlayer::~WAudioPlayer()
