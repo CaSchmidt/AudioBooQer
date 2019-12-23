@@ -117,22 +117,11 @@ void WAudioPlayer::reset()
 
 void WAudioPlayer::changeButtonState(QMediaPlayer::State state)
 {
-#if 1
   if( state == QMediaPlayer::PlayingState ) {
     ui->playButton->setText(tr("Pause"));
   } else {
     ui->playButton->setText(tr("Play"));
   }
-#else
-  QIcon icon;
-  if( state == QMediaPlayer::PlayingState ) {
-    icon.addFile(":/audioplayer/pause.png", QSize(), QIcon::Normal, QIcon::Off);
-  } else {
-    icon.addFile(":/audioplayer/play.png", QSize(), QIcon::Normal, QIcon::Off);
-  }
-  ui->playButton->setIcon(icon);
-  ui->playButton->setIconSize(QSize(75, 75));
-#endif
 
   if( state == QMediaPlayer::StoppedState ) {
     emit fileNameChanged(QString());
