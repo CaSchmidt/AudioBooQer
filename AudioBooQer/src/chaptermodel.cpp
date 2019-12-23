@@ -172,6 +172,26 @@ void ChapterModel::deleteJobs()
   endRemoveRows();
 }
 
+QStringList ChapterModel::files(const bool source_only) const
+{
+  QStringList result;
+
+  for(int i = 0; i < rowCount(QModelIndex()); i++) {
+    const QModelIndex chIndex = index(i, 0, QModelIndex());
+    const ChapterNode *chapter = dynamic_cast<const ChapterNode*>(priv::treeItem(chIndex));
+
+    if( source_only  &&  !chapter->isSource() ) {
+      continue;
+    }
+
+    result += chapter->files(chapter->rowCount());
+  }
+
+  qSort(result);
+
+  return result;
+}
+
 int ChapterModel::columnCount(const QModelIndex& parent) const
 {
   if( parent.isValid() ) {

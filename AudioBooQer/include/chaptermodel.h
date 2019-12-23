@@ -54,6 +54,8 @@ public:
   Jobs buildJobs() const;
   void deleteJobs();
 
+  QStringList files(const bool source_only = false) const;
+
   int columnCount(const QModelIndex& parent = QModelIndex()) const;
   QVariant data(const QModelIndex& index, int role) const;
   Qt::ItemFlags flags(const QModelIndex& index) const;

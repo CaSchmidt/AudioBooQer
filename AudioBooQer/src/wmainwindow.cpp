@@ -174,7 +174,7 @@ void WMainWindow::openDirectory()
     model->setData(root);
   }
 
-  ui->playerWidget->setFiles(fileNames);
+  ui->playerWidget->setFiles(model->files());
   ui->chaptersView->expandAll();
   QDir::setCurrent(dirPath);
 }
