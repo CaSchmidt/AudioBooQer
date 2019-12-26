@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,33 +29,59 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WMAINWINDOW_H
-#define WMAINWINDOW_H
+#include <mp4v2/mp4v2.h>
 
-#include <QtWidgets/QMainWindow>
+#include "mp4tag.h"
 
-namespace Ui {
-  class WMainWindow;
-};
+////// Public ////////////////////////////////////////////////////////////////
 
-class WMainWindow : public QMainWindow {
-  Q_OBJECT
-public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  ~WMainWindow();
+bool Mp4Tag::isValid() const
+{
+  return !filename.isEmpty();
+}
 
-private slots:
-  void createNewChapter();
-  void editTag();
-  void openDirectory();
-  void processJobs();
+Mp4Tag readTag(const QString& filename)
+{
+  MP4FileHandle file = MP4Read(filename.toUtf8().constData());
+  if( file == MP4_INVALID_FILE_HANDLE ) {
+    return Mp4Tag();
+  }
 
-private:
-  void loadSettings();
-  void saveSettings() const;
-  static QString settingsFileName();
+  Mp4Tag result;
+  result.filename = filename;
 
-  Ui::WMainWindow *ui;
-};
+  const MP4Tags *tags = MP4TagsAlloc();
+  if( tags != nullptr  &&  MP4TagsFetch(tags, file) ) {
+    if( tags->album != nullptr ) {
+      result.title = QString::fromUtf8(tags->album);
+    }
+    if( tags->name != nullptr ) {
+      result.chapter = QString::fromUtf8(tags->name);
+    }
+    if( tags->artist != nullptr ) {
+      result.author = QString::fromUtf8(tags->artist);
+    }
+    if( tags->albumArtist != nullptr ) {
+      result.albumArtist = QString::fromUtf8(tags->albumArtist);
+    }
+    if( tags->composer != nullptr ) {
+      result.composer = QString::fromUtf8(tags->composer);
+    }
+    if( tags->genre != nullptr ) {
+      result.genre = QString::fromUtf8(tags->genre);
+    }
+    if( tags->track != nullptr ) {
+      result.trackIndex = tags->track->index;
+      result.trackTotal = tags->track->total;
+    }
+    if( tags->disk != nullptr ) {
+      result.diskIndex = tags->disk->index;
+      result.diskTotal = tags->disk->total;
+    }
+  }
+  MP4TagsFree(tags);
 
-#endif // WMAINWINDOW_H
+  MP4Close(file);
+
+  return result;
+}

@@ -211,6 +211,8 @@
     </property>
     <addaction name="openDirAction"/>
     <addaction name="separator"/>
+    <addaction name="editTagAction"/>
+    <addaction name="separator"/>
     <addaction name="quitAction"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -275,6 +277,14 @@
   <action name="dissolveChapterAction">
    <property name="text">
     <string>&amp;Dissolve last chapter</string>
+   </property>
+  </action>
+  <action name="editTagAction">
+   <property name="text">
+    <string>Edit tag...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>

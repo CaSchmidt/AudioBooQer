@@ -44,6 +44,7 @@
 #include "chaptermodel.h"
 #include "output.h"
 #include "wjobinfo.h"
+#include "WTagEditor.h"
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -89,6 +90,8 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
 
   ui->openDirAction->setShortcut(QKeySequence::Open);
   connect(ui->openDirAction, SIGNAL(triggered()), SLOT(openDirectory()));
+
+  connect(ui->editTagAction, &QAction::triggered, this, &WMainWindow::editTag);
 
   ui->quitAction->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_Q));
   connect(ui->quitAction, SIGNAL(triggered()), SLOT(close()));
@@ -146,11 +149,32 @@ void WMainWindow::createNewChapter()
   }
 }
 
+void WMainWindow::editTag()
+{
+  const QString filename =
+      QFileDialog::getOpenFileName(this, tr("Open"),
+                                   QDir::currentPath(), tr("MP4 files (*.mp4 *.m4a *.m4b *.m4v)"));
+  if( filename.isEmpty() ) {
+    return;
+  }
+
+  const Mp4Tag tag = readTag(filename);
+  if( !tag.isValid() ) {
+    return;
+  }
+
+  WTagEditor editor(tag, this);
+  if( editor.exec() == QDialog::Accepted ) {
+    // TODO...
+  }
+
+  QDir::setCurrent(QFileInfo(filename).absolutePath());
+}
+
 void WMainWindow::openDirectory()
 {
   const QString dirPath =
-      QFileDialog::getExistingDirectory(this,
-                                        tr("Open directory"),
+      QFileDialog::getExistingDirectory(this, tr("Open directory"),
                                         QDir::currentPath());
   if( dirPath.isEmpty() ) {
     return;

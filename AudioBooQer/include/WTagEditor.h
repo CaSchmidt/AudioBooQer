@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,33 +29,28 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WMAINWINDOW_H
-#define WMAINWINDOW_H
+#ifndef WTAGEDITOR_H
+#define WTAGEDITOR_H
 
-#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QDialog>
+
+#include "mp4tag.h"
 
 namespace Ui {
-  class WMainWindow;
-};
+  class WTagEditor;
+}
 
-class WMainWindow : public QMainWindow {
+class WTagEditor : public QDialog {
   Q_OBJECT
 public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  ~WMainWindow();
+  WTagEditor(const Mp4Tag& tag, QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
+  ~WTagEditor();
 
-private slots:
-  void createNewChapter();
-  void editTag();
-  void openDirectory();
-  void processJobs();
+  void set(const Mp4Tag& tag);
 
 private:
-  void loadSettings();
-  void saveSettings() const;
-  static QString settingsFileName();
-
-  Ui::WMainWindow *ui;
+  Ui::WTagEditor *ui{nullptr};
+  QString _filename{};
 };
 
-#endif // WMAINWINDOW_H
+#endif // WTAGEDITOR_H

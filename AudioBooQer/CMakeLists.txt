@@ -33,6 +33,7 @@ set(AudioBooQer_FORMS
   forms/waudioplayer.ui
   forms/wjobinfo.ui
   forms/wmainwindow.ui
+  forms/WTagEditor.ui
   )
 
 set(AudioBooQer_HEADERS
@@ -44,6 +45,7 @@ set(AudioBooQer_HEADERS
   include/chaptermodel.h
   include/iaudioencoder.h
   include/job.h
+  include/mp4tag.h
   include/mpeg4_asc.h
   include/output.h
   include/rawencoder.h
@@ -51,6 +53,7 @@ set(AudioBooQer_HEADERS
   include/waudioplayer.h
   include/wjobinfo.h
   include/wmainwindow.h
+  include/WTagEditor.h
   )
 
 set(AudioBooQer_SOURCES
@@ -63,12 +66,14 @@ set(AudioBooQer_SOURCES
   src/iaudioencoder.cpp
   src/job.cpp
   src/main.cpp
+  src/mp4tag.cpp
   src/output.cpp
   src/rawencoder.cpp
   src/waudioformat.cpp
   src/waudioplayer.cpp
   src/wjobinfo.cpp
   src/wmainwindow.cpp
+  src/WTagEditor.cpp
   )
 
 ### Target ###################################################################

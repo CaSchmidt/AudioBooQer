@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,33 +29,31 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WMAINWINDOW_H
-#define WMAINWINDOW_H
+#ifndef MP4TAG_H
+#define MP4TAG_H
 
-#include <QtWidgets/QMainWindow>
+#include <cstdint>
 
-namespace Ui {
-  class WMainWindow;
+#include <QtCore/QString>
+
+struct Mp4Tag {
+  Mp4Tag() noexcept = default;
+
+  bool isValid() const;
+
+  QString  filename{};
+  QString  title{};
+  QString  chapter{};
+  QString  author{};
+  QString  albumArtist{};
+  QString  composer{};
+  QString  genre{};
+  uint16_t trackIndex{1};
+  uint16_t trackTotal{1};
+  uint16_t diskIndex{1};
+  uint16_t diskTotal{1};
 };
 
-class WMainWindow : public QMainWindow {
-  Q_OBJECT
-public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  ~WMainWindow();
+Mp4Tag readTag(const QString& filename);
 
-private slots:
-  void createNewChapter();
-  void editTag();
-  void openDirectory();
-  void processJobs();
-
-private:
-  void loadSettings();
-  void saveSettings() const;
-  static QString settingsFileName();
-
-  Ui::WMainWindow *ui;
-};
-
-#endif // WMAINWINDOW_H
+#endif // MP4TAG_H
