@@ -41,6 +41,8 @@ struct Mp4Tag {
 
   bool isValid() const;
 
+  static Mp4Tag read(const QString& filename) noexcept;
+
   QString  filename{};
   QString  title{};
   QString  chapter{};
@@ -53,7 +55,5 @@ struct Mp4Tag {
   uint16_t diskIndex{1};
   uint16_t diskTotal{1};
 };
-
-Mp4Tag readTag(const QString& filename);
 
 #endif // MP4TAG_H

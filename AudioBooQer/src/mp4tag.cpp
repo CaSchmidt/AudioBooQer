@@ -40,7 +40,7 @@ bool Mp4Tag::isValid() const
   return !filename.isEmpty();
 }
 
-Mp4Tag readTag(const QString& filename)
+Mp4Tag Mp4Tag::read(const QString& filename) noexcept
 {
   MP4FileHandle file = MP4Read(filename.toUtf8().constData());
   if( file == MP4_INVALID_FILE_HANDLE ) {
