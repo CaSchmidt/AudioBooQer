@@ -47,7 +47,7 @@ public:
   ~WTagEditor();
 
   Mp4Tag get() const;
-  void set(const Mp4Tag& tag);
+  bool set(const Mp4Tag& tag);
 
 private:
   Ui::WTagEditor *ui{nullptr};

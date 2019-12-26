@@ -94,8 +94,12 @@ Mp4Tag WTagEditor::get() const
   return result;
 }
 
-void WTagEditor::set(const Mp4Tag& tag)
+bool WTagEditor::set(const Mp4Tag& tag)
 {
+  if( !tag.isValid() ) {
+    return false;
+  }
+
   _filename = tag.filename;
 
   ui->titleEdit->setText(tag.title);
@@ -108,4 +112,6 @@ void WTagEditor::set(const Mp4Tag& tag)
   ui->trackTotalSpin->setValue(tag.trackTotal);
   ui->diskIndexSpin->setValue(tag.diskIndex);
   ui->diskTotalSpin->setValue(tag.diskTotal);
+
+  return true;
 }
