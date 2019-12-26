@@ -40,7 +40,50 @@ bool Mp4Tag::isValid() const
   return !filename.isEmpty();
 }
 
-Mp4Tag Mp4Tag::read(const QString& filename) noexcept
+bool Mp4Tag::write() const
+{
+  if( !isValid() ) {
+    return false;
+  }
+
+  const MP4Tags *tags = MP4TagsAlloc();
+  if( tags == nullptr ) {
+    return false;
+  }
+
+  { // Begin Conversion
+#define OUTPUT(str,meta)  if( !str.isEmpty() ) MP4TagsSet##meta(tags, str.toUtf8().constData())
+    OUTPUT(title,Album);
+    OUTPUT(chapter,Name);
+    OUTPUT(author,Artist);
+    OUTPUT(albumArtist,AlbumArtist);
+    OUTPUT(composer,Composer);
+    OUTPUT(genre,Genre);
+#undef OUTPUT
+    MP4TagTrack track;
+    track.index = trackIndex;
+    track.total = trackTotal;
+    MP4TagsSetTrack(tags, &track);
+    MP4TagDisk disk;
+    disk.index = diskIndex;
+    disk.total = diskTotal;
+    MP4TagsSetDisk(tags, &disk);
+  } // End Conversion
+
+  MP4FileHandle file = MP4Modify(filename.toUtf8().constData());
+  if( file == MP4_INVALID_FILE_HANDLE ) {
+    MP4TagsFree(tags);
+    return false;
+  }
+  const bool result = MP4TagsStore(tags, file);
+  MP4Close(file);
+
+  MP4TagsFree(tags);
+
+  return result;
+}
+
+Mp4Tag Mp4Tag::read(const QString& filename)
 {
   MP4FileHandle file = MP4Read(filename.toUtf8().constData());
   if( file == MP4_INVALID_FILE_HANDLE ) {

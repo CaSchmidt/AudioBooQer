@@ -46,6 +46,7 @@ public:
   WTagEditor(const Mp4Tag& tag, QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
   ~WTagEditor();
 
+  Mp4Tag get() const;
   void set(const Mp4Tag& tag);
 
 private:

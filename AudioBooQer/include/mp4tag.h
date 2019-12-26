@@ -41,7 +41,9 @@ struct Mp4Tag {
 
   bool isValid() const;
 
-  static Mp4Tag read(const QString& filename) noexcept;
+  bool write() const;
+
+  static Mp4Tag read(const QString& filename);
 
   QString  filename{};
   QString  title{};

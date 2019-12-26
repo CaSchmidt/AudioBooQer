@@ -34,6 +34,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 
 #include <csQt/csQtUtil.h>
 
@@ -158,14 +159,18 @@ void WMainWindow::editTag()
     return;
   }
 
-  const Mp4Tag tag = Mp4Tag::read(filename);
-  if( !tag.isValid() ) {
+  const Mp4Tag in = Mp4Tag::read(filename);
+  if( !in.isValid() ) {
     return;
   }
 
-  WTagEditor editor(tag, this);
+  WTagEditor editor(in, this);
   if( editor.exec() == QDialog::Accepted ) {
-    // TODO...
+    const Mp4Tag out = editor.get();
+    if( !out.write() ) {
+      QMessageBox::critical(this, tr("Error"),
+                            tr("Error writing tag (Mp4Tag::write(\"%1\"))!").arg(out.filename));
+    }
   }
 
   QDir::setCurrent(QFileInfo(filename).absolutePath());

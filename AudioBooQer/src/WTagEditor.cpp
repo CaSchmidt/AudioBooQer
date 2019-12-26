@@ -75,6 +75,25 @@ WTagEditor::~WTagEditor()
   delete ui;
 }
 
+Mp4Tag WTagEditor::get() const
+{
+  Mp4Tag result;
+
+  result.filename    = _filename;
+  result.title       = ui->titleEdit->text();
+  result.chapter     = ui->chapterEdit->text();
+  result.author      = ui->authorEdit->text();
+  result.albumArtist = ui->albumArtistEdit->text();
+  result.composer    = ui->composerEdit->text();
+  result.genre       = ui->genreEdit->text();
+  result.trackIndex  = static_cast<uint16_t>(ui->trackIndexSpin->value());
+  result.trackTotal  = static_cast<uint16_t>(ui->trackTotalSpin->value());
+  result.diskIndex   = static_cast<uint16_t>(ui->diskIndexSpin->value());
+  result.diskTotal   = static_cast<uint16_t>(ui->diskTotalSpin->value());
+
+  return result;
+}
+
 void WTagEditor::set(const Mp4Tag& tag)
 {
   _filename = tag.filename;
