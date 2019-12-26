@@ -52,24 +52,14 @@ Mp4Tag Mp4Tag::read(const QString& filename) noexcept
 
   const MP4Tags *tags = MP4TagsAlloc();
   if( tags != nullptr  &&  MP4TagsFetch(tags, file) ) {
-    if( tags->album != nullptr ) {
-      result.title = QString::fromUtf8(tags->album);
-    }
-    if( tags->name != nullptr ) {
-      result.chapter = QString::fromUtf8(tags->name);
-    }
-    if( tags->artist != nullptr ) {
-      result.author = QString::fromUtf8(tags->artist);
-    }
-    if( tags->albumArtist != nullptr ) {
-      result.albumArtist = QString::fromUtf8(tags->albumArtist);
-    }
-    if( tags->composer != nullptr ) {
-      result.composer = QString::fromUtf8(tags->composer);
-    }
-    if( tags->genre != nullptr ) {
-      result.genre = QString::fromUtf8(tags->genre);
-    }
+#define INPUT(meta,str)  if( tags->meta != nullptr ) result.str = QString::fromUtf8(tags->meta)
+    INPUT(album,title);
+    INPUT(name,chapter);
+    INPUT(artist,author);
+    INPUT(albumArtist,albumArtist);
+    INPUT(composer,composer);
+    INPUT(genre,genre);
+#undef INPUT
     if( tags->track != nullptr ) {
       result.trackIndex = tags->track->index;
       result.trackTotal = tags->track->total;
