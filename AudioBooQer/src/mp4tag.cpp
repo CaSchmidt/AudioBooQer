@@ -29,9 +29,29 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <QtCore/QFile>
+#include <QtGui/QImageReader>
+
 #include <mp4v2/mp4v2.h>
 
 #include "mp4tag.h"
+
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  QByteArray readFile(const QString& filename)
+  {
+    QFile file(filename);
+    if( !file.open(QIODevice::ReadOnly) ) {
+      return QByteArray();
+    }
+    const QByteArray content = file.readAll();
+    file.close();
+    return content;
+  }
+
+} // namespace priv
 
 ////// Public ////////////////////////////////////////////////////////////////
 
@@ -60,14 +80,38 @@ bool Mp4Tag::write() const
     OUTPUT(composer,Composer);
     OUTPUT(genre,Genre);
 #undef OUTPUT
-    MP4TagTrack track;
-    track.index = trackIndex;
-    track.total = trackTotal;
-    MP4TagsSetTrack(tags, &track);
-    MP4TagDisk disk;
-    disk.index = diskIndex;
-    disk.total = diskTotal;
-    MP4TagsSetDisk(tags, &disk);
+    {
+      MP4TagTrack track;
+      track.index = trackIndex;
+      track.total = trackTotal;
+      MP4TagsSetTrack(tags, &track);
+    }
+    {
+      MP4TagDisk disk;
+      disk.index = diskIndex;
+      disk.total = diskTotal;
+      MP4TagsSetDisk(tags, &disk);
+    }
+    {
+      const QByteArray fileData = priv::readFile(coverImageFilePath);
+      if( !fileData.isEmpty() ) {
+        MP4TagArtwork artwork;
+
+        artwork.type = MP4_ART_UNDEFINED;
+        const QByteArray imageType = QImageReader::imageFormat(coverImageFilePath);
+        if(        imageType == "jpeg" ) {
+          artwork.type = MP4_ART_JPEG;
+        } else if( imageType == "png" ) {
+          artwork.type = MP4_ART_PNG;
+        }
+
+        if( artwork.type != MP4_ART_UNDEFINED ) {
+          artwork.data = const_cast<char*>(fileData.constData());
+          artwork.size = static_cast<uint32_t>(fileData.size());
+          MP4TagsAddArtwork(tags, &artwork);
+        }
+      }
+    }
   } // End Conversion
 
   MP4FileHandle file = MP4Modify(filename.toUtf8().constData());

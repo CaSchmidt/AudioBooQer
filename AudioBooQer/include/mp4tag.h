@@ -56,6 +56,7 @@ struct Mp4Tag {
   uint16_t trackTotal{1};
   uint16_t diskIndex{1};
   uint16_t diskTotal{1};
+  QString  coverImageFilePath{};
 };
 
 #endif // MP4TAG_H

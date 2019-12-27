@@ -102,6 +102,7 @@ Mp4Tag WTagEditor::get() const
   result.trackTotal  = static_cast<uint16_t>(ui->trackTotalSpin->value());
   result.diskIndex   = static_cast<uint16_t>(ui->diskIndexSpin->value());
   result.diskTotal   = static_cast<uint16_t>(ui->diskTotalSpin->value());
+  result.coverImageFilePath = ui->coverImageEdit->text();
 
   return result;
 }
