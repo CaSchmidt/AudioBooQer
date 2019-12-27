@@ -214,6 +214,18 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
 {
   qSort(results);
 
+  // (0) Constants ///////////////////////////////////////////////////////////
+
+  /*
+   * duration      : The audiobook's/file's total duration.
+   *                 Should correspond to the duration of the longest track.
+   * sampleDuration: Fixed duration of one MP4 audio sample.
+   * timeScale     : Elapsed time units per second.
+   *
+   * NOTE:
+   * 'duration' and 'sampleDuration' are in 'timeScale' units!
+   */
+
   MP4Duration duration = 0;
   for(const JobResult& result : results) {
     duration += result.numTimeSamples;
@@ -222,6 +234,13 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
   const MP4Duration sampleDuration = format.numSamplesPerAacFrame;
   const uint32_t         timeScale = static_cast<uint32_t>(format.numSamplesPerSecond);
 
+  // (1) Create a MP4 file of the M4B brand //////////////////////////////////
+
+  /*
+   * NOTE:
+   * cf. https://mp4ra.org/ for a list of various brands!
+   */
+
   const MP4FileHandle output = MP4CreateEx(fileName.toUtf8().constData(), 0,
                                            1, 0,
                                            const_cast<char*>("M4B "), 0);
@@ -229,8 +248,18 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
     return;
   }
 
+  // (2) Set timing information for MP4 file /////////////////////////////////
+
   MP4SetDuration(output, duration);
   MP4SetTimeScale(output, timeScale);
+
+  // (3) Create audio track //////////////////////////////////////////////////
+
+  /*
+   * NOTE:
+   * By convention audio tracks are required to have a fixed sample size (in
+   * 'timeScale' units) to facilitate seeking inside the track!
+   */
 
   const MP4TrackId auTrackId = MP4AddAudioTrack(output,
                                                 timeScale, sampleDuration,
@@ -240,21 +269,29 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
     return;
   }
 
+  // (4) Write AudioSpecificConfig() structure for audio track ///////////////
+
   const uint16_t asc = priv::createASC(format);
   if( asc != 0 ) {
     MP4SetTrackESConfiguration(output, auTrackId,
                                reinterpret_cast<const uint8_t*>(&asc), sizeof(uint16_t));
   }
 
+  // (5) Write all chapters into audio track /////////////////////////////////
+
   for(const JobResult& result : results) {
     priv::writeChapter(output, auTrackId, result, format);
   }
+
+  // (6) Create track for chapter titles /////////////////////////////////////
 
   const MP4TrackId chTrackId = MP4AddChapterTextTrack(output, auTrackId);
   if( chTrackId == MP4_INVALID_TRACK_ID ) {
     MP4Close(output);
     return;
   }
+
+  // (7) Write all chapter titles ////////////////////////////////////////////
 
   for(const JobResult& result : results) {
     MP4AddChapter(output, chTrackId,
