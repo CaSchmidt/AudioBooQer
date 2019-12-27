@@ -34,6 +34,14 @@
 
 #include <cstdint>
 
+/*
+ * NOTE:
+ * A minimal AudioSpecificConfig().
+ * cf. ISO 14496-3 Subpart 1 (AKA "MPEG-4 Audio")
+ * Chapter 3: Interface to MPEG-4 Systems
+ * Document W2203
+ */
+
 namespace mpeg4_asc {
 
   enum class AudioObjectType : uint16_t {
