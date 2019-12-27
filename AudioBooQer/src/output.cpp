@@ -219,8 +219,8 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
     duration += result.numTimeSamples;
   }
 
-  const MP4Duration fixedDuration = format.numSamplesPerAacFrame;
-  const uint32_t        timeScale = static_cast<uint32_t>(format.numSamplesPerSecond);
+  const MP4Duration sampleDuration = format.numSamplesPerAacFrame;
+  const uint32_t         timeScale = static_cast<uint32_t>(format.numSamplesPerSecond);
 
   const MP4FileHandle output = MP4CreateEx(fileName.toUtf8().constData(), 0,
                                            1, 0,
@@ -233,7 +233,7 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
   MP4SetTimeScale(output, timeScale);
 
   const MP4TrackId auTrackId = MP4AddAudioTrack(output,
-                                                timeScale, fixedDuration,
+                                                timeScale, sampleDuration,
                                                 MP4_MPEG4_AUDIO_TYPE);
   if( auTrackId == MP4_INVALID_TRACK_ID ) {
     MP4Close(output);
