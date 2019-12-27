@@ -237,6 +237,7 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
                                                 MP4_MPEG4_AUDIO_TYPE);
   if( auTrackId == MP4_INVALID_TRACK_ID ) {
     MP4Close(output);
+    return;
   }
 
   const uint16_t asc = priv::createASC(format);
