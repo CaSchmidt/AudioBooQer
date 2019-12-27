@@ -137,9 +137,15 @@ namespace priv {
   {
     const unsigned int frameLength = format.numSamplesPerAacFrame;
 
+    // (1) Make sure chapter aligns with frame length ////////////////////////
+
     if( chapter.numTimeSamples%frameLength != 0 ) {
       return false;
     }
+
+    const uint64_t numChapterFrames = chapter.numTimeSamples/frameLength;
+
+    // (2) Read chapter's ADTS file and count its frames /////////////////////
 
     AdtsParser::Buffer adtsBuffer = readAdtsFile(chapter.outputFilePath);
     if( adtsBuffer.empty() ) {
@@ -151,8 +157,6 @@ namespace priv {
       return false;
     }
 
-    const uint64_t numChapterFrames = chapter.numTimeSamples/frameLength;
-
     uint64_t numAdtsFrames = 0;
     while( adts.hasFrame() ) {
       numAdtsFrames++;
@@ -160,10 +164,24 @@ namespace priv {
     }
     adts.reset();
 
+    // (3) Make sure ADTS frames do not exceed chapter's frames //////////////
+
+    /*
+     * NOTE:
+     * It has been observed that the FDK AAC encoder appends some additional
+     * frames in the ADTS file, that do not reflect the projected number of
+     * frames!
+     * Therefore we will store all of these additional frames in the chapter's
+     * last sample. Its duration will be set to the frame length, not accounting
+     * for the additional frames!
+     */
+
     if( numAdtsFrames < numChapterFrames  ||
         numAdtsFrames - numChapterFrames > 3 ) {
       return false;
     }
+
+    // (4) Write all frames excluding the last one ///////////////////////////
 
     for(uint64_t i = 0; i < numChapterFrames - 1; i++) {
       MP4WriteSample(file, track,
@@ -171,6 +189,8 @@ namespace priv {
                      frameLength);
       adts.nextFrame();
     }
+
+    // (5) Pack remaining frames into last sample ////////////////////////////
 
     AdtsParser::Buffer remain;
     while( adts.hasFrame() ) {
