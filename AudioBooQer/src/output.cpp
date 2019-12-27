@@ -218,7 +218,6 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
   if( auTrackId == MP4_INVALID_TRACK_ID ) {
     MP4Close(output);
   }
-  // MP4SetTrackIntegerProperty(output, auTrackId, "tkhd.flags", 15);
 
   const uint16_t asc = priv::createASC(format);
   if( asc != 0 ) {
@@ -235,26 +234,11 @@ void writeBook(const QString& fileName, const AacFormat& format, JobResults resu
     MP4Close(output);
     return;
   }
-  // MP4SetTrackIntegerProperty(output, chTrackId, "tkhd.flags", 15);
 
   for(const JobResult& result : results) {
     MP4AddChapter(output, chTrackId,
                   result.numTimeSamples, result.title.toUtf8().constData());
   }
-
-  /*
-  const MP4Tags *tags = MP4TagsAlloc();
-  if( tags != nullptr  &&  MP4TagsFetch(tags, output) ) {
-    MP4TagsSetName(tags, "name");
-    MP4TagsSetArtist(tags, "artist");
-    MP4TagsSetAlbumArtist(tags, "album artist");
-    MP4TagsSetAlbum(tags, "album");
-    MP4TagsSetGenre(tags, "genre");
-
-    MP4TagsStore(tags, output);
-    MP4TagsFree(tags);
-  }
-  */
 
   MP4Close(output);
 }
