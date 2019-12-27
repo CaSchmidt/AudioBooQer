@@ -31,9 +31,12 @@
 
 #include <limits>
 
+#include <QtGui/QHelpEvent>
+#include <QtWidgets/QFileDialog>
 #include <QtWidgets/QPushButton>
 
 #include <csQt/csDialogButtonBox.h>
+#include <csQt/csImageTip.h>
 
 #include "WTagEditor.h"
 #include "ui_WTagEditor.h"
@@ -64,6 +67,15 @@ WTagEditor::WTagEditor(const Mp4Tag& tag, QWidget *parent, Qt::WindowFlags f)
   csRemoveAllButtons(ui->buttonBox);
   csAddButton(ui->buttonBox, tr("Save"),    QDialogButtonBox::AcceptRole, false, true);
   csAddButton(ui->buttonBox, tr("Discard"), QDialogButtonBox::RejectRole);
+
+  // Event Filter ////////////////////////////////////////////////////////////
+
+  ui->coverImageEdit->installEventFilter(this);
+
+  // Signals & Slots /////////////////////////////////////////////////////////
+
+  connect(ui->browseCoverButton, &QPushButton::clicked,
+          this, &WTagEditor::browseCover);
 
   // Initialize //////////////////////////////////////////////////////////////
 
@@ -114,4 +126,33 @@ bool WTagEditor::set(const Mp4Tag& tag)
   ui->diskTotalSpin->setValue(tag.diskTotal);
 
   return true;
+}
+
+////// protected /////////////////////////////////////////////////////////////
+
+bool WTagEditor::eventFilter(QObject *watched, QEvent *event)
+{
+  if( watched == ui->coverImageEdit  &&  event->type() == QEvent::ToolTip ) {
+    QHelpEvent *help = dynamic_cast<QHelpEvent*>(event);
+    if( help != nullptr  &&  !ui->coverImageEdit->text().isEmpty() ) {
+      csImageTip::showImage(help->globalPos(), QImage(ui->coverImageEdit->text()), this,
+                            csImageTip::DrawBorder);
+    }
+    return true;
+  }
+  return QObject::eventFilter(watched, event);
+}
+
+////// private slots /////////////////////////////////////////////////////////
+
+void WTagEditor::browseCover()
+{
+  const QString filename =
+      QFileDialog::getOpenFileName(this, tr("Open"), QDir::currentPath(),
+                                   tr("Images (*.jpeg *.jpg *.png)"));
+  if( filename.isEmpty() ) {
+    return;
+  }
+
+  ui->coverImageEdit->setText(filename);
 }

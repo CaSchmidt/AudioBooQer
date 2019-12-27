@@ -49,6 +49,12 @@ public:
   Mp4Tag get() const;
   bool set(const Mp4Tag& tag);
 
+protected:
+  bool eventFilter(QObject *watched, QEvent *event);
+
+private slots:
+  void browseCover();
+
 private:
   Ui::WTagEditor *ui{nullptr};
   QString _filename{};
