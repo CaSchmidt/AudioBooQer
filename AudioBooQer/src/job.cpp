@@ -29,11 +29,24 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <QtCore/QDir>
 #include <QtCore/QEventLoop>
 
 #include "job.h"
 
 #include "audiojob.h"
+
+////// Job - public //////////////////////////////////////////////////////////
+
+QString Job::outputFilePath(IAudioEncoder *encoder) const
+{
+  QString baseName(title);
+  baseName.replace(QRegExp(QStringLiteral("[^_0-9a-zA-Z]")), QStringLiteral("_"));
+  return QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1_%2.%3")
+                                              .arg(position, 3, 10, QChar::fromLatin1('0'))
+                                              .arg(baseName)
+                                              .arg(encoder->outputSuffix(format)));
+}
 
 ////// Public ////////////////////////////////////////////////////////////////
 

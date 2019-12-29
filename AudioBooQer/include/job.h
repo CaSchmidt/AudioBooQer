@@ -38,8 +38,12 @@
 
 #include "aacformat.h"
 
+class IAudioEncoder;
+
 struct Job {
   Job() = default;
+
+  QString outputFilePath(IAudioEncoder *encoder) const;
 
   AacFormat format{};
   QStringList inputFiles{};

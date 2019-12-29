@@ -34,7 +34,6 @@
 
 #include <vector>
 
-#include <QtCore/QDir>
 #include <QtCore/QFile>
 
 #include <aacenc_lib.h>
@@ -165,9 +164,7 @@ bool AacEncoder::flush(const unsigned int fillTimeSamples)
   return true;
 }
 
-bool AacEncoder::initialize(const AacFormat& format,
-                            const QString& outputDirPath,
-                            const QString& nameHint)
+bool AacEncoder::initialize(const AacFormat& format, const QString& outputFileName)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
 
@@ -252,7 +249,7 @@ bool AacEncoder::initialize(const AacFormat& format,
 
   // (2) Create output file //////////////////////////////////////////////////
 
-  result->file.setFileName(QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1.aac").arg(nameHint)));
+  result->file.setFileName(outputFileName);
   if( !result->file.open(QIODevice::WriteOnly) ) {
     return false;
   }
@@ -272,9 +269,9 @@ uint64_t AacEncoder::numTimeSamples() const
   return impl->numDataSamples/impl->info.inputChannels;
 }
 
-QString AacEncoder::outputFileName() const
+QString AacEncoder::outputSuffix(const AacFormat&) const
 {
-  return impl->file.fileName();
+  return QStringLiteral("aac");
 }
 
 ////// private ///////////////////////////////////////////////////////////////

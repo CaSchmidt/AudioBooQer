@@ -29,8 +29,6 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtCore/QDir>
-
 #include "rawencoder.h"
 
 ////// public ////////////////////////////////////////////////////////////////
@@ -54,34 +52,27 @@ bool RawEncoder::encode(const QAudioBuffer& buffer)
   return _file.write(data, buffer.byteCount()) == buffer.byteCount();
 }
 
-bool RawEncoder::initialize(const AacFormat& format,
-                            const QString& outputDirPath,
-                            const QString& nameHint)
+bool RawEncoder::initialize(const AacFormat& format, const QString& outputFileName)
 {
   if( _file.isOpen()  ||  format.numChannels > 2 ) {
     return false;
   }
-
-  QString filePath;
-  {
-    QString fileName(nameHint);
-    fileName.append(QSysInfo::ByteOrder == QSysInfo::BigEndian
-                    ? QStringLiteral(".be")
-                    : QStringLiteral(".le"));
-    fileName.append(QStringLiteral(".%1ch").arg(format.numChannels));
-    fileName.append(QStringLiteral(".s%1")
-                    .arg(format.numBitsPerChannel));
-    fileName.append(QStringLiteral(".%1Hz").arg(format.numSamplesPerSecond));
-    fileName.append(QStringLiteral(".raw"));
-
-    filePath = QDir(outputDirPath).absoluteFilePath(fileName);
-  }
-
-  _file.setFileName(filePath);
+  _file.setFileName(outputFileName);
   return _file.open(QIODevice::WriteOnly);
 }
 
-QString RawEncoder::outputFileName() const
+QString RawEncoder::outputSuffix(const AacFormat& format) const
 {
-  return _file.fileName();
+  QString result;
+  if( format.isValid() ) {
+    result.append(QStringLiteral("%1.%2ch.s%3.%4Hz.")
+                  .arg(QSysInfo::ByteOrder == QSysInfo::BigEndian
+                       ? QStringLiteral("be")
+                       : QStringLiteral("le"))
+                  .arg(format.numChannels)
+                  .arg(format.numBitsPerChannel)
+                  .arg(format.numSamplesPerSecond));
+  }
+  result.append(QStringLiteral("raw"));
+  return result;
 }

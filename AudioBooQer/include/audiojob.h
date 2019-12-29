@@ -63,6 +63,7 @@ private:
   Job _job;
   QString _message;
   uint64_t _numTimeSamples;
+  QString _outputFilePath;
 
 signals:
   void done();

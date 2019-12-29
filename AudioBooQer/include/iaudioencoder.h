@@ -45,10 +45,8 @@ public:
 
   virtual bool encode(const QAudioBuffer& buffer) = 0;
   virtual bool flush(const unsigned int fillTimeSamples);
-  virtual bool initialize(const AacFormat& format,
-                          const QString& outputDirPath,
-                          const QString& nameHint) = 0;
-  virtual QString outputFileName() const = 0;
+  virtual bool initialize(const AacFormat& format, const QString& outputFileName) = 0;
+  virtual QString outputSuffix(const AacFormat& format) const = 0;
 };
 
 using AudioEncoderPtr = std::unique_ptr<IAudioEncoder>;

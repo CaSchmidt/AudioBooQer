@@ -42,10 +42,8 @@ public:
   ~RawEncoder();
 
   bool encode(const QAudioBuffer& buffer);
-  bool initialize(const AacFormat& format,
-                  const QString& outputDirPath,
-                  const QString& nameHint);
-  QString outputFileName() const;
+  bool initialize(const AacFormat& format, const QString& outputFileName);
+  QString outputSuffix(const AacFormat& format) const;
 
 private:
   QFile _file;

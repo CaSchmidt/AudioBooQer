@@ -50,6 +50,7 @@ AudioJob::AudioJob(const Job& job, QObject *parent)
   , _job(job)
   , _message()
   , _numTimeSamples{0}
+  , _outputFilePath()
 {
   // Signals & Slots /////////////////////////////////////////////////////////
 
@@ -77,7 +78,7 @@ uint64_t AudioJob::numTimeSamples() const
 
 QString AudioJob::outputFilePath() const
 {
-  return _encoder->outputFileName();
+  return _outputFilePath;
 }
 
 bool AudioJob::start()
@@ -107,7 +108,9 @@ bool AudioJob::start()
     return false;
   }
 
-  if( !_encoder->initialize(_job.format, _job.outputDirPath, _job.title) ) {
+  _outputFilePath = _job.outputFilePath(_encoder.get());
+
+  if( !_encoder->initialize(_job.format, _outputFilePath) ) {
     appendErrorMessage(QStringLiteral("IAudioEncoder::initialize() failed!"));
     return false;
   }
@@ -161,7 +164,7 @@ void AudioJob::decodingFinished()
       appendErrorMessage(QStringLiteral("IAudioEncoder::flush() failed!"));
     } else {
       _numTimeSamples += fill;
-      appendInfoMessage(QStringLiteral("= %1").arg(_encoder->outputFileName()));
+      appendInfoMessage(QStringLiteral("= %1").arg(_outputFilePath));
     }
     emit done();
   } else {

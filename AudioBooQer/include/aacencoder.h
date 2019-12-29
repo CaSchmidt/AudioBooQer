@@ -45,11 +45,9 @@ public:
 
   bool encode(const QAudioBuffer& buffer);
   bool flush(const unsigned int fillTimeSamples);
-  bool initialize(const AacFormat& format,
-                  const QString& outputDirPath,
-                  const QString& nameHint);
+  bool initialize(const AacFormat& format, const QString& outputFileName);
   uint64_t numTimeSamples() const;
-  QString outputFileName() const;
+  QString outputSuffix(const AacFormat&) const;
 
 private:
   bool encodeBlock(const uint8_t *data, int size, bool *eof = nullptr);
