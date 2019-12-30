@@ -48,11 +48,14 @@ WBookBinder::WBookBinder(QWidget *parent, Qt::WindowFlags f)
   // Data Model //////////////////////////////////////////////////////////////
 
   _model = new BookBinderModel(this);
-  ui->filesList->setModel(_model);
+  ui->chaptersList->setModel(_model);
 
   // Signals & Slots /////////////////////////////////////////////////////////
 
-  connect(ui->addButton, &QPushButton::clicked, this, &WBookBinder::addFiles);
+  connect(ui->addButton,    &QPushButton::clicked, this, &WBookBinder::addChapters);
+  connect(ui->upButton,     &QPushButton::clicked, this, &WBookBinder::moveChapterUp);
+  connect(ui->downButton,   &QPushButton::clicked, this, &WBookBinder::moveChapterDown);
+  connect(ui->removeButton, &QPushButton::clicked, this, &WBookBinder::removeChapter);
 }
 
 WBookBinder::~WBookBinder()
@@ -62,7 +65,7 @@ WBookBinder::~WBookBinder()
 
 ////// private slots /////////////////////////////////////////////////////////
 
-void WBookBinder::addFiles()
+void WBookBinder::addChapters()
 {
   QStringList files =
       QFileDialog::getOpenFileNames(this, tr("Select chapters"),
@@ -83,4 +86,47 @@ void WBookBinder::addFiles()
   _model->appendChapters(binder);
 
   QDir::setCurrent(QFileInfo(binder.last().second).absolutePath());
+}
+
+void WBookBinder::moveChapterDown()
+{
+  moveChapter(MOVE_DOWN);
+}
+
+void WBookBinder::moveChapterUp()
+{
+  moveChapter(MOVE_UP);
+}
+
+void WBookBinder::removeChapter()
+{
+  const QModelIndex index = singleSelection();
+  if( !index.isValid() ) {
+    return;
+  }
+  _model->removeChapter(index.row());
+}
+
+////// private ///////////////////////////////////////////////////////////////
+
+void WBookBinder::moveChapter(const bool is_up)
+{
+  const QModelIndex index = singleSelection();
+  if( !index.isValid() ) {
+    return;
+  }
+  const QModelIndex moved = _model->move(index.row(), is_up);
+  if( moved.isValid() ) {
+    ui->chaptersList->setCurrentIndex(moved);
+  }
+  ui->chaptersList->setFocus();
+}
+
+QModelIndex WBookBinder::singleSelection() const
+{
+  const QModelIndexList indexes = ui->chaptersList->selectionModel()->selection().indexes();
+  if( indexes.size() != 1 ) {
+    return QModelIndex();
+  }
+  return indexes.front();
 }

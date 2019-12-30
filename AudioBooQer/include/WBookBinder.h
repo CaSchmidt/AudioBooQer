@@ -47,9 +47,18 @@ public:
   ~WBookBinder();
 
 private slots:
-  void addFiles();
+  void addChapters();
+  void moveChapterDown();
+  void moveChapterUp();
+  void removeChapter();
 
 private:
+  static constexpr bool MOVE_DOWN = false;
+  static constexpr bool MOVE_UP   = true;
+
+  void moveChapter(const bool is_up);
+  QModelIndex singleSelection() const;
+
   Ui::WBookBinder *ui{nullptr};
   BookBinderModel *_model{nullptr};
 };

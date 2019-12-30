@@ -46,9 +46,13 @@ public:
   QVariant data(const QModelIndex& index, int role) const;
   Qt::ItemFlags flags(const QModelIndex& index) const;
   int rowCount(const QModelIndex& index) const;
+  bool setData(const QModelIndex& index, const QVariant& value, int role);
 
   void appendChapters(const BookBinder& chapters);
   BookBinder binder() const;
+  bool isChapter(const int i) const;
+  QModelIndex move(const int from, const bool is_up);
+  void removeChapter(const int i);
   void setBinder(const BookBinder& binder);
 
 private:

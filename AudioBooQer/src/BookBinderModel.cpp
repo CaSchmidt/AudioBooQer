@@ -63,6 +63,7 @@ Qt::ItemFlags BookBinderModel::flags(const QModelIndex& index) const
     return Qt::NoItemFlags;
   }
   Qt::ItemFlags f = QAbstractListModel::flags(index);
+  f |= Qt::ItemIsEditable;
   f |= Qt::ItemIsSelectable;
   return f;
 }
@@ -70,6 +71,17 @@ Qt::ItemFlags BookBinderModel::flags(const QModelIndex& index) const
 int BookBinderModel::rowCount(const QModelIndex& /*index*/) const
 {
   return _binder.size();
+}
+
+bool BookBinderModel::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+  if( !index.isValid()                  ||  !isChapter(index.row())  ||
+      value.type() != QVariant::String  ||  role != Qt::EditRole ) {
+    return false;
+  }
+  _binder[index.row()].first = value.toString();
+  emit dataChanged(index, index);
+  return true;
 }
 
 void BookBinderModel::appendChapters(const BookBinder& chapters)
@@ -85,6 +97,35 @@ void BookBinderModel::appendChapters(const BookBinder& chapters)
 BookBinder BookBinderModel::binder() const
 {
   return _binder;
+}
+
+bool BookBinderModel::isChapter(const int i) const
+{
+  return 0 <= i  &&  i < _binder.size();
+}
+
+QModelIndex BookBinderModel::move(const int from, const bool is_up)
+{
+  const int to = is_up
+      ? from - 1
+      : from + 1;
+  if( !isChapter(from)  ||  !isChapter(to) ) {
+    return QModelIndex();
+  }
+  _binder.swap(from, to);
+  emit dataChanged(index(from, 0, QModelIndex()),
+                   index(to,   0, QModelIndex()));
+  return index(to, 0, QModelIndex());
+}
+
+void BookBinderModel::removeChapter(const int i)
+{
+  if( !isChapter(i) ) {
+    return;
+  }
+  beginRemoveRows(QModelIndex(), i, i);
+  _binder.removeAt(i);
+  endRemoveRows();
 }
 
 void BookBinderModel::setBinder(const BookBinder& binder)

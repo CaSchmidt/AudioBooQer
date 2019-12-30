@@ -51,7 +51,7 @@
        <number>4</number>
       </property>
       <item>
-       <widget class="QListView" name="filesList">
+       <widget class="QListView" name="chaptersList">
         <property name="editTriggers">
          <set>QAbstractItemView::EditKeyPressed</set>
         </property>
@@ -140,7 +140,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>filesList</tabstop>
+  <tabstop>chaptersList</tabstop>
   <tabstop>addButton</tabstop>
   <tabstop>upButton</tabstop>
   <tabstop>downButton</tabstop>
