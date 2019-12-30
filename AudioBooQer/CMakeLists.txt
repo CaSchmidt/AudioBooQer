@@ -31,6 +31,7 @@ add_subdirectory(3rdparty/mp4v2)
 set(AudioBooQer_FORMS
   forms/waudioformat.ui
   forms/waudioplayer.ui
+  forms/WBookBinder.ui
   forms/wjobinfo.ui
   forms/wmainwindow.ui
   forms/WTagEditor.ui
@@ -41,6 +42,7 @@ set(AudioBooQer_HEADERS
   include/aacformat.h
   include/adts.h
   include/audiojob.h
+  include/BookBinderModel.h
   include/chapter.h
   include/chaptermodel.h
   include/iaudioencoder.h
@@ -51,6 +53,7 @@ set(AudioBooQer_HEADERS
   include/rawencoder.h
   include/waudioformat.h
   include/waudioplayer.h
+  include/WBookBinder.h
   include/wjobinfo.h
   include/wmainwindow.h
   include/WTagEditor.h
@@ -61,6 +64,7 @@ set(AudioBooQer_SOURCES
   src/aacformat.cpp
   src/adts.cpp
   src/audiojob.cpp
+  src/BookBinderModel.cpp
   src/chapter.cpp
   src/chaptermodel.cpp
   src/iaudioencoder.cpp
@@ -71,6 +75,7 @@ set(AudioBooQer_SOURCES
   src/rawencoder.cpp
   src/waudioformat.cpp
   src/waudioplayer.cpp
+  src/WBookBinder.cpp
   src/wjobinfo.cpp
   src/wmainwindow.cpp
   src/WTagEditor.cpp

@@ -44,6 +44,7 @@
 #include "chapter.h"
 #include "chaptermodel.h"
 #include "output.h"
+#include "WBookBinder.h"
 #include "wjobinfo.h"
 #include "WTagEditor.h"
 
@@ -92,6 +93,8 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   ui->openDirAction->setShortcut(QKeySequence::Open);
   connect(ui->openDirAction, SIGNAL(triggered()), SLOT(openDirectory()));
 
+  connect(ui->bindBookAction, &QAction::triggered, this, &WMainWindow::bindBook);
+
   connect(ui->editTagAction, &QAction::triggered, this, &WMainWindow::editTag);
 
   ui->quitAction->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_Q));
@@ -133,6 +136,14 @@ WMainWindow::~WMainWindow()
 }
 
 ////// private slots /////////////////////////////////////////////////////////
+
+void WMainWindow::bindBook()
+{
+  WBookBinder bookBinder(this);
+  if( bookBinder.exec() == QDialog::Rejected ) {
+    return;
+  }
+}
 
 void WMainWindow::createNewChapter()
 {

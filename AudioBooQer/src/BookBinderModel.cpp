@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,34 +29,67 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WMAINWINDOW_H
-#define WMAINWINDOW_H
+#include "BookBinderModel.h"
 
-#include <QtWidgets/QMainWindow>
+////// public ////////////////////////////////////////////////////////////////
 
-namespace Ui {
-  class WMainWindow;
-};
+BookBinderModel::BookBinderModel(QObject *parent)
+  : QAbstractListModel(parent)
+{
+}
 
-class WMainWindow : public QMainWindow {
-  Q_OBJECT
-public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  ~WMainWindow();
+BookBinderModel::~BookBinderModel()
+{
+}
 
-private slots:
-  void bindBook();
-  void createNewChapter();
-  void editTag();
-  void openDirectory();
-  void processJobs();
+QVariant BookBinderModel::data(const QModelIndex& index, int role) const
+{
+  if( !index.isValid() ) {
+    return QVariant();
+  }
+  if(        role == Qt::DisplayRole ) {
+    return _binder.at(index.row()).first;
+  } else if( role == Qt::EditRole ) {
+    return _binder.at(index.row()).first;
+  } else if( role == Qt::ToolTipRole ) {
+    return _binder.at(index.row()).second;
+  }
+  return QVariant();
+}
 
-private:
-  void loadSettings();
-  void saveSettings() const;
-  static QString settingsFileName();
+Qt::ItemFlags BookBinderModel::flags(const QModelIndex& index) const
+{
+  if( !index.isValid() ) {
+    return Qt::NoItemFlags;
+  }
+  Qt::ItemFlags f = QAbstractListModel::flags(index);
+  f |= Qt::ItemIsSelectable;
+  return f;
+}
 
-  Ui::WMainWindow *ui;
-};
+int BookBinderModel::rowCount(const QModelIndex& /*index*/) const
+{
+  return _binder.size();
+}
 
-#endif // WMAINWINDOW_H
+void BookBinderModel::appendChapters(const BookBinder& chapters)
+{
+  if( chapters.isEmpty() ) {
+    return;
+  }
+  beginInsertRows(QModelIndex(), _binder.size(), _binder.size() + chapters.size() - 1);
+  _binder.append(chapters);
+  endInsertRows();
+}
+
+BookBinder BookBinderModel::binder() const
+{
+  return _binder;
+}
+
+void BookBinderModel::setBinder(const BookBinder& binder)
+{
+  beginResetModel();
+  _binder = binder;
+  endResetModel();
+}

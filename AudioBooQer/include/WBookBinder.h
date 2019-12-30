@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,34 +29,29 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WMAINWINDOW_H
-#define WMAINWINDOW_H
+#ifndef WBOOKBINDER_H
+#define WBOOKBINDER_H
 
-#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QDialog>
+
+class BookBinderModel;
 
 namespace Ui {
-  class WMainWindow;
-};
+  class WBookBinder;
+}
 
-class WMainWindow : public QMainWindow {
+class WBookBinder : public QDialog {
   Q_OBJECT
 public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  ~WMainWindow();
+  WBookBinder(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+  ~WBookBinder();
 
 private slots:
-  void bindBook();
-  void createNewChapter();
-  void editTag();
-  void openDirectory();
-  void processJobs();
+  void addFiles();
 
 private:
-  void loadSettings();
-  void saveSettings() const;
-  static QString settingsFileName();
-
-  Ui::WMainWindow *ui;
+  Ui::WBookBinder *ui{nullptr};
+  BookBinderModel *_model{nullptr};
 };
 
-#endif // WMAINWINDOW_H
+#endif // WBOOKBINDER_H

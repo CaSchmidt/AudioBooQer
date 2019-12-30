@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,34 +29,30 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WMAINWINDOW_H
-#define WMAINWINDOW_H
+#ifndef BOOKBINDERMODEL_H
+#define BOOKBINDERMODEL_H
 
-#include <QtWidgets/QMainWindow>
+#include <QtCore/QAbstractListModel>
 
-namespace Ui {
-  class WMainWindow;
-};
+using BookBinderChapter = QPair<QString,QString>;
+using BookBinder = QList<BookBinderChapter>;
 
-class WMainWindow : public QMainWindow {
+class BookBinderModel : public QAbstractListModel {
   Q_OBJECT
 public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  ~WMainWindow();
+  BookBinderModel(QObject *parent = nullptr);
+  ~BookBinderModel();
 
-private slots:
-  void bindBook();
-  void createNewChapter();
-  void editTag();
-  void openDirectory();
-  void processJobs();
+  QVariant data(const QModelIndex& index, int role) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
+  int rowCount(const QModelIndex& index) const;
+
+  void appendChapters(const BookBinder& chapters);
+  BookBinder binder() const;
+  void setBinder(const BookBinder& binder);
 
 private:
-  void loadSettings();
-  void saveSettings() const;
-  static QString settingsFileName();
-
-  Ui::WMainWindow *ui;
+  BookBinder _binder{};
 };
 
-#endif // WMAINWINDOW_H
+#endif // BOOKBINDERMODEL_H

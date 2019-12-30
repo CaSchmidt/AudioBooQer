@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,34 +29,58 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WMAINWINDOW_H
-#define WMAINWINDOW_H
+#include <QtCore/QDir>
+#include <QtWidgets/QFileDialog>
 
-#include <QtWidgets/QMainWindow>
+#include "WBookBinder.h"
+#include "ui_WBookBinder.h"
 
-namespace Ui {
-  class WMainWindow;
-};
+#include "BookBinderModel.h"
 
-class WMainWindow : public QMainWindow {
-  Q_OBJECT
-public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  ~WMainWindow();
+////// public ////////////////////////////////////////////////////////////////
 
-private slots:
-  void bindBook();
-  void createNewChapter();
-  void editTag();
-  void openDirectory();
-  void processJobs();
+WBookBinder::WBookBinder(QWidget *parent, Qt::WindowFlags f)
+  : QDialog(parent, f)
+  , ui(new Ui::WBookBinder)
+{
+  ui->setupUi(this);
 
-private:
-  void loadSettings();
-  void saveSettings() const;
-  static QString settingsFileName();
+  // Data Model //////////////////////////////////////////////////////////////
 
-  Ui::WMainWindow *ui;
-};
+  _model = new BookBinderModel(this);
+  ui->filesList->setModel(_model);
 
-#endif // WMAINWINDOW_H
+  // Signals & Slots /////////////////////////////////////////////////////////
+
+  connect(ui->addButton, &QPushButton::clicked, this, &WBookBinder::addFiles);
+}
+
+WBookBinder::~WBookBinder()
+{
+  delete ui;
+}
+
+////// private slots /////////////////////////////////////////////////////////
+
+void WBookBinder::addFiles()
+{
+  QStringList files =
+      QFileDialog::getOpenFileNames(this, tr("Select chapters"),
+                                    QDir::currentPath(), tr("Chapters (*.aac)"));
+  if( files.isEmpty() ) {
+    return;
+  }
+
+  qSort(files);
+
+  BookBinder binder;
+  for(const QString& file : files) {
+    const QFileInfo info(file);
+    const BookBinderChapter chapter{info.completeBaseName(), info.absoluteFilePath()};
+    binder.push_back(chapter);
+  }
+
+  _model->appendChapters(binder);
+
+  QDir::setCurrent(QFileInfo(binder.last().second).absolutePath());
+}

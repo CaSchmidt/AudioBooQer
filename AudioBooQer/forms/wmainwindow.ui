@@ -211,6 +211,8 @@
     </property>
     <addaction name="openDirAction"/>
     <addaction name="separator"/>
+    <addaction name="bindBookAction"/>
+    <addaction name="separator"/>
     <addaction name="editTagAction"/>
     <addaction name="separator"/>
     <addaction name="quitAction"/>
@@ -281,10 +283,18 @@
   </action>
   <action name="editTagAction">
    <property name="text">
-    <string>Edit tag...</string>
+    <string>Edit &amp;tag...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="bindBookAction">
+   <property name="text">
+    <string>&amp;Bind book...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
  </widget>
