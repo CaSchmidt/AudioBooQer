@@ -28,6 +28,10 @@ add_subdirectory(3rdparty/mp4v2)
 
 ### AudioBooQer ##############################################################
 
+set(AudioBooQer_RESOURCES
+  resources/resources.qrc
+  )
+
 set(AudioBooQer_FORMS
   forms/waudioformat.ui
   forms/waudioplayer.ui
@@ -86,6 +90,7 @@ set(AudioBooQer_SOURCES
 add_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_TO_ASCII)
 
 add_executable(AudioBooQer
+  ${AudioBooQer_RESOURCES}
   ${AudioBooQer_FORMS}
   ${AudioBooQer_HEADERS}
   ${AudioBooQer_SOURCES}

@@ -73,6 +73,11 @@
           <property name="text">
            <string>Add</string>
           </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/icons/plus.svg</normalon>
+           </iconset>
+          </property>
          </widget>
         </item>
         <item>
@@ -93,12 +98,22 @@
           <property name="text">
            <string>Up</string>
           </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/icons/up.svg</normalon>
+           </iconset>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="downButton">
           <property name="text">
            <string>Down</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/icons/down.svg</normalon>
+           </iconset>
           </property>
          </widget>
         </item>
@@ -119,6 +134,11 @@
          <widget class="QPushButton" name="removeButton">
           <property name="text">
            <string>Remove</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/icons/minus.svg</normalon>
+           </iconset>
           </property>
          </widget>
         </item>
