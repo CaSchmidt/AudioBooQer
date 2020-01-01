@@ -53,6 +53,7 @@ set(AudioBooQer_HEADERS
   include/job.h
   include/mp4tag.h
   include/mpeg4_asc.h
+  include/mpeg4audio.h
   include/output.h
   include/rawencoder.h
   include/waudioformat.h
@@ -75,6 +76,7 @@ set(AudioBooQer_SOURCES
   src/job.cpp
   src/main.cpp
   src/mp4tag.cpp
+  src/mpeg4audio.cpp
   src/output.cpp
   src/rawencoder.cpp
   src/waudioformat.cpp
