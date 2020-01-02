@@ -39,6 +39,10 @@
 namespace mpeg4 {
 
   // Audio Object Type: 5bits
+  /*
+   * NOTE:
+   * ADTS encodes only 2bits!
+   */
   enum class AudioObjectType : uint16_t {
     Null = 0,
     AAC_Main,

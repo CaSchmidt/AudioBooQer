@@ -37,6 +37,14 @@ namespace mpeg4 {
 
   ////// Macros //////////////////////////////////////////////////////////////
 
+#define ASC_MASK_AOT        0x1F
+#define ASC_MASK_CHANNELS   0x0F
+#define ASC_MASK_FREQUENCY  0x0F
+
+#define ASC_RSVD_AOT         5
+#define ASC_RSVD_CHANNELS    8
+#define ASC_RSVD_FREQUENCY  12
+
 #define ASC_SHIFT_AOT        11
 #define ASC_SHIFT_CHANNELS    3
 #define ASC_SHIFT_FREQUENCY   7
@@ -67,14 +75,15 @@ namespace mpeg4 {
   uint16_t createAudioSpecificConfig(const uint16_t aot, const uint16_t channels, const uint32_t freq)
   {
     // Limit type to AAC and limit channels to defined range!
-    if( aot > 4  ||  channels > 7 ) {
+    if( aot >= ASC_RSVD_AOT  ||  channels >= ASC_RSVD_CHANNELS ) {
       return 0;
     }
-    uint16_t index = freq > 11
-        ? 12
+    uint16_t index = freq >= ASC_RSVD_FREQUENCY
+        ? ASC_RSVD_FREQUENCY
         : static_cast<uint16_t>(freq);
-    if( index > 11 ) {
-      for(std::size_t i = 0; i < 12; i++) {
+    // Search frequency's index if not already provided!
+    if( index >= ASC_RSVD_FREQUENCY ) {
+      for(std::size_t i = 0; i < ASC_RSVD_FREQUENCY; i++) {
         if( freq == SamplingFrequencyData[i] ) {
           index = static_cast<uint16_t>(i);
           break;
@@ -82,7 +91,7 @@ namespace mpeg4 {
       }
     }
     // Valid index found?
-    if( index > 11 ) {
+    if( index >= ASC_RSVD_FREQUENCY ) {
       return 0;
     }
     uint16_t asc = 0;
@@ -94,23 +103,23 @@ namespace mpeg4 {
 
   uint16_t audioObjectTypeFromASC(const uint16_t asc)
   {
-    return (qFromBigEndian(asc) >> ASC_SHIFT_AOT) & 0x1F;
+    return (qFromBigEndian(asc) >> ASC_SHIFT_AOT) & ASC_MASK_AOT;
   }
 
   uint16_t channelConfigurationFromASC(const uint16_t asc)
   {
-    return (qFromBigEndian(asc) >> ASC_SHIFT_CHANNELS) & 0xF;
+    return (qFromBigEndian(asc) >> ASC_SHIFT_CHANNELS) & ASC_MASK_CHANNELS;
   }
 
   uint16_t samplingFrequencyIndexFromASC(const uint16_t asc)
   {
-    return (qFromBigEndian(asc) >> ASC_SHIFT_FREQUENCY) & 0xF;
+    return (qFromBigEndian(asc) >> ASC_SHIFT_FREQUENCY) & ASC_MASK_FREQUENCY;
   }
 
   uint32_t samplingFrequencyFromASC(const uint16_t asc)
   {
     const uint16_t index = samplingFrequencyIndexFromASC(asc);
-    if( index >= SamplingFrequencyData.size() ) {
+    if( index >= ASC_RSVD_FREQUENCY ) {
       return 0;
     }
     return SamplingFrequencyData[index];
