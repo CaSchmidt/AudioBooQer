@@ -4,6 +4,7 @@ add_executable(test_adts
   src/test_adts.cpp
   ${AudioBooQer_SOURCE_DIR}/include/adts.h
   ${AudioBooQer_SOURCE_DIR}/src/adts.cpp
+  ${AudioBooQer_SOURCE_DIR}/src/mpeg4audio.cpp
   )
 
 target_include_directories(test_adts

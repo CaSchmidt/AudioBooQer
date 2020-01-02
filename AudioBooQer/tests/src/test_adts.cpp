@@ -4,6 +4,7 @@
 #include <QtCore/QFile>
 
 #include "adts.h"
+#include "mpeg4audio.h"
 
 int main(int /*argc*/, char **argv)
 {
@@ -24,8 +25,12 @@ int main(int /*argc*/, char **argv)
 
   uint32_t i = 0;
   while( p.hasFrame() ) {
-    printf("%6d: #%llu, %4llubytes, MPEG-%d\n",
-           i, p.frameCount(), p.frameSize(), p.isMpeg2Frame() ? 2 : 4);
+    const uint16_t asc = p.mpeg4AudioSpecificConfig();
+    printf("%6d: AAC frames=%llu, AOT=%d, Channel Configuration=%d, Frequency=%dHz\n",
+           i, p.aacFrameCount(),
+           mpeg4::audioObjectTypeFromASC(asc),
+           mpeg4::channelConfigurationFromASC(asc),
+           mpeg4::samplingFrequencyFromASC(asc));
 
     if( p.frameSize() < 100 ) {
       printf("data:");

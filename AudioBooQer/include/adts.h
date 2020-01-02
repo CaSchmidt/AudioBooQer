@@ -44,12 +44,13 @@ public:
   AdtsParser(Buffer&& buffer);
   ~AdtsParser() noexcept = default;
 
-  size_type frameCount() const;
+  size_type aacFrameCount() const;
   const uint8_t *frameData() const;
   size_type frameSize() const;
   bool hasFrame() const;
   bool isMpeg2Frame() const;
   bool isMpeg4Frame() const;
+  uint16_t mpeg4AudioSpecificConfig() const;
   bool nextFrame();
   bool reset();
 
@@ -63,17 +64,23 @@ private:
   AdtsParser& operator=(AdtsParser&&) noexcept = delete;
 
   enum HeaderBits : uint64_t {
-    Sync         = 0xFFF0000000000000,
-    Mpeg2        = 0x0008000000000000,
-    NoProtection = 0x0001000000000000,
-    AdtsLength   = 0x00000003FFE00000,
-    NumberFrames = 0x0000000000000300
+    Sync            = 0xFFF0000000000000,
+    Mpeg2           = 0x0008000000000000,
+    NoProtection    = 0x0001000000000000,
+    Mpeg4AudioType  = 0x0000C00000000000,
+    Mpeg4Frequency  = 0x00003C0000000000,
+    Mpeg4Channels   = 0x000001C000000000,
+    AdtsLength      = 0x00000003FFE00000,
+    NumberAacFrames = 0x0000000000000300
   };
 
   size_type adtsLength() const;
   size_type headerSize() const;
   bool isHeader() const;
   bool isNoProtection() const;
+  uint16_t mpeg4AudioType() const;
+  uint16_t mpeg4Channels() const;
+  uint16_t mpeg4Frequency() const;
   size_type numberFrames() const;
   bool readHeader();
 

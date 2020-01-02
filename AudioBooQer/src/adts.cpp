@@ -33,6 +33,8 @@
 
 #include "adts.h"
 
+#include "mpeg4audio.h"
+
 ////// public ////////////////////////////////////////////////////////////////
 
 AdtsParser::AdtsParser(Buffer&& buffer)
@@ -41,7 +43,7 @@ AdtsParser::AdtsParser(Buffer&& buffer)
   readHeader();
 }
 
-AdtsParser::size_type AdtsParser::frameCount() const
+AdtsParser::size_type AdtsParser::aacFrameCount() const
 {
   return hasFrame()
       ? numberFrames()
@@ -75,6 +77,13 @@ bool AdtsParser::isMpeg2Frame() const
 bool AdtsParser::isMpeg4Frame() const
 {
   return hasFrame()  &&  (_header & Mpeg2) == 0;
+}
+
+uint16_t AdtsParser::mpeg4AudioSpecificConfig() const
+{
+  return hasFrame()
+      ? mpeg4::createAudioSpecificConfig(mpeg4AudioType(), mpeg4Channels(), mpeg4Frequency())
+      : 0;
 }
 
 bool AdtsParser::nextFrame()
@@ -119,10 +128,31 @@ bool AdtsParser::isNoProtection() const
   return isHeader()  &&  (_header & NoProtection) == NoProtection;
 }
 
+uint16_t AdtsParser::mpeg4AudioType() const
+{
+  return isHeader()
+      ? static_cast<uint16_t>((_header & Mpeg4AudioType) >> 46) + 1
+      : 0;
+}
+
+uint16_t AdtsParser::mpeg4Channels() const
+{
+  return isHeader()
+      ? static_cast<uint16_t>((_header & Mpeg4Channels) >> 38)
+      : 0;
+}
+
+uint16_t AdtsParser::mpeg4Frequency() const
+{
+  return isHeader()
+      ? static_cast<uint16_t>((_header & Mpeg4Frequency) >> 42)
+      : 0;
+}
+
 AdtsParser::size_type AdtsParser::numberFrames() const
 {
   return isHeader()
-      ? ((_header & NumberFrames) >> 8) + 1
+      ? ((_header & NumberAacFrames) >> 8) + 1
       : 0;
 }
 
