@@ -99,6 +99,11 @@ namespace mpeg4 {
 
   uint16_t createAudioSpecificConfig(const uint16_t aot, const uint16_t channels, const uint32_t freq);
 
+  uint16_t audioObjectTypeFromASC(const uint16_t asc);
+  uint16_t channelConfigurationFromASC(const uint16_t asc);
+  uint16_t samplingFrequencyIndexFromASC(const uint16_t asc);
+  uint32_t samplingFrequencyFromASC(const uint16_t asc);
+
 } // namespace mpeg4
 
 #endif // MPEG4AUDIO_H

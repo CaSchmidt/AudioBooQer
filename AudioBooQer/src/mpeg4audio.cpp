@@ -35,6 +35,14 @@
 
 namespace mpeg4 {
 
+  ////// Macros //////////////////////////////////////////////////////////////
+
+#define ASC_SHIFT_AOT        11
+#define ASC_SHIFT_CHANNELS    3
+#define ASC_SHIFT_FREQUENCY   7
+
+  ////// Public //////////////////////////////////////////////////////////////
+
   const std::array<uint32_t,16> SamplingFrequencyData{
     {
       96000,
@@ -78,10 +86,34 @@ namespace mpeg4 {
       return 0;
     }
     uint16_t asc = 0;
-    asc |=      aot << uint16_t(11);
-    asc |=    index << uint16_t( 7);
-    asc |= channels << uint16_t( 3);
+    asc |=      aot << ASC_SHIFT_AOT;
+    asc |=    index << ASC_SHIFT_FREQUENCY;
+    asc |= channels << ASC_SHIFT_CHANNELS;
     return qToBigEndian(asc);
+  }
+
+  uint16_t audioObjectTypeFromASC(const uint16_t asc)
+  {
+    return (qFromBigEndian(asc) >> ASC_SHIFT_AOT) & 0x1F;
+  }
+
+  uint16_t channelConfigurationFromASC(const uint16_t asc)
+  {
+    return (qFromBigEndian(asc) >> ASC_SHIFT_CHANNELS) & 0xF;
+  }
+
+  uint16_t samplingFrequencyIndexFromASC(const uint16_t asc)
+  {
+    return (qFromBigEndian(asc) >> ASC_SHIFT_FREQUENCY) & 0xF;
+  }
+
+  uint32_t samplingFrequencyFromASC(const uint16_t asc)
+  {
+    const uint16_t index = samplingFrequencyIndexFromASC(asc);
+    if( index >= SamplingFrequencyData.size() ) {
+      return 0;
+    }
+    return SamplingFrequencyData[index];
   }
 
 } // namespace mpeg4
