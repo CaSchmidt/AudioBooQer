@@ -63,6 +63,11 @@ WBookBinder::~WBookBinder()
   delete ui;
 }
 
+BookBinder WBookBinder::binder() const
+{
+  return _model->binder();
+}
+
 ////// private slots /////////////////////////////////////////////////////////
 
 void WBookBinder::addChapters()

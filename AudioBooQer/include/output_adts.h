@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2020, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,40 +29,12 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WBOOKBINDER_H
-#define WBOOKBINDER_H
-
-#include <QtWidgets/QDialog>
+#ifndef OUTPUT_ADTS_H
+#define OUTPUT_ADTS_H
 
 #include "BookBinderModel.h"
 
-namespace Ui {
-  class WBookBinder;
-}
+bool outputAdtsBinder(const QString& filename, const BookBinder& binder,
+                      const uint16_t refAsc, const uint32_t numSamplesPerAacFrame);
 
-class WBookBinder : public QDialog {
-  Q_OBJECT
-public:
-  WBookBinder(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-  ~WBookBinder();
-
-  BookBinder binder() const;
-
-private slots:
-  void addChapters();
-  void moveChapterDown();
-  void moveChapterUp();
-  void removeChapter();
-
-private:
-  static constexpr bool MOVE_DOWN = false;
-  static constexpr bool MOVE_UP   = true;
-
-  void moveChapter(const bool is_up);
-  QModelIndex singleSelection() const;
-
-  Ui::WBookBinder *ui{nullptr};
-  BookBinderModel *_model{nullptr};
-};
-
-#endif // WBOOKBINDER_H
+#endif // OUTPUT_ADTS_H

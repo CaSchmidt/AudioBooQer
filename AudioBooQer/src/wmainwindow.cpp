@@ -43,7 +43,9 @@
 
 #include "chapter.h"
 #include "chaptermodel.h"
+#include "mpeg4audio.h"
 #include "output.h"
+#include "output_adts.h"
 #include "WBookBinder.h"
 #include "wjobinfo.h"
 #include "WTagEditor.h"
@@ -143,6 +145,26 @@ void WMainWindow::bindBook()
   if( bookBinder.exec() == QDialog::Rejected ) {
     return;
   }
+
+  const BookBinder binder = bookBinder.binder();
+  if( binder.isEmpty() ) {
+    return;
+  }
+
+  const AacFormat format = ui->formatWidget->format();
+  const uint16_t     asc =
+      mpeg4::createAudioSpecificConfig(static_cast<uint16_t>(mpeg4::AudioObjectType::AAC_LC),
+                                       static_cast<uint16_t>(format.numChannels),
+                                       format.numSamplesPerSecond);
+
+  const QString filename =
+      QFileDialog::getSaveFileName(this, tr("Save"),
+                                   QDir::currentPath(), tr("Audiobooks (*.m4b)"));
+  if( filename.isEmpty() ) {
+    return;
+  }
+
+  outputAdtsBinder(filename, binder, asc, format.numSamplesPerAacFrame);
 }
 
 void WMainWindow::createNewChapter()

@@ -55,6 +55,7 @@ set(AudioBooQer_HEADERS
   include/mpeg4_asc.h
   include/mpeg4audio.h
   include/output.h
+  include/output_adts.h
   include/rawencoder.h
   include/waudioformat.h
   include/waudioplayer.h
@@ -78,6 +79,7 @@ set(AudioBooQer_SOURCES
   src/mp4tag.cpp
   src/mpeg4audio.cpp
   src/output.cpp
+  src/output_adts.cpp
   src/rawencoder.cpp
   src/waudioformat.cpp
   src/waudioplayer.cpp
