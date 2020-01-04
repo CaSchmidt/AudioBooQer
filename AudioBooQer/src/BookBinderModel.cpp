@@ -29,6 +29,10 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <algorithm>
+
+#include <QtCore/QFileInfo>
+
 #include "BookBinderModel.h"
 
 ////// public ////////////////////////////////////////////////////////////////
@@ -94,6 +98,26 @@ void BookBinderModel::appendChapters(const BookBinder& chapters)
   endInsertRows();
 }
 
+void BookBinderModel::apply(const StringOperation op)
+{
+  beginResetModel();
+  for(BookBinderChapter& chapter : _binder) {
+    if( op == AllStringOperations  ||  op == RemoveNumbering ) {
+      chapter.first.remove(QRegExp(QStringLiteral("^\\d+[_ ]")));
+    }
+    if( op == AllStringOperations  ||  op == ReplaceUnderscore ) {
+      chapter.first.replace(QChar::fromLatin1('_'), QChar::fromLatin1(' '));
+    }
+    if( op == AllStringOperations  ||  op == Simplify ) {
+      chapter.first = chapter.first.simplified();
+    }
+    if( op == AllStringOperations  ||  op == Trim ) {
+      chapter.first = chapter.first.trimmed();
+    }
+  }
+  endResetModel();
+}
+
 BookBinder BookBinderModel::binder() const
 {
   return _binder;
@@ -128,9 +152,38 @@ void BookBinderModel::removeChapter(const int i)
   endRemoveRows();
 }
 
+void BookBinderModel::resetChapters()
+{
+  beginResetModel();
+  for(BookBinderChapter& chapter : _binder) {
+    chapter.first = QFileInfo(chapter.second).completeBaseName();
+  }
+  endResetModel();
+}
+
 void BookBinderModel::setBinder(const BookBinder& binder)
 {
   beginResetModel();
   _binder = binder;
+  endResetModel();
+}
+
+void BookBinderModel::sortByChapter()
+{
+  beginResetModel();
+  std::sort(_binder.begin(), _binder.end(),
+            [](const BookBinderChapter& a, const BookBinderChapter& b) -> bool {
+    return a.first < b.first;
+  });
+  endResetModel();
+}
+
+void BookBinderModel::sortByFilename()
+{
+  beginResetModel();
+  std::sort(_binder.begin(), _binder.end(),
+            [](const BookBinderChapter& a, const BookBinderChapter& b) -> bool {
+    return a.second < b.second;
+  });
   endResetModel();
 }

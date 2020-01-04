@@ -54,6 +54,9 @@ private slots:
   void moveChapterUp();
   void removeChapter();
 
+protected:
+  bool eventFilter(QObject *watched, QEvent *event);
+
 private:
   static constexpr bool MOVE_DOWN = false;
   static constexpr bool MOVE_UP   = true;

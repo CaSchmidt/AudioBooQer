@@ -30,7 +30,9 @@
 *****************************************************************************/
 
 #include <QtCore/QDir>
+#include <QtGui/QContextMenuEvent>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMenu>
 
 #include "WBookBinder.h"
 #include "ui_WBookBinder.h"
@@ -49,6 +51,10 @@ WBookBinder::WBookBinder(QWidget *parent, Qt::WindowFlags f)
 
   _model = new BookBinderModel(this);
   ui->chaptersList->setModel(_model);
+
+  // Events //////////////////////////////////////////////////////////////////
+
+  ui->chaptersList->installEventFilter(this);
 
   // Signals & Slots /////////////////////////////////////////////////////////
 
@@ -110,6 +116,49 @@ void WBookBinder::removeChapter()
     return;
   }
   _model->removeChapter(index.row());
+}
+
+////// protected /////////////////////////////////////////////////////////////
+
+bool WBookBinder::eventFilter(QObject *watched, QEvent *event)
+{
+  QContextMenuEvent *contextMenuEvent = dynamic_cast<QContextMenuEvent*>(event);
+  if( watched == ui->chaptersList  &&  contextMenuEvent != nullptr ) {
+    QMenu menu;
+    QAction *remove   = menu.addAction(tr("Remove numbering"));
+    QAction *replace  = menu.addAction(tr("Replace underscore with space"));
+    QAction *simplify = menu.addAction(tr("Simplify"));
+    QAction *trim     = menu.addAction(tr("Trim"));
+    menu.addSeparator();
+    QAction *allOperations = menu.addAction(tr("All operations"));
+    menu.addSeparator();
+    QAction *sortChapter  = menu.addAction(tr("Sort by chapter"));
+    QAction *sortFilename = menu.addAction(tr("Sort by filename"));
+    menu.addSeparator();
+    QAction *resetChapters = menu.addAction(tr("Reset chapter titles"));
+
+    QAction *choice = menu.exec(contextMenuEvent->globalPos());
+    if(        choice == remove ) {
+      _model->apply(BookBinderModel::RemoveNumbering);
+    } else if( choice == replace ) {
+      _model->apply(BookBinderModel::ReplaceUnderscore);
+    } else if( choice == simplify ) {
+      _model->apply(BookBinderModel::Simplify);
+    } else if( choice == trim ) {
+      _model->apply(BookBinderModel::Trim);
+    } else if( choice == allOperations ) {
+      _model->apply(BookBinderModel::AllStringOperations);
+    } else if( choice == sortChapter ) {
+      _model->sortByChapter();
+    } else if( choice == sortFilename ) {
+      _model->sortByFilename();
+    } else if( choice == resetChapters ) {
+      _model->resetChapters();
+    }
+
+    return true;
+  }
+  return QObject::eventFilter(watched, event);
 }
 
 ////// private ///////////////////////////////////////////////////////////////

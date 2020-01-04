@@ -40,6 +40,15 @@ using BookBinder = QList<BookBinderChapter>;
 class BookBinderModel : public QAbstractListModel {
   Q_OBJECT
 public:
+  enum StringOperation {
+    NoStringOperation = 0,
+    RemoveNumbering,
+    ReplaceUnderscore,
+    Simplify,
+    Trim,
+    AllStringOperations
+  };
+
   BookBinderModel(QObject *parent = nullptr);
   ~BookBinderModel();
 
@@ -49,11 +58,15 @@ public:
   bool setData(const QModelIndex& index, const QVariant& value, int role);
 
   void appendChapters(const BookBinder& chapters);
+  void apply(const StringOperation op);
   BookBinder binder() const;
   bool isChapter(const int i) const;
   QModelIndex move(const int from, const bool is_up);
   void removeChapter(const int i);
+  void resetChapters();
   void setBinder(const BookBinder& binder);
+  void sortByChapter();
+  void sortByFilename();
 
 private:
   BookBinder _binder{};
