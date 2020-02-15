@@ -23,8 +23,7 @@ add_subdirectory(../csUtil/csUtil
   ${CMAKE_CURRENT_BINARY_DIR}/csUtil
   )
 
-add_subdirectory(3rdparty/fdk-aac)
-add_subdirectory(3rdparty/mp4v2)
+add_subdirectory(audiobook)
 
 ### AudioBooQer ##############################################################
 
@@ -51,7 +50,6 @@ set(AudioBooQer_HEADERS
   include/chaptermodel.h
   include/iaudioencoder.h
   include/job.h
-  include/mp4tag.h
   include/mpeg4_asc.h
   include/mpeg4audio.h
   include/output.h
@@ -76,7 +74,6 @@ set(AudioBooQer_SOURCES
   src/iaudioencoder.cpp
   src/job.cpp
   src/main.cpp
-  src/mp4tag.cpp
   src/mpeg4audio.cpp
   src/output.cpp
   src/output_adts.cpp
@@ -104,7 +101,7 @@ if(WIN32)
   set_target_properties(AudioBooQer PROPERTIES WIN32_EXECUTABLE ON)
 endif()
 
-target_link_libraries(AudioBooQer fdk-aac mp4v2 csQt csUtil Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
+target_link_libraries(AudioBooQer audiobook csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
 
 format_output_name(AudioBooQer "AudioBooQer")
 

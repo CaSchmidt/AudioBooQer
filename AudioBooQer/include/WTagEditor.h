@@ -34,7 +34,7 @@
 
 #include <QtWidgets/QDialog>
 
-#include "mp4tag.h"
+#include "Mp4Tag.h"
 
 namespace Ui {
   class WTagEditor;

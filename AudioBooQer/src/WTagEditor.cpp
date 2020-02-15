@@ -91,18 +91,18 @@ Mp4Tag WTagEditor::get() const
 {
   Mp4Tag result;
 
-  result.filename    = _filename;
-  result.title       = ui->titleEdit->text();
-  result.chapter     = ui->chapterEdit->text();
-  result.author      = ui->authorEdit->text();
-  result.albumArtist = ui->albumArtistEdit->text();
-  result.composer    = ui->composerEdit->text();
-  result.genre       = ui->genreEdit->text();
+  result.filename    = _filename.toStdU16String();
+  result.title       = ui->titleEdit->text().toStdU16String();
+  result.chapter     = ui->chapterEdit->text().toStdU16String();
+  result.author      = ui->authorEdit->text().toStdU16String();
+  result.albumArtist = ui->albumArtistEdit->text().toStdU16String();
+  result.composer    = ui->composerEdit->text().toStdU16String();
+  result.genre       = ui->genreEdit->text().toStdU16String();
   result.trackIndex  = static_cast<uint16_t>(ui->trackIndexSpin->value());
   result.trackTotal  = static_cast<uint16_t>(ui->trackTotalSpin->value());
   result.diskIndex   = static_cast<uint16_t>(ui->diskIndexSpin->value());
   result.diskTotal   = static_cast<uint16_t>(ui->diskTotalSpin->value());
-  result.coverImageFilePath = ui->coverImageEdit->text();
+  result.coverImageFilePath = ui->coverImageEdit->text().toStdU16String();
 
   return result;
 }
@@ -113,14 +113,14 @@ bool WTagEditor::set(const Mp4Tag& tag)
     return false;
   }
 
-  _filename = tag.filename;
+  _filename = QString::fromStdU16String(tag.filename);
 
-  ui->titleEdit->setText(tag.title);
-  ui->chapterEdit->setText(tag.chapter);
-  ui->authorEdit->setText(tag.author);
-  ui->albumArtistEdit->setText(tag.albumArtist);
-  ui->composerEdit->setText(tag.composer);
-  ui->genreEdit->setText(tag.genre);
+  ui->titleEdit->setText(QString::fromStdU16String(tag.title));
+  ui->chapterEdit->setText(QString::fromStdU16String(tag.chapter));
+  ui->authorEdit->setText(QString::fromStdU16String(tag.author));
+  ui->albumArtistEdit->setText(QString::fromStdU16String(tag.albumArtist));
+  ui->composerEdit->setText(QString::fromStdU16String(tag.composer));
+  ui->genreEdit->setText(QString::fromStdU16String(tag.genre));
   ui->trackIndexSpin->setValue(tag.trackIndex);
   ui->trackTotalSpin->setValue(tag.trackTotal);
   ui->diskIndexSpin->setValue(tag.diskIndex);

@@ -34,7 +34,7 @@
 
 #include <cstdint>
 
-#include <QtCore/QString>
+#include <string>
 
 struct Mp4Tag {
   Mp4Tag() noexcept = default;
@@ -43,20 +43,20 @@ struct Mp4Tag {
 
   bool write() const;
 
-  static Mp4Tag read(const QString& filename);
+  static Mp4Tag read(const std::string& filename_utf);
 
-  QString  filename{};
-  QString  title{};
-  QString  chapter{};
-  QString  author{};
-  QString  albumArtist{};
-  QString  composer{};
-  QString  genre{};
-  uint16_t trackIndex{1};
-  uint16_t trackTotal{1};
-  uint16_t diskIndex{1};
-  uint16_t diskTotal{1};
-  QString  coverImageFilePath{};
+  std::u16string filename{};
+  std::u16string title{};
+  std::u16string chapter{};
+  std::u16string author{};
+  std::u16string albumArtist{};
+  std::u16string composer{};
+  std::u16string genre{};
+  uint16_t       trackIndex{1};
+  uint16_t       trackTotal{1};
+  uint16_t       diskIndex{1};
+  uint16_t       diskTotal{1};
+  std::u16string coverImageFilePath{};
 };
 
 #endif // MP4TAG_H

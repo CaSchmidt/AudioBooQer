@@ -192,7 +192,7 @@ void WMainWindow::editTag()
     return;
   }
 
-  const Mp4Tag in = Mp4Tag::read(filename);
+  const Mp4Tag in = Mp4Tag::read(filename.toStdString());
   if( !in.isValid() ) {
     return;
   }

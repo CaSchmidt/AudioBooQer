@@ -29,35 +29,18 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtCore/QFile>
-#include <QtGui/QImageReader>
-
+#include <csUtil/csFileIO.h>
+#include <csUtil/csStringUtil.h>
+#include <csUtil/csTextConverter.h>
 #include <mp4v2/mp4v2.h>
 
-#include "mp4tag.h"
-
-////// Private ///////////////////////////////////////////////////////////////
-
-namespace priv {
-
-  QByteArray readFile(const QString& filename)
-  {
-    QFile file(filename);
-    if( !file.open(QIODevice::ReadOnly) ) {
-      return QByteArray();
-    }
-    const QByteArray content = file.readAll();
-    file.close();
-    return content;
-  }
-
-} // namespace priv
+#include "Mp4Tag.h"
 
 ////// Public ////////////////////////////////////////////////////////////////
 
 bool Mp4Tag::isValid() const
 {
-  return !filename.isEmpty();
+  return !filename.empty();
 }
 
 bool Mp4Tag::write() const
@@ -72,7 +55,11 @@ bool Mp4Tag::write() const
   }
 
   { // Begin Conversion
-#define OUTPUT(str,meta)  if( !str.isEmpty() ) MP4TagsSet##meta(tags, str.toUtf8().constData())
+#define OUTPUT(str,meta)                              \
+  if( !str.empty() ) {                              \
+  const std::string utf8 = csUnicodeToUtf8(str);  \
+  MP4TagsSet##meta(tags, utf8.data());            \
+  }
     OUTPUT(title,Album);
     OUTPUT(chapter,Name);
     OUTPUT(author,Artist);
@@ -93,20 +80,24 @@ bool Mp4Tag::write() const
       MP4TagsSetDisk(tags, &disk);
     }
     {
-      const QByteArray fileData = priv::readFile(coverImageFilePath);
-      if( !fileData.isEmpty() ) {
-        MP4TagArtwork artwork;
+      const std::vector<uint8_t> fileData = csReadBinaryFile(csUnicodeToUtf8(coverImageFilePath));
+      if( !fileData.empty() ) {
+        const bool is_jpeg =
+            cs::endsWith(coverImageFilePath.data(), cs::MAX_SIZE_T, u".jpg", cs::MAX_SIZE_T, true)
+            ||
+            cs::endsWith(coverImageFilePath.data(), cs::MAX_SIZE_T, u".jpeg", cs::MAX_SIZE_T, true);
+        const bool is_png =
+            cs::endsWith(coverImageFilePath.data(), cs::MAX_SIZE_T,  u".png", cs::MAX_SIZE_T, true);
 
+        MP4TagArtwork artwork;
         artwork.type = MP4_ART_UNDEFINED;
-        const QByteArray imageType = QImageReader::imageFormat(coverImageFilePath);
-        if(        imageType == "jpeg" ) {
+        if(        is_jpeg ) {
           artwork.type = MP4_ART_JPEG;
-        } else if( imageType == "png" ) {
+        } else if( is_png ) {
           artwork.type = MP4_ART_PNG;
         }
-
         if( artwork.type != MP4_ART_UNDEFINED ) {
-          artwork.data = const_cast<char*>(fileData.constData());
+          artwork.data = const_cast<uint8_t*>(fileData.data());
           artwork.size = static_cast<uint32_t>(fileData.size());
           MP4TagsAddArtwork(tags, &artwork);
         }
@@ -114,7 +105,7 @@ bool Mp4Tag::write() const
     }
   } // End Conversion
 
-  MP4FileHandle file = MP4Modify(filename.toUtf8().constData());
+  MP4FileHandle file = MP4Modify(csUnicodeToUtf8(filename).data());
   if( file == MP4_INVALID_FILE_HANDLE ) {
     MP4TagsFree(tags);
     return false;
@@ -127,19 +118,19 @@ bool Mp4Tag::write() const
   return result;
 }
 
-Mp4Tag Mp4Tag::read(const QString& filename)
+Mp4Tag Mp4Tag::read(const std::string& filename_utf8)
 {
-  MP4FileHandle file = MP4Read(filename.toUtf8().constData());
+  MP4FileHandle file = MP4Read(filename_utf8.data());
   if( file == MP4_INVALID_FILE_HANDLE ) {
     return Mp4Tag();
   }
 
   Mp4Tag result;
-  result.filename = filename;
+  result.filename = csUtf8ToUnicode(filename_utf8);
 
   const MP4Tags *tags = MP4TagsAlloc();
   if( tags != nullptr  &&  MP4TagsFetch(tags, file) ) {
-#define INPUT(meta,str)  if( tags->meta != nullptr ) result.str = QString::fromUtf8(tags->meta)
+#define INPUT(meta,str)  if( tags->meta != nullptr ) { result.str = csUtf8ToUnicode(tags->meta); }
     INPUT(album,title);
     INPUT(name,chapter);
     INPUT(artist,author);
