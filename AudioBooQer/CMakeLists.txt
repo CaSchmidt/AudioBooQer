@@ -11,16 +11,16 @@ include(FormatOutputName)
 
 ### Dependencies #############################################################
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/forms)
 find_package(Qt5Widgets 5.6 REQUIRED)
 find_package(Qt5Multimedia 5.6 REQUIRED)
 find_package(Qt5Concurrent 5.6 REQUIRED)
 
 add_subdirectory(../csQt/csQt
   ${CMAKE_CURRENT_BINARY_DIR}/csQt
+  )
+
+add_subdirectory(../csUtil/csUtil
+  ${CMAKE_CURRENT_BINARY_DIR}/csUtil
   )
 
 add_subdirectory(3rdparty/fdk-aac)
@@ -104,7 +104,7 @@ if(WIN32)
   set_target_properties(AudioBooQer PROPERTIES WIN32_EXECUTABLE ON)
 endif()
 
-target_link_libraries(AudioBooQer fdk-aac mp4v2 csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
+target_link_libraries(AudioBooQer fdk-aac mp4v2 csQt csUtil Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
 
 format_output_name(AudioBooQer "AudioBooQer")
 
@@ -119,6 +119,13 @@ target_include_directories(AudioBooQer PRIVATE
   3rdparty/fdk-aac/fdk-aac-src/libAACenc/include
   3rdparty/fdk-aac/fdk-aac-src/libSYS/include
   3rdparty/mp4v2/mp4v2-src/include
+  )
+
+set_target_properties(AudioBooQer PROPERTIES
+  AUTOMOC ON
+  AUTORCC ON
+  AUTOUIC ON
+  AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/forms
   )
 
 install(TARGETS AudioBooQer
