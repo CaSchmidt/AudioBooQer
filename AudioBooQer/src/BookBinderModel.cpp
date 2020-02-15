@@ -30,6 +30,7 @@
 *****************************************************************************/
 
 #include <algorithm>
+#include <iterator>
 
 #include <QtCore/QFileInfo>
 
@@ -52,11 +53,11 @@ QVariant BookBinderModel::data(const QModelIndex& index, int role) const
     return QVariant();
   }
   if(        role == Qt::DisplayRole ) {
-    return _binder.at(index.row()).first;
+    return QString::fromStdU16String(_binder.at(index.row()).first);
   } else if( role == Qt::EditRole ) {
-    return _binder.at(index.row()).first;
+    return QString::fromStdU16String(_binder.at(index.row()).first);
   } else if( role == Qt::ToolTipRole ) {
-    return _binder.at(index.row()).second;
+    return QString::fromStdString(_binder.at(index.row()).second);
   }
   return QVariant();
 }
@@ -83,18 +84,18 @@ bool BookBinderModel::setData(const QModelIndex& index, const QVariant& value, i
       value.type() != QVariant::String  ||  role != Qt::EditRole ) {
     return false;
   }
-  _binder[index.row()].first = value.toString();
+  _binder[index.row()].first = value.toString().toStdU16String();
   emit dataChanged(index, index);
   return true;
 }
 
 void BookBinderModel::appendChapters(const BookBinder& chapters)
 {
-  if( chapters.isEmpty() ) {
+  if( chapters.empty() ) {
     return;
   }
   beginInsertRows(QModelIndex(), _binder.size(), _binder.size() + chapters.size() - 1);
-  _binder.append(chapters);
+  std::copy(chapters.begin(), chapters.end(), std::back_inserter(_binder));
   endInsertRows();
 }
 
@@ -102,18 +103,20 @@ void BookBinderModel::apply(const StringOperation op)
 {
   beginResetModel();
   for(BookBinderChapter& chapter : _binder) {
+    QString title = QString::fromStdU16String(chapter.first);
     if( op == AllStringOperations  ||  op == RemoveNumbering ) {
-      chapter.first.remove(QRegExp(QStringLiteral("^\\d+[_ ]")));
+      title.remove(QRegExp(QStringLiteral("^\\d+[_ ]")));
     }
     if( op == AllStringOperations  ||  op == ReplaceUnderscore ) {
-      chapter.first.replace(QChar::fromLatin1('_'), QChar::fromLatin1(' '));
+      title.replace(QChar::fromLatin1('_'), QChar::fromLatin1(' '));
     }
     if( op == AllStringOperations  ||  op == Simplify ) {
-      chapter.first = chapter.first.simplified();
+      title = title.simplified();
     }
     if( op == AllStringOperations  ||  op == Trim ) {
-      chapter.first = chapter.first.trimmed();
+      title = title.trimmed();
     }
+    chapter.first = title.toStdU16String();
   }
   endResetModel();
 }
@@ -125,7 +128,7 @@ BookBinder BookBinderModel::binder() const
 
 bool BookBinderModel::isChapter(const int i) const
 {
-  return 0 <= i  &&  i < _binder.size();
+  return 0 <= i  &&  i < static_cast<int>(_binder.size());
 }
 
 QModelIndex BookBinderModel::move(const int from, const bool is_up)
@@ -136,7 +139,7 @@ QModelIndex BookBinderModel::move(const int from, const bool is_up)
   if( !isChapter(from)  ||  !isChapter(to) ) {
     return QModelIndex();
   }
-  _binder.swap(from, to);
+  std::swap(_binder[from], _binder[to]);
   emit dataChanged(index(from, 0, QModelIndex()),
                    index(to,   0, QModelIndex()));
   return index(to, 0, QModelIndex());
@@ -148,7 +151,7 @@ void BookBinderModel::removeChapter(const int i)
     return;
   }
   beginRemoveRows(QModelIndex(), i, i);
-  _binder.removeAt(i);
+  _binder.erase(std::next(_binder.begin(), i));
   endRemoveRows();
 }
 
@@ -156,7 +159,7 @@ void BookBinderModel::resetChapters()
 {
   beginResetModel();
   for(BookBinderChapter& chapter : _binder) {
-    chapter.first = QFileInfo(chapter.second).completeBaseName();
+    chapter.first = QFileInfo(QString::fromStdString(chapter.second)).completeBaseName().toStdU16String();
   }
   endResetModel();
 }

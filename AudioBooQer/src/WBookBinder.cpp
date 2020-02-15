@@ -90,13 +90,13 @@ void WBookBinder::addChapters()
   BookBinder binder;
   for(const QString& file : files) {
     const QFileInfo info(file);
-    const BookBinderChapter chapter{info.completeBaseName(), info.absoluteFilePath()};
+    const BookBinderChapter chapter{info.completeBaseName().toStdU16String(), info.absoluteFilePath().toStdString()};
     binder.push_back(chapter);
   }
 
   _model->appendChapters(binder);
 
-  QDir::setCurrent(QFileInfo(binder.last().second).absolutePath());
+  QDir::setCurrent(QFileInfo(QString::fromStdString(binder.back().second)).absolutePath());
 }
 
 void WBookBinder::moveChapterDown()

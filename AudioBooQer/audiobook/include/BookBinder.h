@@ -29,46 +29,14 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef BOOKBINDERMODEL_H
-#define BOOKBINDERMODEL_H
+#ifndef BOOKBINDER_H
+#define BOOKBINDER_H
 
-#include <QtCore/QAbstractListModel>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "BookBinder.h"
+using BookBinderChapter = std::pair<std::u16string,std::string>;
+using BookBinder        = std::vector<BookBinderChapter>;
 
-class BookBinderModel : public QAbstractListModel {
-  Q_OBJECT
-public:
-  enum StringOperation {
-    NoStringOperation = 0,
-    RemoveNumbering,
-    ReplaceUnderscore,
-    Simplify,
-    Trim,
-    AllStringOperations
-  };
-
-  BookBinderModel(QObject *parent = nullptr);
-  ~BookBinderModel();
-
-  QVariant data(const QModelIndex& index, int role) const;
-  Qt::ItemFlags flags(const QModelIndex& index) const;
-  int rowCount(const QModelIndex& index) const;
-  bool setData(const QModelIndex& index, const QVariant& value, int role);
-
-  void appendChapters(const BookBinder& chapters);
-  void apply(const StringOperation op);
-  BookBinder binder() const;
-  bool isChapter(const int i) const;
-  QModelIndex move(const int from, const bool is_up);
-  void removeChapter(const int i);
-  void resetChapters();
-  void setBinder(const BookBinder& binder);
-  void sortByChapter();
-  void sortByFilename();
-
-private:
-  BookBinder _binder{};
-};
-
-#endif // BOOKBINDERMODEL_H
+#endif // BOOKBINDER_H

@@ -33,6 +33,8 @@
 
 #include <QtCore/QFile>
 
+#include <csUtil/csFileIO.h>
+#include <csUtil/csTextConverter.h>
 #include <mp4v2/mp4v2.h>
 
 #include "output_adts.h"
@@ -48,40 +50,12 @@ using Durations = std::vector<MP4Duration>;
 
 namespace priv {
 
-  AdtsParser::Buffer readAdtsBinaryFile(const QString& filename)
-  {
-    // (1) Open file /////////////////////////////////////////////////////////
-
-    QFile file(filename);
-    if( !file.open(QIODevice::ReadOnly) ) {
-      return AdtsParser::Buffer();
-    }
-
-    // (2) Resize buffer /////////////////////////////////////////////////////
-
-    AdtsParser::Buffer result;
-    try {
-      result.resize(static_cast<AdtsParser::size_type>(file.size()));
-    } catch(...) {
-      return AdtsParser::Buffer();
-    }
-
-    // (3) Read file /////////////////////////////////////////////////////////
-
-    file.read(reinterpret_cast<char*>(result.data()),
-              static_cast<qint64>(result.size()));
-
-    // Done! /////////////////////////////////////////////////////////////////
-
-    return result;
-  }
-
-  MP4Duration adtsDuration(const QString& filename, const uint16_t refAsc,
+  MP4Duration adtsDuration(const std::string& filename_utf8, const uint16_t refAsc,
                            const uint32_t numSamplesPerAacFrame)
   {
     // (1) Read ADTS file ////////////////////////////////////////////////////
 
-    AdtsParser::Buffer buffer = readAdtsBinaryFile(filename);
+    AdtsParser::Buffer buffer = csReadBinaryFile(filename_utf8);
     if( buffer.empty() ) {
       return 0;
     }
@@ -118,11 +92,11 @@ namespace priv {
     return duration;
   }
 
-  bool writeAdtsSample(MP4FileHandle file, const MP4TrackId trackId, const QString& filename)
+  bool writeAdtsSample(MP4FileHandle file, const MP4TrackId trackId, const std::string& filename_utf)
   {
     // (1) Read ADTS file ////////////////////////////////////////////////////
 
-    AdtsParser::Buffer buffer = readAdtsBinaryFile(filename);
+    AdtsParser::Buffer buffer = csReadBinaryFile(filename_utf);
     if( buffer.empty() ) {
       return false;
     }
@@ -153,7 +127,7 @@ bool outputAdtsBinder(const QString& filename, const BookBinder& binder,
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
 
-  if( binder.isEmpty()  ||  refAsc == 0  ||  numSamplesPerAacFrame != 1024 ) {
+  if( binder.empty()  ||  refAsc == 0  ||  numSamplesPerAacFrame != 1024 ) {
     return false;
   }
 
@@ -235,7 +209,7 @@ bool outputAdtsBinder(const QString& filename, const BookBinder& binder,
 
   Durations::const_iterator chDuration = durations.cbegin();
   for(const BookBinderChapter& chapter : binder) {
-    MP4AddChapter(file, chTrackId, *chDuration, chapter.first.toUtf8().constData());
+    MP4AddChapter(file, chTrackId, *chDuration, csUnicodeToUtf8(chapter.first).data());
     ++chDuration;
   }
 

@@ -147,7 +147,7 @@ void WMainWindow::bindBook()
   }
 
   const BookBinder binder = bookBinder.binder();
-  if( binder.isEmpty() ) {
+  if( binder.empty() ) {
     return;
   }
 

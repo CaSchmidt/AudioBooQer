@@ -12,6 +12,7 @@ add_subdirectory(${AudioBooQer_SOURCE_DIR}/3rdparty/mp4v2
 list(APPEND audiobook_HEADERS
   include/AacEncoder.h
   include/AacFormat.h
+  include/BookBinder.h
   include/IAudioEncoder.h
   include/Mp4Tag.h
   include/RawEncoder.h
