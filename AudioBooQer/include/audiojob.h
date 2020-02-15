@@ -34,7 +34,7 @@
 
 #include <QtMultimedia/QAudioDecoder>
 
-#include "iaudioencoder.h"
+#include "IAudioEncoder.h"
 #include "job.h"
 
 class AudioJob : public QObject {

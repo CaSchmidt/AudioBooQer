@@ -29,24 +29,30 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef RAWENCODER_H
-#define RAWENCODER_H
+#ifndef AACENCODER_H
+#define AACENCODER_H
 
-#include <QtCore/QFile>
+#include "IAudioEncoder.h"
 
-#include "iaudioencoder.h"
+class AacEncoderImpl;
 
-class RawEncoder : public IAudioEncoder {
+class AacEncoder : public IAudioEncoder {
 public:
-  RawEncoder();
-  ~RawEncoder();
+  AacEncoder();
+  ~AacEncoder();
 
-  bool encode(const QAudioBuffer& buffer);
-  bool initialize(const AacFormat& format, const QString& outputFileName);
-  QString outputSuffix(const AacFormat& format) const;
+  bool isNull() const;
+
+  bool encode(const void *data, const std::size_t size);
+  bool flush(const unsigned int fillTimeSamples);
+  bool initialize(const AacFormat& format, const std::string& outputFileName_utf8);
+  uint64_t numTimeSamples() const;
+  std::string outputSuffix(const AacFormat&) const;
 
 private:
-  QFile _file;
+  bool encodeBlock(const uint8_t *data, int size, bool *eof = nullptr);
+
+  std::unique_ptr<AacEncoderImpl> impl{};
 };
 
-#endif // RAWENCODER_H
+#endif // AACENCODER_H

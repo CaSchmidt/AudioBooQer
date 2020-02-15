@@ -40,12 +40,13 @@
 
 QString Job::outputFilePath(IAudioEncoder *encoder) const
 {
+  const QString suffix = QString::fromStdString(encoder->outputSuffix(format));
   QString baseName(title);
   baseName.replace(QRegExp(QStringLiteral("[^_0-9a-zA-Z]")), QStringLiteral("_"));
   return QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1_%2.%3")
                                               .arg(position, 3, 10, QChar::fromLatin1('0'))
                                               .arg(baseName)
-                                              .arg(encoder->outputSuffix(format)));
+                                              .arg(suffix));
 }
 
 ////// Public ////////////////////////////////////////////////////////////////

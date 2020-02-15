@@ -38,7 +38,7 @@
 
 #include "output.h"
 
-#include "aacencoder.h"
+#include "AacEncoder.h"
 #include "adts.h"
 #include "mpeg4_asc.h"
 

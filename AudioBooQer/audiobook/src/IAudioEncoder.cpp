@@ -29,50 +29,22 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include "rawencoder.h"
+#include "IAudioEncoder.h"
 
 ////// public ////////////////////////////////////////////////////////////////
 
-RawEncoder::RawEncoder()
-  : _file()
+IAudioEncoder::~IAudioEncoder()
 {
 }
 
-RawEncoder::~RawEncoder()
+bool IAudioEncoder::flush(const unsigned int /*fillTimeSamples*/)
 {
-  _file.close();
+  return true;
 }
 
-bool RawEncoder::encode(const QAudioBuffer& buffer)
-{
-  if( !buffer.isValid() ) {
-    return false;
-  }
-  const char *data = reinterpret_cast<const char *>(buffer.data());
-  return _file.write(data, buffer.byteCount()) == buffer.byteCount();
-}
+////// protected /////////////////////////////////////////////////////////////
 
-bool RawEncoder::initialize(const AacFormat& format, const QString& outputFileName)
+bool IAudioEncoder::isValidData(const void *data, const std::size_t size) const
 {
-  if( _file.isOpen()  ||  format.numChannels > 2 ) {
-    return false;
-  }
-  _file.setFileName(outputFileName);
-  return _file.open(QIODevice::WriteOnly);
-}
-
-QString RawEncoder::outputSuffix(const AacFormat& format) const
-{
-  QString result;
-  if( format.isValid() ) {
-    result.append(QStringLiteral("%1.%2ch.s%3.%4Hz.")
-                  .arg(QSysInfo::ByteOrder == QSysInfo::BigEndian
-                       ? QStringLiteral("be")
-                       : QStringLiteral("le"))
-                  .arg(format.numChannels)
-                  .arg(format.numBitsPerChannel)
-                  .arg(format.numSamplesPerSecond));
-  }
-  result.append(QStringLiteral("raw"));
-  return result;
+  return data != nullptr  &&  size > 0;
 }

@@ -10,13 +10,19 @@ add_subdirectory(${AudioBooQer_SOURCE_DIR}/3rdparty/mp4v2
 ### Project ##################################################################
 
 list(APPEND audiobook_HEADERS
+  include/AacEncoder.h
   include/AacFormat.h
+  include/IAudioEncoder.h
   include/Mp4Tag.h
+  include/RawEncoder.h
   )
 
 list(APPEND audiobook_SOURCES
+  src/AacEncoder.cpp
   src/AacFormat.cpp
+  src/IAudioEncoder.cpp
   src/Mp4Tag.cpp
+  src/RawEncoder.cpp
   )
 
 ### Target ###################################################################
@@ -27,6 +33,12 @@ add_library(audiobook STATIC
   )
 
 format_output_name(audiobook "audiobook")
+
+if(MSVC)
+  target_compile_options(audiobook
+    PRIVATE /std:c++latest
+    )
+endif()
 
 target_include_directories(audiobook
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include

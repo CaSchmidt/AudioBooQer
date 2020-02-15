@@ -36,9 +36,9 @@
 #define HAVE_AAC
 
 #ifdef HAVE_AAC
-# include "aacencoder.h"
+# include "AacEncoder.h"
 #else
-# include "rawencoder.h"
+# include "RawEncoder.h"
 #endif
 
 ////// Private ///////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ bool AudioJob::start()
 
   _outputFilePath = _job.outputFilePath(_encoder.get());
 
-  if( !_encoder->initialize(_job.format, _outputFilePath) ) {
+  if( !_encoder->initialize(_job.format, _outputFilePath.toStdString()) ) {
     appendErrorMessage(QStringLiteral("IAudioEncoder::initialize() failed!"));
     return false;
   }
@@ -151,7 +151,7 @@ bool AudioJob::start()
 void AudioJob::decodingBufferReady()
 {
   const QAudioBuffer buffer = _decoder.read();
-  if( !_encoder->encode(buffer) ) {
+  if( !_encoder->encode(buffer.data(), buffer.byteCount()) ) {
     _decoder.stop();
     appendErrorMessage(QStringLiteral("IAudioEncoder::encode() failed!"));
     emit done();

@@ -29,30 +29,28 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef AACENCODER_H
-#define AACENCODER_H
+#ifndef IAUDIOENCODER_H
+#define IAUDIOENCODER_H
 
-#include "iaudioencoder.h"
+#include <memory>
 
-class AacEncoderImpl;
+#include <string>
 
-class AacEncoder : public IAudioEncoder {
+#include "AacFormat.h"
+
+class IAudioEncoder {
 public:
-  AacEncoder();
-  ~AacEncoder();
+  virtual ~IAudioEncoder();
 
-  bool isNull() const;
+  virtual bool encode(const void *data, const std::size_t size) = 0;
+  virtual bool flush(const unsigned int fillTimeSamples);
+  virtual bool initialize(const AacFormat& format, const std::string& outputFileName_utf) = 0;
+  virtual std::string outputSuffix(const AacFormat& format) const = 0;
 
-  bool encode(const QAudioBuffer& buffer);
-  bool flush(const unsigned int fillTimeSamples);
-  bool initialize(const AacFormat& format, const QString& outputFileName);
-  uint64_t numTimeSamples() const;
-  QString outputSuffix(const AacFormat&) const;
-
-private:
-  bool encodeBlock(const uint8_t *data, int size, bool *eof = nullptr);
-
-  std::unique_ptr<AacEncoderImpl> impl{};
+protected:
+  bool isValidData(const void *data, const std::size_t size) const;
 };
 
-#endif // AACENCODER_H
+using AudioEncoderPtr = std::unique_ptr<IAudioEncoder>;
+
+#endif // IAUDIOENCODER_H

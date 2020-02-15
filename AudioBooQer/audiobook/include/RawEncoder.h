@@ -29,15 +29,24 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include "iaudioencoder.h"
+#ifndef RAWENCODER_H
+#define RAWENCODER_H
 
-////// public ////////////////////////////////////////////////////////////////
+#include <csUtil/csFileIO.h>
 
-IAudioEncoder::~IAudioEncoder()
-{
-}
+#include "IAudioEncoder.h"
 
-bool IAudioEncoder::flush(const unsigned int /*fillTimeSamples*/)
-{
-  return true;
-}
+class RawEncoder : public IAudioEncoder {
+public:
+  RawEncoder();
+  ~RawEncoder();
+
+  bool encode(const void *data, const std::size_t size);
+  bool initialize(const AacFormat& format, const std::string& outputFileName_utf8);
+  std::string outputSuffix(const AacFormat& format) const;
+
+private:
+  std::fstream _file;
+};
+
+#endif // RAWENCODER_H

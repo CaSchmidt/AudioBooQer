@@ -29,26 +29,53 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef IAUDIOENCODER_H
-#define IAUDIOENCODER_H
+#include <sstream>
+#include <type_traits> // C++20
 
-#include <memory>
+#include "RawEncoder.h"
 
-#include <QtCore/QString>
-#include <QtMultimedia/QAudioBuffer>
+////// public ////////////////////////////////////////////////////////////////
 
-#include "AacFormat.h"
+RawEncoder::RawEncoder()
+  : _file()
+{
+}
 
-class IAudioEncoder {
-public:
-  virtual ~IAudioEncoder();
+RawEncoder::~RawEncoder()
+{
+  _file.close();
+}
 
-  virtual bool encode(const QAudioBuffer& buffer) = 0;
-  virtual bool flush(const unsigned int fillTimeSamples);
-  virtual bool initialize(const AacFormat& format, const QString& outputFileName) = 0;
-  virtual QString outputSuffix(const AacFormat& format) const = 0;
-};
+bool RawEncoder::encode(const void *data, const std::size_t size)
+{
+  if( !isValidData(data, size) ) {
+    return false;
+  }
+  return csWrite(_file, data, size);
+}
 
-using AudioEncoderPtr = std::unique_ptr<IAudioEncoder>;
+bool RawEncoder::initialize(const AacFormat& format, const std::string& outputFileName_utf8)
+{
+  if( _file.is_open()  ||  format.numChannels > 2 ) {
+    return false;
+  }
+  _file = csOpenFile(outputFileName_utf8, cs::CREATE_BINARY_FILE);
+  return _file.is_open();
+}
 
-#endif // IAUDIOENCODER_H
+std::string RawEncoder::outputSuffix(const AacFormat& format) const
+{
+  std::ostringstream result;
+  if( format.isValid() ) {
+    if( std::endian::native == std::endian::big ) {
+      result << "be.";
+    } else {
+      result << "le.";
+    }
+    result        << format.numChannels         << "ch.";
+    result << "s" << format.numBitsPerChannel   << ".";
+    result        << format.numSamplesPerSecond << "Hz.";
+  }
+  result << "raw";
+  return result.str();
+}

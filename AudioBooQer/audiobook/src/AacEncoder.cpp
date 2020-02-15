@@ -34,11 +34,10 @@
 
 #include <vector>
 
-#include <QtCore/QFile>
-
 #include <aacenc_lib.h>
+#include <csUtil/csFileIO.h>
 
-#include "aacencoder.h"
+#include "AacEncoder.h"
 
 ////// Implementation ////////////////////////////////////////////////////////
 
@@ -101,7 +100,7 @@ public:
   bool setParam(const AACENC_PARAM param, const UINT value);
 
   uint8_t           bitstream[64*1024];
-  QFile             file{};
+  std::fstream      file{};
   AacFormat         format{};
   HANDLE_AACENCODER handle{};
   BufferDesc        inDesc{};
@@ -136,12 +135,12 @@ bool AacEncoder::isNull() const
   return !impl;
 }
 
-bool AacEncoder::encode(const QAudioBuffer& buffer)
+bool AacEncoder::encode(const void *data, const std::size_t size)
 {
-  if( !buffer.isValid() ) {
+  if( !isValidData(data, size) ) {
     return false;
   }
-  return encodeBlock(reinterpret_cast<const uint8_t*>(buffer.data()), buffer.byteCount());
+  return encodeBlock(reinterpret_cast<const uint8_t*>(data), static_cast<int>(size));
 }
 
 bool AacEncoder::flush(const unsigned int fillTimeSamples)
@@ -164,7 +163,7 @@ bool AacEncoder::flush(const unsigned int fillTimeSamples)
   return true;
 }
 
-bool AacEncoder::initialize(const AacFormat& format, const QString& outputFileName)
+bool AacEncoder::initialize(const AacFormat& format, const std::string& outputFileName_utf8)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
 
@@ -249,8 +248,8 @@ bool AacEncoder::initialize(const AacFormat& format, const QString& outputFileNa
 
   // (2) Create output file //////////////////////////////////////////////////
 
-  result->file.setFileName(outputFileName);
-  if( !result->file.open(QIODevice::WriteOnly) ) {
+  result->file = csOpenFile(outputFileName_utf8, cs::CREATE_BINARY_FILE);
+  if( !result->file.is_open() ) {
     return false;
   }
 
@@ -269,9 +268,9 @@ uint64_t AacEncoder::numTimeSamples() const
   return impl->numDataSamples/impl->info.inputChannels;
 }
 
-QString AacEncoder::outputSuffix(const AacFormat&) const
+std::string AacEncoder::outputSuffix(const AacFormat&) const
 {
-  return QStringLiteral("aac");
+  return "aac";
 }
 
 ////// private ///////////////////////////////////////////////////////////////
@@ -302,7 +301,7 @@ bool AacEncoder::encodeBlock(const uint8_t *data, int size, bool *eof)
     impl->numDataSamples += static_cast<uint64_t>(out_args.numInSamples);
 
     if( out_args.numOutBytes > 0  &&
-        impl->file.write(reinterpret_cast<const char*>(impl->bitstream), out_args.numOutBytes) != out_args.numOutBytes ) {
+        !csWrite(impl->file, impl->bitstream, out_args.numOutBytes) ) {
       return false;
     }
 
