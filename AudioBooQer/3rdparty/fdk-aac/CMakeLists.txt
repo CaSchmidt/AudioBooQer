@@ -226,9 +226,11 @@ add_library(fdk-aac STATIC
 
 target_link_libraries(fdk-aac)
 
-target_include_directories(fdk-aac PRIVATE
+format_output_name(fdk-aac "fdk-aac")
+
+target_include_directories(fdk-aac
+  PRIVATE
   fdk-aac-src/libAACdec/include
-  fdk-aac-src/libAACenc/include
   fdk-aac-src/libArithCoding/include
   fdk-aac-src/libDRCdec/include
   fdk-aac-src/libFDK/include
@@ -239,5 +241,7 @@ target_include_directories(fdk-aac PRIVATE
   fdk-aac-src/libSACenc/include
   fdk-aac-src/libSBRdec/include
   fdk-aac-src/libSBRenc/include
+  PUBLIC
+  fdk-aac-src/libAACenc/include
   fdk-aac-src/libSYS/include
   )

@@ -108,18 +108,9 @@ target_link_libraries(AudioBooQer fdk-aac mp4v2 csQt csUtil Qt5::Widgets Qt5::Mu
 
 format_output_name(AudioBooQer "AudioBooQer")
 
-target_compile_definitions(AudioBooQer PRIVATE
-  MP4V2_USE_STATIC_LIB
-  )
-
 target_include_directories(AudioBooQer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(AudioBooQer PRIVATE ${csQt_SOURCE_DIR}/include)
 target_include_directories(AudioBooQer PRIVATE ${csQt_BINARY_DIR}/include)
-target_include_directories(AudioBooQer PRIVATE
-  3rdparty/fdk-aac/fdk-aac-src/libAACenc/include
-  3rdparty/fdk-aac/fdk-aac-src/libSYS/include
-  3rdparty/mp4v2/mp4v2-src/include
-  )
 
 set_target_properties(AudioBooQer PROPERTIES
   AUTOMOC ON

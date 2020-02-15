@@ -1,4 +1,4 @@
-### Sources ##################################################################
+### Project ##################################################################
 
 list(APPEND bmff_SOURCES
   mp4v2-src/src/bmff/bmff.h
@@ -194,15 +194,17 @@ add_library(mp4v2 STATIC
   ${util_SOURCES}
   )
 
+format_output_name(mp4v2 "mp4v2")
+
 target_link_libraries(mp4v2)
 
-target_compile_definitions(mp4v2 PRIVATE
-  MP4V2_USE_STATIC_LIB
+target_compile_definitions(mp4v2
+  PUBLIC MP4V2_USE_STATIC_LIB
   )
 
-target_include_directories(mp4v2 PRIVATE
-  mp4v2-src
-  mp4v2-src/include
+target_include_directories(mp4v2
+  PRIVATE mp4v2-src
+  PUBLIC  mp4v2-src/include
   )
 
 ### Macros ###################################################################
@@ -213,10 +215,6 @@ macro(mp4_test target)
   format_output_name(${target} ${target})
   target_compile_definitions(${target} PRIVATE
     _CRT_SECURE_NO_WARNINGS
-    MP4V2_USE_STATIC_LIB
-    )
-  target_include_directories(${target} PRIVATE
-    mp4v2-src/include
     )
   target_link_libraries(${target} mp4v2)
 endmacro()
