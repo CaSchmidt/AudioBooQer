@@ -1,3 +1,6 @@
 [submodule "csQt"]
 	path = csQt
 	url = https://github.com/CaSchmidt/csQt.git
+[submodule "csUtil"]
+	path = csUtil
+	url = https://github.com/CaSchmidt/csUtil.git
