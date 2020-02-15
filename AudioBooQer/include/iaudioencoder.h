@@ -37,7 +37,7 @@
 #include <QtCore/QString>
 #include <QtMultimedia/QAudioBuffer>
 
-#include "aacformat.h"
+#include "AacFormat.h"
 
 class IAudioEncoder {
 public:

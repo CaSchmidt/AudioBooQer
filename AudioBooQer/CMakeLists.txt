@@ -42,7 +42,6 @@ set(AudioBooQer_FORMS
 
 set(AudioBooQer_HEADERS
   include/aacencoder.h
-  include/aacformat.h
   include/adts.h
   include/audiojob.h
   include/BookBinderModel.h
@@ -65,7 +64,6 @@ set(AudioBooQer_HEADERS
 
 set(AudioBooQer_SOURCES
   src/aacencoder.cpp
-  src/aacformat.cpp
   src/adts.cpp
   src/audiojob.cpp
   src/BookBinderModel.cpp

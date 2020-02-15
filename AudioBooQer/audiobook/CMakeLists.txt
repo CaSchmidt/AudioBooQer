@@ -10,10 +10,12 @@ add_subdirectory(${AudioBooQer_SOURCE_DIR}/3rdparty/mp4v2
 ### Project ##################################################################
 
 list(APPEND audiobook_HEADERS
+  include/AacFormat.h
   include/Mp4Tag.h
   )
 
 list(APPEND audiobook_SOURCES
+  src/AacFormat.cpp
   src/Mp4Tag.cpp
   )
 

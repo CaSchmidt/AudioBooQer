@@ -36,7 +36,7 @@
 #include <QtCore/QList>
 #include <QtCore/QStringList>
 
-#include "aacformat.h"
+#include "AacFormat.h"
 
 class IAudioEncoder;
 

@@ -41,6 +41,29 @@
 # include "rawencoder.h"
 #endif
 
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  QAudioFormat convert(const AacFormat& fmt)
+  {
+    if( !fmt.isValid() ) {
+      return QAudioFormat();
+    }
+
+    QAudioFormat result;
+    result.setByteOrder(static_cast<QAudioFormat::Endian>(QSysInfo::ByteOrder));
+    result.setChannelCount(static_cast<int>(fmt.numChannels));
+    result.setCodec(QStringLiteral("audio/pcm"));
+    result.setSampleRate(static_cast<int>(fmt.numSamplesPerSecond));
+    result.setSampleSize(static_cast<int>(fmt.numBitsPerChannel));
+    result.setSampleType(QAudioFormat::SignedInt);
+
+    return result;
+  }
+
+} // namespace priv
+
 ////// public ////////////////////////////////////////////////////////////////
 
 AudioJob::AudioJob(const Job& job, QObject *parent)
@@ -85,7 +108,7 @@ bool AudioJob::start()
 {
   // (1) Initialize decoder //////////////////////////////////////////////////
 
-  _decoder.setAudioFormat(_job.format);
+  _decoder.setAudioFormat(priv::convert(_job.format));
   if( _decoder.error() != QAudioDecoder::NoError ) {
     appendErrorMessage(_decoder.errorString());
     return false;

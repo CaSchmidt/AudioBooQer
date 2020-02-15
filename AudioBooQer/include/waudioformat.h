@@ -34,7 +34,7 @@
 
 #include <QtWidgets/QWidget>
 
-#include "aacformat.h"
+#include "AacFormat.h"
 
 namespace Ui {
   class WAudioFormat;

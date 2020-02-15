@@ -29,7 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include "aacformat.h"
+#include "AacFormat.h"
 
 bool AacFormat::isSupportedRate(const unsigned int rate) const
 {
@@ -60,21 +60,4 @@ bool AacFormat::isValid() const
   }
 
   return true;
-}
-
-AacFormat::operator QAudioFormat() const
-{
-  if( !isValid() ) {
-    return QAudioFormat();
-  }
-
-  QAudioFormat result;
-  result.setByteOrder(static_cast<QAudioFormat::Endian>(QSysInfo::ByteOrder));
-  result.setChannelCount(static_cast<int>(numChannels));
-  result.setCodec(QStringLiteral("audio/pcm"));
-  result.setSampleRate(static_cast<int>(numSamplesPerSecond));
-  result.setSampleSize(static_cast<int>(numBitsPerChannel));
-  result.setSampleType(QAudioFormat::SignedInt);
-
-  return result;
 }

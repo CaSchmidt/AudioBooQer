@@ -32,7 +32,7 @@
 #ifndef AACFORMAT_H
 #define AACFORMAT_H
 
-#include <QtMultimedia/QAudioFormat>
+// #include <QtMultimedia/QAudioFormat>
 
 /*
  * NOTE:
@@ -65,8 +65,6 @@ struct AacFormat {
   {
     return sizeof(supportedRates)/sizeof(unsigned int);
   }
-
-  operator QAudioFormat() const;
 };
 
 #endif // AACFORMAT_H
