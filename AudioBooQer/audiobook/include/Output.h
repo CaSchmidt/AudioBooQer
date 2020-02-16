@@ -29,12 +29,12 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef OUTPUT_ADTS_H
-#define OUTPUT_ADTS_H
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
-#include "BookBinderModel.h"
+#include "BookBinder.h"
 
-bool outputAdtsBinder(const QString& filename, const BookBinder& binder,
+bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder,
                       const uint16_t refAsc, const uint32_t numSamplesPerAacFrame);
 
-#endif // OUTPUT_ADTS_H
+#endif // OUTPUT_H

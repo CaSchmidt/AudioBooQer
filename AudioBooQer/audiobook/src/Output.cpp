@@ -29,15 +29,13 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <algorithm>
-
-#include <QtCore/QFile>
+#include <numeric>
 
 #include <csUtil/csFileIO.h>
 #include <csUtil/csTextConverter.h>
 #include <mp4v2/mp4v2.h>
 
-#include "output_adts.h"
+#include "Output.h"
 
 #include "AdtsParser.h"
 #include "Mpeg4Audio.h"
@@ -122,7 +120,7 @@ namespace priv {
 
 ////// Public ////////////////////////////////////////////////////////////////
 
-bool outputAdtsBinder(const QString& filename, const BookBinder& binder,
+bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder,
                       const uint16_t refAsc, const uint32_t numSamplesPerAacFrame)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
@@ -163,7 +161,7 @@ bool outputAdtsBinder(const QString& filename, const BookBinder& binder,
   // (3) Create MP4 file /////////////////////////////////////////////////////
 
   const MP4FileHandle file =
-      MP4CreateEx(filename.toUtf8().constData(), 0, 1, 0, const_cast<char*>("M4B "), 0);
+      MP4CreateEx(filename_utf8.data(), 0, 1, 0, const_cast<char*>("M4B "), 0);
   if( file == MP4_INVALID_FILE_HANDLE ) {
     return false;
   }

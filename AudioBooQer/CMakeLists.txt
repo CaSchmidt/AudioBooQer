@@ -46,7 +46,6 @@ set(AudioBooQer_HEADERS
   include/chapter.h
   include/chaptermodel.h
   include/job.h
-  include/output_adts.h
   include/waudioformat.h
   include/waudioplayer.h
   include/WBookBinder.h
@@ -62,7 +61,6 @@ set(AudioBooQer_SOURCES
   src/chaptermodel.cpp
   src/job.cpp
   src/main.cpp
-  src/output_adts.cpp
   src/waudioformat.cpp
   src/waudioplayer.cpp
   src/WBookBinder.cpp

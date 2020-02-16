@@ -44,7 +44,7 @@
 #include "chapter.h"
 #include "chaptermodel.h"
 #include "Mpeg4Audio.h"
-#include "output_adts.h"
+#include "Output.h"
 #include "WBookBinder.h"
 #include "wjobinfo.h"
 #include "WTagEditor.h"
@@ -163,7 +163,7 @@ void WMainWindow::bindBook()
     return;
   }
 
-  outputAdtsBinder(filename, binder, asc, format.numSamplesPerAacFrame);
+  outputAdtsBinder(filename.toStdString(), binder, asc, format.numSamplesPerAacFrame);
 }
 
 void WMainWindow::createNewChapter()

@@ -17,6 +17,7 @@ list(APPEND audiobook_HEADERS
   include/IAudioEncoder.h
   include/Mp4Tag.h
   include/Mpeg4Audio.h
+  include/Output.h
   include/RawEncoder.h
   )
 
@@ -27,6 +28,7 @@ list(APPEND audiobook_SOURCES
   src/IAudioEncoder.cpp
   src/Mp4Tag.cpp
   src/Mpeg4Audio.cpp
+  src/Output.cpp
   src/RawEncoder.cpp
   )
 
