@@ -29,9 +29,9 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtCore/QtEndian>
+#include <csUtil/csEndian.h>
 
-#include "mpeg4audio.h"
+#include "Mpeg4Audio.h"
 
 namespace mpeg4 {
 
@@ -98,22 +98,22 @@ namespace mpeg4 {
     asc |=      aot << ASC_SHIFT_AOT;
     asc |=    index << ASC_SHIFT_FREQUENCY;
     asc |= channels << ASC_SHIFT_CHANNELS;
-    return qToBigEndian(asc);
+    return cs::toBigEndian(asc);
   }
 
   uint16_t audioObjectTypeFromASC(const uint16_t asc)
   {
-    return (qFromBigEndian(asc) >> ASC_SHIFT_AOT) & ASC_MASK_AOT;
+    return (cs::fromBigEndian(asc) >> ASC_SHIFT_AOT) & ASC_MASK_AOT;
   }
 
   uint16_t channelConfigurationFromASC(const uint16_t asc)
   {
-    return (qFromBigEndian(asc) >> ASC_SHIFT_CHANNELS) & ASC_MASK_CHANNELS;
+    return (cs::fromBigEndian(asc) >> ASC_SHIFT_CHANNELS) & ASC_MASK_CHANNELS;
   }
 
   uint16_t samplingFrequencyIndexFromASC(const uint16_t asc)
   {
-    return (qFromBigEndian(asc) >> ASC_SHIFT_FREQUENCY) & ASC_MASK_FREQUENCY;
+    return (cs::fromBigEndian(asc) >> ASC_SHIFT_FREQUENCY) & ASC_MASK_FREQUENCY;
   }
 
   uint32_t samplingFrequencyFromASC(const uint16_t asc)

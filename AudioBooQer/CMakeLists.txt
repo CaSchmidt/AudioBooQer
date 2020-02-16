@@ -41,14 +41,12 @@ set(AudioBooQer_FORMS
   )
 
 set(AudioBooQer_HEADERS
-  include/adts.h
   include/audiojob.h
   include/BookBinderModel.h
   include/chapter.h
   include/chaptermodel.h
   include/job.h
   include/mpeg4_asc.h
-  include/mpeg4audio.h
   include/output.h
   include/output_adts.h
   include/waudioformat.h
@@ -60,14 +58,12 @@ set(AudioBooQer_HEADERS
   )
 
 set(AudioBooQer_SOURCES
-  src/adts.cpp
   src/audiojob.cpp
   src/BookBinderModel.cpp
   src/chapter.cpp
   src/chaptermodel.cpp
   src/job.cpp
   src/main.cpp
-  src/mpeg4audio.cpp
   src/output.cpp
   src/output_adts.cpp
   src/waudioformat.cpp

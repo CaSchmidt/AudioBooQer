@@ -29,8 +29,8 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef ADTS_H
-#define ADTS_H
+#ifndef ADTSPARSER_H
+#define ADTSPARSER_H
 
 #include <cstdint>
 
@@ -89,4 +89,4 @@ private:
   size_type _offset{};
 };
 
-#endif // ADTS_H
+#endif // ADTSPARSER_H

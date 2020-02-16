@@ -1,26 +1,14 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <QtCore/QFile>
+#include <csUtil/csFileIO.h>
 
-#include "adts.h"
-#include "mpeg4audio.h"
+#include "AdtsParser.h"
+#include "Mpeg4Audio.h"
 
 int main(int /*argc*/, char **argv)
 {
-  AdtsParser::Buffer buf;
-
-  QFile file(QString::fromLatin1(argv[1]));
-  if( !file.open(QIODevice::ReadOnly) ) {
-    return EXIT_FAILURE;
-  }
-
-  buf.resize(static_cast<AdtsParser::size_type>(file.size()), 0);
-  file.seek(0);
-  file.read(reinterpret_cast<char*>(buf.data()), static_cast<qint64>(buf.size()));
-
-  file.close();
-
+  AdtsParser::Buffer buf = csReadBinaryFile(argv[1]);
   AdtsParser p(std::move(buf));
 
   uint32_t i = 0;

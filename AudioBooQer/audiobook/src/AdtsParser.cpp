@@ -29,11 +29,11 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtCore/QtEndian>
+#include <csUtil/csEndian.h>
 
-#include "adts.h"
+#include "AdtsParser.h"
 
-#include "mpeg4audio.h"
+#include "Mpeg4Audio.h"
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -164,7 +164,7 @@ bool AdtsParser::readHeader()
     return false;
   }
 
-  _header = qFromBigEndian<uint64_t>(*reinterpret_cast<const uint64_t*>(_buffer.data() + _offset));
+  _header = cs::fromBigEndian<uint64_t>(*reinterpret_cast<const uint64_t*>(_buffer.data() + _offset));
 
   return isHeader();
 }

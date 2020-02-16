@@ -39,7 +39,7 @@
 #include "output.h"
 
 #include "AacEncoder.h"
-#include "adts.h"
+#include "AdtsParser.h"
 #include "mpeg4_asc.h"
 
 namespace priv {

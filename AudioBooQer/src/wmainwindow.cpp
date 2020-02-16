@@ -43,7 +43,7 @@
 
 #include "chapter.h"
 #include "chaptermodel.h"
-#include "mpeg4audio.h"
+#include "Mpeg4Audio.h"
 #include "output.h"
 #include "output_adts.h"
 #include "WBookBinder.h"

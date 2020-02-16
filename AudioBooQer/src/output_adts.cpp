@@ -39,8 +39,8 @@
 
 #include "output_adts.h"
 
-#include "adts.h"
-#include "mpeg4audio.h"
+#include "AdtsParser.h"
+#include "Mpeg4Audio.h"
 
 ////// Types /////////////////////////////////////////////////////////////////
 
