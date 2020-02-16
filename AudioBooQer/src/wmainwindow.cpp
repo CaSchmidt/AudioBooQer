@@ -44,7 +44,6 @@
 #include "chapter.h"
 #include "chaptermodel.h"
 #include "Mpeg4Audio.h"
-#include "output.h"
 #include "output_adts.h"
 #include "WBookBinder.h"
 #include "wjobinfo.h"
@@ -297,14 +296,6 @@ void WMainWindow::processJobs()
 
   model->deleteJobs();
   ui->playerWidget->setFiles(model->files());
-
-  const QString outputFileName =
-      QFileDialog::getSaveFileName(this, tr("Save"), outputDirPath, tr("Audiobooks (*.m4b)"));
-  if( outputFileName.isEmpty() ) {
-    return;
-  }
-
-  writeBook(outputFileName, ui->formatWidget->format(), jobInfo.results());
 }
 
 QString WMainWindow::settingsFileName()
