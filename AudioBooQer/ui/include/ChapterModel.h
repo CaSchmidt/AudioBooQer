@@ -29,29 +29,63 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#if defined(_DEBUG)
-# include <vld.h>
-#endif
+#ifndef CHAPTERMODEL_H
+#define CHAPTERMODEL_H
 
-#include <cstdio>
-#include <cstdlib>
+#include <QtCore/QAbstractItemModel>
 
-#include <QtCore/QLocale>
-#include <QtWidgets/QApplication>
+#include "Job.h"
 
-#include "wmainwindow.h"
+class csAbstractTreeItem;
 
-int main(int argc, char **argv)
-{
-  QApplication qapp(argc, argv);
-  QLocale::setDefault(QLocale::system());
+class ChapterModel : public QAbstractItemModel {
+  Q_OBJECT
+public:
+  ChapterModel(QObject *parent = nullptr);
+  ~ChapterModel();
 
-  WMainWindow *mainwindow = new WMainWindow();
-  mainwindow->show();
+  QModelIndex createNewChapter(const QModelIndex& index);
+  void setData(csAbstractTreeItem *data);
 
-  const int result = qapp.exec();
+  bool showChapterNo() const;
+  int firstChaopterNo() const;
+  int widthChapterNo() const;
 
-  delete mainwindow;
+  Jobs buildJobs() const;
+  void deleteJobs();
 
-  return result;
-}
+  QStringList files(const bool source_only = false) const;
+
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  QVariant data(const QModelIndex& index, int role) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
+  QModelIndex index(int row, int column,
+                    const QModelIndex& parent = QModelIndex()) const;
+  QModelIndex parent(const QModelIndex& index) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  bool setData(const QModelIndex& index, const QVariant& value,
+               int role = Qt::EditRole);
+
+public slots:
+  void activateNode(const QModelIndex& nodeIndex);
+  void dissolveLastChapter();
+  void setFirstChapterNo(int no);
+  void setShowChapterNo(bool state);
+  void setWidthChapterNo(int width);
+  void setPlayingFileName(const QString& fileName);
+
+private:
+  QString chapterTitle(const class ChapterNode *node) const;
+  void updateChapters();
+
+  csAbstractTreeItem *_root;
+  bool _showChapterNo;
+  int _firstChapterNo;
+  int _widthChapterNo;
+  QString _playingFileName;
+
+signals:
+  void playedFile(const QString& filename);
+};
+
+#endif // CHAPTERMODEL_H

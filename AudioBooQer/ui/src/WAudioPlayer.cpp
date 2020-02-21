@@ -32,8 +32,8 @@
 #include <QtCore/QUrl>
 #include <QtMultimedia/QMediaPlaylist>
 
-#include "waudioplayer.h"
-#include "ui_waudioplayer.h"
+#include "WAudioPlayer.h"
+#include "ui_WAudioPlayer.h"
 
 ////// public ////////////////////////////////////////////////////////////////
 

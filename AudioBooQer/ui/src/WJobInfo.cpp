@@ -33,8 +33,8 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QKeySequence>
 
-#include "wjobinfo.h"
-#include "ui_wjobinfo.h"
+#include "WJobInfo.h"
+#include "ui_WJobInfo.h"
 
 ////// public ////////////////////////////////////////////////////////////////
 

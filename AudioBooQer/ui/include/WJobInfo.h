@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,44 +29,47 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef AUDIOJOB_H
-#define AUDIOJOB_H
+#ifndef WJOBINFO_H
+#define WJOBINFO_H
 
-#include <QtMultimedia/QAudioDecoder>
+#include <QtCore/QFutureWatcher>
+#include <QtWidgets/QDialog>
 
-#include "IAudioEncoder.h"
-#include "job.h"
+#include "Job.h"
 
-class AudioJob : public QObject {
-  Q_OBJECT
-public:
-  AudioJob(const Job& job, QObject *parent = nullptr);
-  ~AudioJob();
-
-  QString message() const;
-  uint64_t numTimeSamples() const;
-  QString outputFilePath() const;
-
-  bool start();
-
-private slots:
-  void decodingBufferReady();
-  void decodingError(QAudioDecoder::Error error);
-  void decodingFinished();
-
-private:
-  void appendErrorMessage(const QString& msg);
-  void appendInfoMessage(const QString& msg);
-
-  QAudioDecoder _decoder;
-  AudioEncoderPtr _encoder;
-  Job _job;
-  QString _message;
-  uint64_t _numTimeSamples;
-  QString _outputFilePath;
-
-signals:
-  void done();
+namespace Ui {
+  class WJobInfo;
 };
 
-#endif // AUDIOJOB_H
+class WJobInfo : public QDialog {
+  Q_OBJECT
+public:
+  WJobInfo(QWidget *parent, Qt::WindowFlags f = Qt::WindowFlags());
+  ~WJobInfo();
+
+  void executeJobs(const Jobs& jobs);
+  JobResults results() const;
+
+protected:
+  void keyPressEvent(QKeyEvent *event);
+
+private slots:
+  void accept();
+  void done(int r);
+  int exec();
+  void open();
+  void reject();
+  void enableClose();
+  void readResult(int index);
+  void setProgressRange(int min, int max);
+  void setProgressValue(int val);
+
+private:
+  using JobWatcher = QFutureWatcher<JobResult>;
+
+  Ui::WJobInfo *ui{};
+  JobResults _results{};
+  JobWatcher _watcher{};
+};
+
+#endif // WJOBINFO_H

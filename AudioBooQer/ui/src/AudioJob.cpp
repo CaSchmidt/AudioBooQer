@@ -31,7 +31,7 @@
 
 #include <QtCore/QFile>
 
-#include "audiojob.h"
+#include "AudioJob.h"
 
 #define HAVE_AAC
 

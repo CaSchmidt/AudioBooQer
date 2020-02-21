@@ -29,47 +29,55 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WJOBINFO_H
-#define WJOBINFO_H
+#include <QtCore/QDir>
+#include <QtCore/QEventLoop>
 
-#include <QtCore/QFutureWatcher>
-#include <QtWidgets/QDialog>
+#include "Job.h"
 
-#include "job.h"
+#include "AudioJob.h"
 
-namespace Ui {
-  class WJobInfo;
-};
+////// Job - public //////////////////////////////////////////////////////////
 
-class WJobInfo : public QDialog {
-  Q_OBJECT
-public:
-  WJobInfo(QWidget *parent, Qt::WindowFlags f = Qt::WindowFlags());
-  ~WJobInfo();
+QString Job::outputFilePath(IAudioEncoder *encoder) const
+{
+  const QString suffix = QString::fromStdString(encoder->outputSuffix(format));
+  QString baseName(title);
+  baseName.replace(QRegExp(QStringLiteral("[^_0-9a-zA-Z]")), QStringLiteral("_"));
+  return QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1_%2.%3")
+                                              .arg(position, 3, 10, QChar::fromLatin1('0'))
+                                              .arg(baseName)
+                                              .arg(suffix));
+}
 
-  void executeJobs(const Jobs& jobs);
-  JobResults results() const;
+////// Public ////////////////////////////////////////////////////////////////
 
-protected:
-  void keyPressEvent(QKeyEvent *event);
+JobResult executeJob(const Job& job)
+{
+  JobResult result;
 
-private slots:
-  void accept();
-  void done(int r);
-  int exec();
-  void open();
-  void reject();
-  void enableClose();
-  void readResult(int index);
-  void setProgressRange(int min, int max);
-  void setProgressValue(int val);
+  std::unique_ptr<AudioJob> audio;
+  try {
+    audio = std::make_unique<AudioJob>(job);
+  } catch(...) {
+    audio.reset();
+    result.message = QStringLiteral("ERROR: AudioJob is <nullptr>!\n");
+    return result;
+  }
 
-private:
-  using JobWatcher = QFutureWatcher<JobResult>;
+  QEventLoop loop;
+  QObject::connect(audio.get(), &AudioJob::done, &loop, &QEventLoop::quit);
 
-  Ui::WJobInfo *ui{};
-  JobResults _results{};
-  JobWatcher _watcher{};
-};
+  if( audio->start() ) {
+    loop.exec();
 
-#endif // WJOBINFO_H
+    result.message        = audio->message();
+    result.numTimeSamples = audio->numTimeSamples();
+    result.outputFilePath = audio->outputFilePath();
+    result.position       = job.position;
+    result.title          = job.title;
+  } else {
+    result.message = audio->message();
+  }
+
+  return result;
+}

@@ -31,7 +31,7 @@
 
 #include <QtCore/QFileInfo>
 
-#include "chapter.h"
+#include "Chapter.h"
 
 ////// Global ////////////////////////////////////////////////////////////////
 

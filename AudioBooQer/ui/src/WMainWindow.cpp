@@ -38,15 +38,15 @@
 
 #include <csQt/csQtUtil.h>
 
-#include "wmainwindow.h"
-#include "ui_wmainwindow.h"
+#include "WMainWindow.h"
+#include "ui_WMainWindow.h"
 
-#include "chapter.h"
-#include "chaptermodel.h"
+#include "Chapter.h"
+#include "ChapterModel.h"
 #include "Mpeg4Audio.h"
 #include "Output.h"
 #include "WBookBinder.h"
-#include "wjobinfo.h"
+#include "WJobInfo.h"
 #include "WTagEditor.h"
 
 ////// public ////////////////////////////////////////////////////////////////

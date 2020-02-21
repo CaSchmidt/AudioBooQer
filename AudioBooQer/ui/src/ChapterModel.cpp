@@ -34,9 +34,9 @@
 
 #include <csQt/csQtUtil.h>
 
-#include "chaptermodel.h"
+#include "ChapterModel.h"
 
-#include "chapter.h"
+#include "Chapter.h"
 
 ////// Private ///////////////////////////////////////////////////////////////
 

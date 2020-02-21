@@ -29,55 +29,29 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtCore/QDir>
-#include <QtCore/QEventLoop>
+#if defined(_DEBUG)
+# include <vld.h>
+#endif
 
-#include "job.h"
+#include <cstdio>
+#include <cstdlib>
 
-#include "audiojob.h"
+#include <QtCore/QLocale>
+#include <QtWidgets/QApplication>
 
-////// Job - public //////////////////////////////////////////////////////////
+#include "WMainWindow.h"
 
-QString Job::outputFilePath(IAudioEncoder *encoder) const
+int main(int argc, char **argv)
 {
-  const QString suffix = QString::fromStdString(encoder->outputSuffix(format));
-  QString baseName(title);
-  baseName.replace(QRegExp(QStringLiteral("[^_0-9a-zA-Z]")), QStringLiteral("_"));
-  return QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1_%2.%3")
-                                              .arg(position, 3, 10, QChar::fromLatin1('0'))
-                                              .arg(baseName)
-                                              .arg(suffix));
-}
+  QApplication qapp(argc, argv);
+  QLocale::setDefault(QLocale::system());
 
-////// Public ////////////////////////////////////////////////////////////////
+  WMainWindow *mainwindow = new WMainWindow();
+  mainwindow->show();
 
-JobResult executeJob(const Job& job)
-{
-  JobResult result;
+  const int result = qapp.exec();
 
-  std::unique_ptr<AudioJob> audio;
-  try {
-    audio = std::make_unique<AudioJob>(job);
-  } catch(...) {
-    audio.reset();
-    result.message = QStringLiteral("ERROR: AudioJob is <nullptr>!\n");
-    return result;
-  }
-
-  QEventLoop loop;
-  QObject::connect(audio.get(), &AudioJob::done, &loop, &QEventLoop::quit);
-
-  if( audio->start() ) {
-    loop.exec();
-
-    result.message        = audio->message();
-    result.numTimeSamples = audio->numTimeSamples();
-    result.outputFilePath = audio->outputFilePath();
-    result.position       = job.position;
-    result.title          = job.title;
-  } else {
-    result.message = audio->message();
-  }
+  delete mainwindow;
 
   return result;
 }

@@ -31,8 +31,8 @@
 
 #include <QtCore/QSysInfo>
 
-#include "waudioformat.h"
-#include "ui_waudioformat.h"
+#include "WAudioFormat.h"
+#include "ui_WAudioFormat.h"
 
 ////// public ////////////////////////////////////////////////////////////////
 

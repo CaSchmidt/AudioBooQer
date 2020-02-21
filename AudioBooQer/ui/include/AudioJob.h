@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,63 +29,44 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef CHAPTERMODEL_H
-#define CHAPTERMODEL_H
+#ifndef AUDIOJOB_H
+#define AUDIOJOB_H
 
-#include <QtCore/QAbstractItemModel>
+#include <QtMultimedia/QAudioDecoder>
 
-#include "job.h"
+#include "IAudioEncoder.h"
+#include "Job.h"
 
-class csAbstractTreeItem;
-
-class ChapterModel : public QAbstractItemModel {
+class AudioJob : public QObject {
   Q_OBJECT
 public:
-  ChapterModel(QObject *parent = nullptr);
-  ~ChapterModel();
+  AudioJob(const Job& job, QObject *parent = nullptr);
+  ~AudioJob();
 
-  QModelIndex createNewChapter(const QModelIndex& index);
-  void setData(csAbstractTreeItem *data);
+  QString message() const;
+  uint64_t numTimeSamples() const;
+  QString outputFilePath() const;
 
-  bool showChapterNo() const;
-  int firstChaopterNo() const;
-  int widthChapterNo() const;
+  bool start();
 
-  Jobs buildJobs() const;
-  void deleteJobs();
-
-  QStringList files(const bool source_only = false) const;
-
-  int columnCount(const QModelIndex& parent = QModelIndex()) const;
-  QVariant data(const QModelIndex& index, int role) const;
-  Qt::ItemFlags flags(const QModelIndex& index) const;
-  QModelIndex index(int row, int column,
-                    const QModelIndex& parent = QModelIndex()) const;
-  QModelIndex parent(const QModelIndex& index) const;
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  bool setData(const QModelIndex& index, const QVariant& value,
-               int role = Qt::EditRole);
-
-public slots:
-  void activateNode(const QModelIndex& nodeIndex);
-  void dissolveLastChapter();
-  void setFirstChapterNo(int no);
-  void setShowChapterNo(bool state);
-  void setWidthChapterNo(int width);
-  void setPlayingFileName(const QString& fileName);
+private slots:
+  void decodingBufferReady();
+  void decodingError(QAudioDecoder::Error error);
+  void decodingFinished();
 
 private:
-  QString chapterTitle(const class ChapterNode *node) const;
-  void updateChapters();
+  void appendErrorMessage(const QString& msg);
+  void appendInfoMessage(const QString& msg);
 
-  csAbstractTreeItem *_root;
-  bool _showChapterNo;
-  int _firstChapterNo;
-  int _widthChapterNo;
-  QString _playingFileName;
+  QAudioDecoder _decoder;
+  AudioEncoderPtr _encoder;
+  Job _job;
+  QString _message;
+  uint64_t _numTimeSamples;
+  QString _outputFilePath;
 
 signals:
-  void playedFile(const QString& filename);
+  void done();
 };
 
-#endif // CHAPTERMODEL_H
+#endif // AUDIOJOB_H
