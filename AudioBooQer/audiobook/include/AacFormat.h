@@ -32,8 +32,6 @@
 #ifndef AACFORMAT_H
 #define AACFORMAT_H
 
-// #include <QtMultimedia/QAudioFormat>
-
 /*
  * NOTE:
  * FDK AAC seems to operate on native endian, signed 16bit integers ONLY!
