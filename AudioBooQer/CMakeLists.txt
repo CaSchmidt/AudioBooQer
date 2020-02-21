@@ -104,7 +104,3 @@ install(TARGETS AudioBooQer
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
   )
-
-### Tests ####################################################################
-
-add_subdirectory(tests)
