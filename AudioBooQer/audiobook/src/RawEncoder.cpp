@@ -32,6 +32,8 @@
 #include <sstream>
 #include <type_traits> // C++20
 
+#include <csUtil/csFileIO.h>
+
 #include "RawEncoder.h"
 
 ////// public ////////////////////////////////////////////////////////////////

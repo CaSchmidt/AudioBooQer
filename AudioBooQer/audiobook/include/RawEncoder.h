@@ -32,7 +32,7 @@
 #ifndef RAWENCODER_H
 #define RAWENCODER_H
 
-#include <csUtil/csFileIO.h>
+#include <fstream>
 
 #include "IAudioEncoder.h"
 
