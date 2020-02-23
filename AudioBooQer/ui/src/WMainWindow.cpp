@@ -32,7 +32,6 @@
 #include <QtWidgets/QApplication>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtCore/QSettings>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
@@ -123,16 +122,10 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   ui->nextAction->setShortcut(Qt::CTRL+Qt::Key_4);
   connect(ui->nextAction, SIGNAL(triggered()),
           ui->playerWidget, SLOT(next()));
-
-  // Load Settings ///////////////////////////////////////////////////////////
-
-  loadSettings();
 }
 
 WMainWindow::~WMainWindow()
 {
-  saveSettings();
-
   delete ui;
 }
 
@@ -245,20 +238,6 @@ void WMainWindow::openDirectory()
   QDir::setCurrent(dirPath);
 }
 
-////// private ///////////////////////////////////////////////////////////////
-
-void WMainWindow::loadSettings()
-{
-  QSettings settings(settingsFileName(), QSettings::IniFormat);
-}
-
-void WMainWindow::saveSettings() const
-{
-  QSettings settings(settingsFileName(), QSettings::IniFormat);
-
-  settings.sync();
-}
-
 void WMainWindow::processJobs()
 {
   if( !ui->formatWidget->format().isValid() ) {
@@ -296,10 +275,4 @@ void WMainWindow::processJobs()
 
   model->deleteJobs();
   ui->playerWidget->setFiles(model->files());
-}
-
-QString WMainWindow::settingsFileName()
-{
-  return QFileInfo(QDir(QApplication::applicationDirPath()),
-                   _L1("AudioBooQer.ini")).absoluteFilePath();
 }

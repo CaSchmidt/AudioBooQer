@@ -52,10 +52,6 @@ private slots:
   void processJobs();
 
 private:
-  void loadSettings();
-  void saveSettings() const;
-  static QString settingsFileName();
-
   Ui::WMainWindow *ui;
 };
 
