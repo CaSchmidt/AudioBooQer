@@ -130,8 +130,10 @@ void WAudioPlayer::reset()
 void WAudioPlayer::changeButtonState(QMediaPlayer::State state)
 {
   if( state == QMediaPlayer::PlayingState ) {
+    ui->playButton->setIcon(QIcon(QStringLiteral(":/icons/pause.svg")));
     ui->playButton->setText(tr("Pause"));
   } else {
+    ui->playButton->setIcon(QIcon(QStringLiteral(":/icons/play.svg")));
     ui->playButton->setText(tr("Play"));
   }
 

@@ -69,6 +69,10 @@
      <property name="text">
       <string>Prev</string>
      </property>
+     <property name="icon">
+      <iconset resource="../resources/resources.qrc">
+       <normaloff>:/icons/prev.svg</normaloff>:/icons/prev.svg</iconset>
+     </property>
     </widget>
    </item>
    <item>
@@ -92,6 +96,10 @@
      </property>
      <property name="text">
       <string>Stop</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources/resources.qrc">
+       <normaloff>:/icons/stop.svg</normaloff>:/icons/stop.svg</iconset>
      </property>
     </widget>
    </item>
@@ -117,6 +125,10 @@
      <property name="text">
       <string>Play</string>
      </property>
+     <property name="icon">
+      <iconset resource="../resources/resources.qrc">
+       <normaloff>:/icons/play.svg</normaloff>:/icons/play.svg</iconset>
+     </property>
     </widget>
    </item>
    <item>
@@ -141,6 +153,10 @@
      <property name="text">
       <string>Next</string>
      </property>
+     <property name="icon">
+      <iconset resource="../resources/resources.qrc">
+       <normaloff>:/icons/next.svg</normaloff>:/icons/next.svg</iconset>
+     </property>
     </widget>
    </item>
   </layout>
@@ -151,6 +167,8 @@
   <tabstop>playButton</tabstop>
   <tabstop>nextButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../resources/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
