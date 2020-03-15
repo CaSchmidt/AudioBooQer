@@ -157,6 +157,9 @@ void WMainWindow::bindBook()
   }
 
   outputAdtsBinder(filename.toStdString(), binder, asc, format.numSamplesPerAacFrame);
+
+  QMessageBox::information(this, tr("Info"), tr("Done!"),
+                           QMessageBox::Ok, QMessageBox::Ok);
 }
 
 void WMainWindow::createNewChapter()
