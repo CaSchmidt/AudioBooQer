@@ -11,6 +11,7 @@ list(APPEND ui_FORMS
 
 list(APPEND ui_HEADERS
   include/AudioJob.h
+  include/BinderIO.h
   include/BookBinderModel.h
   include/Chapter.h
   include/ChapterModel.h
@@ -25,6 +26,7 @@ list(APPEND ui_HEADERS
 
 list(APPEND ui_SOURCES
   src/AudioJob.cpp
+  src/BinderIO.cpp
   src/BookBinderModel.cpp
   src/Chapter.cpp
   src/ChapterModel.cpp
