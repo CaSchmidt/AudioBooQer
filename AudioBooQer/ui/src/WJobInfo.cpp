@@ -77,6 +77,24 @@ WJobInfo::~WJobInfo()
   delete ui;
 }
 
+BookBinder WJobInfo::binder() const
+{
+  BookBinder result;
+
+  try {
+    result.resize(_results.size());
+  } catch (...) {
+    return BookBinder();
+  }
+
+  for(int i = 0; i < _results.size(); i++) {
+    result[i].first  = _results[i].title.toStdU16String();
+    result[i].second = _results[i].outputFilePath.toUtf8().constData();
+  }
+
+  return result;
+}
+
 void WJobInfo::executeJobs(const Jobs& jobs)
 {
   _results.clear();

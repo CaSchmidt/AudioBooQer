@@ -35,6 +35,7 @@
 #include <QtCore/QFutureWatcher>
 #include <QtWidgets/QDialog>
 
+#include "BookBinder.h"
 #include "Job.h"
 
 namespace Ui {
@@ -47,6 +48,7 @@ public:
   WJobInfo(QWidget *parent, Qt::WindowFlags f = Qt::WindowFlags());
   ~WJobInfo();
 
+  BookBinder binder() const;
   void executeJobs(const Jobs& jobs);
   JobResults results() const;
 
