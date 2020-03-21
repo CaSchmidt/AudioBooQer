@@ -62,6 +62,8 @@ private:
   static constexpr bool MOVE_UP   = true;
 
   void moveChapter(const bool is_up);
+  void openBinder();
+  void saveBinder();
   QModelIndex singleSelection() const;
 
   Ui::WBookBinder *ui{nullptr};

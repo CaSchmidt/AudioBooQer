@@ -37,6 +37,7 @@
 #include "WBookBinder.h"
 #include "ui_WBookBinder.h"
 
+#include "BinderIO.h"
 #include "BookBinderModel.h"
 
 ////// public ////////////////////////////////////////////////////////////////
@@ -125,6 +126,9 @@ bool WBookBinder::eventFilter(QObject *watched, QEvent *event)
   QContextMenuEvent *contextMenuEvent = dynamic_cast<QContextMenuEvent*>(event);
   if( watched == ui->chaptersList  &&  contextMenuEvent != nullptr ) {
     QMenu menu;
+    QAction *open     = menu.addAction(tr("Open binder..."));
+    QAction *save     = menu.addAction(tr("Save binder..."));
+    menu.addSeparator();
     QAction *remove   = menu.addAction(tr("Remove numbering"));
     QAction *replace  = menu.addAction(tr("Replace underscore with space"));
     QAction *simplify = menu.addAction(tr("Simplify"));
@@ -138,7 +142,11 @@ bool WBookBinder::eventFilter(QObject *watched, QEvent *event)
     QAction *resetChapters = menu.addAction(tr("Reset chapter titles"));
 
     QAction *choice = menu.exec(contextMenuEvent->globalPos());
-    if(        choice == remove ) {
+    if(        choice == open ) {
+      openBinder();
+    } else if( choice == save ) {
+      saveBinder();
+    } else if( choice == remove ) {
       _model->apply(BookBinderModel::RemoveNumbering);
     } else if( choice == replace ) {
       _model->apply(BookBinderModel::ReplaceUnderscore);
@@ -174,6 +182,28 @@ void WBookBinder::moveChapter(const bool is_up)
     ui->chaptersList->setCurrentIndex(moved);
   }
   ui->chaptersList->setFocus();
+}
+
+void WBookBinder::openBinder()
+{
+  const QString filename =
+      QFileDialog::getOpenFileName(this, tr("Open"), QDir::currentPath(), tr("Binders (*.xml)"));
+  if( filename.isEmpty() ) {
+    return;
+  }
+  const BookBinder binder = ::openBinder(filename);
+  _model->appendChapters(binder);
+}
+
+void WBookBinder::saveBinder()
+{
+  const QString filename =
+      QFileDialog::getSaveFileName(this, tr("Save"), QDir::currentPath(), tr("Binders (*.xml)"));
+  if( filename.isEmpty() ) {
+    return;
+  }
+  const BookBinder binder = _model->binder();
+  ::saveBinder(filename, binder);
 }
 
 QModelIndex WBookBinder::singleSelection() const
