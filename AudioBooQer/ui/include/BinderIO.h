@@ -36,6 +36,7 @@
 
 #include "BookBinder.h"
 
+BookBinder openBinder(const QString& filename);
 bool saveBinder(const QString& filename, const BookBinder& binder);
 
 #endif // BINDERIO_H

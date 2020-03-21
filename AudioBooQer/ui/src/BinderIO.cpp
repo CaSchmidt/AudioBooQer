@@ -30,9 +30,76 @@
 *****************************************************************************/
 
 #include <QtCore/QFile>
+#include <QtCore/QXmlStreamReader>
 #include <QtCore/QXmlStreamWriter>
 
 #include "BinderIO.h"
+
+#define XML_BINDER   QStringLiteral("binder")
+#define XML_CHAPTER  QStringLiteral("chapter")
+#define XML_FILE     QStringLiteral("file")
+#define XML_TITLE    QStringLiteral("title")
+
+namespace priv {
+
+  void readChapter(QXmlStreamReader& xml, BookBinder& binder)
+  {
+    QString file;
+    QString title;
+    while( xml.readNextStartElement() ) {
+      if(        xml.name() == XML_TITLE ) {
+        title = xml.readElementText();
+      } else if( xml.name() == XML_FILE ) {
+        file  = xml.readElementText();
+      } else {
+        xml.skipCurrentElement();
+      }
+    }
+
+    if( file.isEmpty()  ||  title.isEmpty() ) {
+      return;
+    }
+
+    BookBinderChapter chapter;
+    chapter.first  = title.toStdU16String();
+    chapter.second = file.toUtf8().constData();
+    binder.push_back(chapter);
+  }
+
+  void readBinder(QXmlStreamReader& xml, BookBinder& binder)
+  {
+    while( xml.readNextStartElement() ) {
+      if( xml.name() == XML_CHAPTER ) {
+        readChapter(xml, binder);
+      } else {
+        xml.skipCurrentElement();
+      }
+    }
+  }
+
+} // namespace priv
+
+BookBinder openBinder(const QString& filename)
+{
+  BookBinder result;
+
+  QFile file(filename);
+  if( !file.open(QIODevice::ReadOnly) ) {
+    return BookBinder();
+  }
+
+  QXmlStreamReader xml(&file);
+
+  while( xml.readNextStartElement() ) {
+    if( xml.name() == XML_BINDER ) {
+      priv::readBinder(xml, result);
+    } else {
+      xml.skipCurrentElement();
+    }
+  }
+
+  return result;
+}
 
 bool saveBinder(const QString& filename, const BookBinder& binder)
 {
@@ -46,13 +113,13 @@ bool saveBinder(const QString& filename, const BookBinder& binder)
   xml.setAutoFormattingIndent(2);
   xml.writeStartDocument();
 
-  xml.writeStartElement(QStringLiteral("binder")); // Begin Binder ///////////
+  xml.writeStartElement(XML_BINDER); // Begin Binder /////////////////////////
 
   for(const BookBinderChapter& chapter : binder) {
-    xml.writeStartElement(QStringLiteral("chapter")); // Begin Chapter ///////
+    xml.writeStartElement(XML_CHAPTER); // Begin Chapter /////////////////////
 
-    xml.writeTextElement(QStringLiteral("title"), QString::fromStdU16String(chapter.first));
-    xml.writeTextElement(QStringLiteral("file"), QString::fromUtf8(chapter.second.data()));
+    xml.writeTextElement(XML_TITLE, QString::fromStdU16String(chapter.first));
+    xml.writeTextElement(XML_FILE,  QString::fromUtf8(chapter.second.data()));
 
     xml.writeEndElement(); // End Chapter ////////////////////////////////////
   }
