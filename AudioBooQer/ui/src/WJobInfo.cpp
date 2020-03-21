@@ -63,7 +63,7 @@ WJobInfo::WJobInfo(QWidget *parent, Qt::WindowFlags f)
   // Future Watcher //////////////////////////////////////////////////////////
 
   connect(&_watcher, &JobWatcher::finished,
-          this, &WJobInfo::enableClose);
+          this, &WJobInfo::finish);
   connect(&_watcher, &JobWatcher::resultReadyAt,
           this, &WJobInfo::readResult);
   connect(&_watcher, &JobWatcher::progressRangeChanged,
@@ -150,8 +150,9 @@ void WJobInfo::reject()
   QDialog::reject();
 }
 
-void WJobInfo::enableClose()
+void WJobInfo::finish()
 {
+  qSort(_results);
   ui->closeButton->setEnabled(true);
 }
 

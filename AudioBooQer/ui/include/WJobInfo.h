@@ -61,7 +61,7 @@ private slots:
   int exec();
   void open();
   void reject();
-  void enableClose();
+  void finish();
   void readResult(int index);
   void setProgressRange(int min, int max);
   void setProgressValue(int val);
