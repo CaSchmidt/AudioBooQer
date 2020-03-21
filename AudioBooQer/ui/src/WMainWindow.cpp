@@ -40,6 +40,7 @@
 #include "WMainWindow.h"
 #include "ui_WMainWindow.h"
 
+#include "BinderIO.h"
 #include "Chapter.h"
 #include "ChapterModel.h"
 #include "Mpeg4Audio.h"
@@ -243,9 +244,13 @@ void WMainWindow::openDirectory()
 
 void WMainWindow::processJobs()
 {
+  // (1) Sanity check UI /////////////////////////////////////////////////////
+
   if( !ui->formatWidget->format().isValid() ) {
     return;
   }
+
+  // (2) Query destination folder ////////////////////////////////////////////
 
   const QString outputDirPath =
       QFileDialog::getExistingDirectory(this,
@@ -254,6 +259,8 @@ void WMainWindow::processJobs()
   if( outputDirPath.isEmpty() ) {
     return;
   }
+
+  // (3) Build jobs from ChapterModel ////////////////////////////////////////
 
   ChapterModel *model = dynamic_cast<ChapterModel*>(ui->chaptersView->model());
   if( model == nullptr ) {
@@ -264,8 +271,7 @@ void WMainWindow::processJobs()
   if( jobs.size() < 1 ) {
     return;
   }
-
-  ui->playerWidget->stop();
+  model->deleteJobs();
 
   for(Job& job : jobs) {
     job.format        = ui->formatWidget->format();
@@ -273,9 +279,27 @@ void WMainWindow::processJobs()
     job.renameInput   = ui->renameCheck->isChecked();
   }
 
+  // (4) Maintain state of audio player //////////////////////////////////////
+
+  ui->playerWidget->stop();
+  ui->playerWidget->setFiles(model->files());
+
+  // (5) Execute jobs ////////////////////////////////////////////////////////
+
   WJobInfo jobInfo(this);
   jobInfo.executeJobs(jobs);
 
-  model->deleteJobs();
-  ui->playerWidget->setFiles(model->files());
+  // (6) (Optionally) Save to binder /////////////////////////////////////////
+
+  if( QMessageBox::question(this, tr("Question"), tr("Create binder?"),
+                            QMessageBox::Yes | QMessageBox::No,
+                            QMessageBox::No)
+      == QMessageBox::Yes ) {
+    const QString filename =
+        QFileDialog::getSaveFileName(this, tr("Save"), QDir::currentPath(), tr("Binders (*.xml)"));
+    if( !filename.isEmpty() ) {
+      const BookBinder binder = jobInfo.binder();
+      saveBinder(filename, binder);
+    }
+  }
 }
