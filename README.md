@@ -6,6 +6,6 @@ Create audiobooks with ease.
 
 ### Step 1: Create chapters
 
-Open a directory (`Ctrl+O`) with the tracks of your audiobook and group into chapters.
+Open a directory (`Ctrl+O`) with the tracks of your audiobook and group them into chapters.
 
-[Step 1](AudioBooQer/docs/QuickStart/step1.png)
+![Step 1](AudioBooQer/docs/QuickStart/step1.png)
