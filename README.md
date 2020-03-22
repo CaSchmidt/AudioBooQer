@@ -29,3 +29,7 @@ Bind the encoded chapters (`Ctrl+B`) to a single audiobook in `M4B` format.
 Tag the audiobook (`Ctrl+T`) to supply meta information.
 
 ![Step 3](AudioBooQer/docs/QuickStart/step3.png)
+
+## Internals AKA How is it done?
+
+You may want to take a look at the [References](AudioBooQer/docs/References.md) first.
