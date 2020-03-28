@@ -50,3 +50,15 @@ For an `MP4` file to be recognized by **iTunes** as an audiobook the following c
   Usually the `AAC` frame length is used.
   The conversion to time units is performed using the "time scale" which resembles the sampling rate of the audio stream.
 - A separate text track is written to provide the chapter boundaries.
+
+Creating audiobooks is performed in two steps:
+
+1. Encoding of audio streams for each chapter using the [FDK AAC](https://github.com/mstorsjo/fdk-aac) library.
+  - For each chapter, the selected audio files are encoded to a consecutive audio stream.
+  - Decoding the individual audio files is performed using [QAudioDecoder](https://doc.qt.io/qt-5/qaudiodecoder.html).
+  - The class `QAudioDecoder` closely interacts with the class [AudioJob](AudioBooQer/ui/include/AudioJob.h)
+    to produced a consecutive audio stream.
+  - Encoding to `AAC` audio is provided by the class [AacEncoder](AudioBooQer/audiobook/include/AacEncoder.h) which
+    implements the [IAudioEncoder](AudioBooQer/audiobook/include/IAudioEncoder.h) interface.
+  - The resulting `AAC` stream is written to an `ADTS` stream.
+  - Upon finishing each file set, the `AAC` stream is padded to complete `AAC` frames by inserting zero samples.
