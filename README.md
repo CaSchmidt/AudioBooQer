@@ -34,12 +34,12 @@ Tag the audiobook (`Ctrl+T`) to supply meta information.
 
 You may also want to take a look at the [References](AudioBooQer/docs/References.md).
 
-The main goal while developing **AudioBooQer** was to create audiobooks that are playable with **iTunes** and
-to support all its bells and whistles like chapter names, seeking and bookmarks.
+The main goal while developing **AudioBooQer** was to create audiobooks that are playable with **iTunes**
+with support for all its bells and whistles like chapter names, seeking and bookmarks.
 
 As it turns out, audiobooks for the **iTunes** store, usually distributed as `M4B` files,
 are just `AAC` encoded audio streams with a separate text stream providing the chapter marks.
-The infamous `M4B` format used for distribution is a derivative of the `MP4` format,
+The infamous `M4B` format used for distribution is a derivative of the `MP4` format
 specified in the MPEG-4 / ISO 14996 standard.
 
 However, encoding audio to `AAC`, writing the stream to `MP4` and
