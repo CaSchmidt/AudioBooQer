@@ -46,9 +46,9 @@ However, encoding audio to `AAC`, writing the stream to `MP4` and
 renaming the file to `MP4` will not produce a valid `M4B` audiobook recognized by **iTunes**.
 For an `MP4` file to be recognized by **iTunes** as an audiobook the following constraints must be met:
 
-- The audio stream is stored in fixed time intervals or "samples" according to the MPEG-4 standard.
+- The audio stream is stored in fixed time intervals or *samples* according to the MPEG-4 standard.
   Usually the `AAC` frame length is used.
-  The conversion to time units is performed using the "time scale" which resembles the sampling rate of the audio stream.
+  The conversion to time units is performed using the *time scale* which resembles the sampling rate of the audio stream.
 - A separate text track is written to provide the chapter boundaries.
 
 Creating audiobooks is performed in two steps:
@@ -62,3 +62,14 @@ Creating audiobooks is performed in two steps:
      implements the [IAudioEncoder](AudioBooQer/audiobook/include/IAudioEncoder.h) interface.
    - The resulting `AAC` stream is written to an `ADTS` stream.
    - Upon finishing each file set, the `AAC` stream is padded to complete `AAC` frames by inserting zero samples.
+2. Writing the chapters to a `M4B` file using the [mp4v2](https://github.com/TechSmith/mp4v2) library.
+   - **Note**: Storing the chapters as `ADTS` streams allows easy access to individual `AAC` frames and
+     thus to determine the length of each chapter.
+   - The duration of each chapter with respect to audio samples is determined.
+   - A `MP4` file is created with the *FourCC* `M4B `, the total duration of the audiobook and
+     the *time scale* (sampling rate) of the audio stream.
+   - An audio track with the *time scale* and fixed (MPEG-4) *sample* duration is created.
+   - The *AudioSpecificConfig* of the audio stream is written to the audio track.
+   - Each chapter is written to the audio track.
+   - A text track depending on the audio track is created.
+   - The duration and title for each chapter are written to the text track.
