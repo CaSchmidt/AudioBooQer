@@ -1,9 +1,50 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <iostream>
 #include <limits>
 
 #include <mp4v2/mp4v2.h>
+
+void print_tags(const MP4FileHandle file)
+{
+  const MP4Tags *tags = MP4TagsAlloc();
+  if( MP4TagsFetch(tags, file) ) {
+    printf("name         = %s\n", tags->name);
+    printf("artist       = %s\n", tags->artist);
+    printf("album artist = %s\n", tags->albumArtist);
+    printf("album        = %s\n", tags->album);
+    printf("grouping     = %s\n", tags->grouping);
+    printf("composer     = %s\n", tags->composer);
+    printf("comments     = %s\n", tags->comments);
+    printf("genre        = %s\n", tags->genre);
+    printf("release date = %s\n", tags->releaseDate);
+    if( tags->track != nullptr ) {
+      printf("track        = %d/%d\n", tags->track->index, tags->track->total);
+    }
+    if( tags->disk != nullptr ) {
+      printf("disk         = %d/%d\n", tags->disk->index, tags->disk->total);
+    }
+    printf("description  = %s\n", tags->description);
+    printf("long descr.  = %s\n", tags->longDescription);
+    printf("lyrics       = %s\n", tags->lyrics);
+    printf("--- sorting ---\n");
+    printf("name         = %s\n", tags->sortName);
+    printf("artist       = %s\n", tags->sortArtist);
+    printf("album artist = %s\n", tags->sortAlbumArtist);
+    printf("album        = %s\n", tags->sortAlbum);
+    printf("composer     = %s\n", tags->sortComposer);
+    printf("copyright    = %s\n", tags->copyright);
+    printf("encoding tl. = %s\n", tags->encodingTool);
+    printf("encoded by   = %s\n", tags->encodedBy);
+    printf("purchase dt. = %s\n", tags->purchaseDate);
+    printf("keywords     = %s\n", tags->keywords);
+    printf("category     = %s\n", tags->category);
+    printf("iTunes acc.  = %s\n", tags->iTunesAccount);
+    printf("xid          = %s\n", tags->xid);
+  }
+  MP4TagsFree(tags); tags = nullptr;
+}
 
 int main(int argc, char **argv)
 {
@@ -22,7 +63,7 @@ int main(int argc, char **argv)
   }
 
   if( argc - 1 > 1 ) {
-    const uint32_t trackId = static_cast<uint32_t>(argv[2][0]) - 0x30;
+    const MP4TrackId trackId = static_cast<MP4TrackId>(argv[2][0]) - 0x30;
 
     printf("\n\n");
 
@@ -68,44 +109,14 @@ int main(int argc, char **argv)
       MP4Free(config);
     }
 
-#if 0
-    const MP4Tags *tags = MP4TagsAlloc();
-    if( MP4TagsFetch(tags, file) ) {
-      printf("name         = %s\n", tags->name);
-      printf("artist       = %s\n", tags->artist);
-      printf("album artist = %s\n", tags->albumArtist);
-      printf("album        = %s\n", tags->album);
-      printf("grouping     = %s\n", tags->grouping);
-      printf("composer     = %s\n", tags->composer);
-      printf("comments     = %s\n", tags->comments);
-      printf("genre        = %s\n", tags->genre);
-      printf("release date = %s\n", tags->releaseDate);
-      if( tags->track != nullptr ) {
-        printf("track        = %d/%d\n", tags->track->index, tags->track->total);
-      }
-      if( tags->disk != nullptr ) {
-        printf("disk         = %d/%d\n", tags->disk->index, tags->disk->total);
-      }
-      printf("description  = %s\n", tags->description);
-      printf("long descr.  = %s\n", tags->longDescription);
-      printf("lyrics       = %s\n", tags->lyrics);
-      printf("--- sorting ---\n");
-      printf("name         = %s\n", tags->sortName);
-      printf("artist       = %s\n", tags->sortArtist);
-      printf("album artist = %s\n", tags->sortAlbumArtist);
-      printf("album        = %s\n", tags->sortAlbum);
-      printf("composer     = %s\n", tags->sortComposer);
-      printf("copyright    = %s\n", tags->copyright);
-      printf("encoding tl. = %s\n", tags->encodingTool);
-      printf("encoded by   = %s\n", tags->encodedBy);
-      printf("purchase dt. = %s\n", tags->purchaseDate);
-      printf("keywords     = %s\n", tags->keywords);
-      printf("category     = %s\n", tags->category);
-      printf("iTunes acc.  = %s\n", tags->iTunesAccount);
-      printf("xid          = %s\n", tags->xid);
+    uint64_t flags = 0;
+    if( MP4GetTrackIntegerProperty(file, trackId, "tkhd.flags", &flags) ) {
+      std::cout << "flags: " << std::showbase << std::hex << flags << std::endl;
     }
-    MP4TagsFree(tags); tags = nullptr;
-#endif
+
+    char language[4] = { 0, 0, 0, 0 };
+    MP4GetTrackLanguage(file, trackId, language);
+    printf("language: %s\n", language);
   }
 
   MP4Close(file);
