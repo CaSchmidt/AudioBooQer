@@ -222,5 +222,6 @@ endmacro()
 ### Tests ####################################################################
 
 mp4_test(mp4create src/mp4create.cpp)
+mp4_test(mp4dump src/mp4dump.cpp)
 mp4_test(mp4info src/mp4info.cpp)
 mp4_test(mp4modify src/mp4modify.cpp)
