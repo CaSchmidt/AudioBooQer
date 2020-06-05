@@ -60,5 +60,12 @@ int main(int argc, char **argv)
 
   MP4Close(file);
 
+  const char *brand0 = "M4B ";
+  const char *brand1 = "3gp5";
+  const char *brand2 = "isom";
+  const char *brand3 = "mp42";
+  const char *brands[] = { brand0, brand1, brand2, brand3 };
+  MP4Make3GPCompliant(ARG_FILE, const_cast<char*>(brand0), 0, const_cast<char **>(brands), 4);
+
   return EXIT_SUCCESS;
 }
