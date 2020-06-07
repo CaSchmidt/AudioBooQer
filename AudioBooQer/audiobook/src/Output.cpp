@@ -121,7 +121,8 @@ namespace priv {
 ////// Public ////////////////////////////////////////////////////////////////
 
 bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder,
-                      const uint16_t refAsc, const uint32_t numSamplesPerAacFrame)
+                      const uint16_t refAsc, const uint32_t numSamplesPerAacFrame,
+                      const std::string& language)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
 
@@ -160,8 +161,14 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
 
   // (3) Create MP4 file /////////////////////////////////////////////////////
 
+  const char *brand0 = "M4B ";
+  const char *brand1 = "isom";
+  const char *brand2 = "mp42"; // required for a valid MP4 file, cf. ISO 14496-14 "4 File Identification"
+  const char *brands[] = { brand0, brand1, brand2 };
+  char **compBrands = const_cast<char**>(brands);
+
   const MP4FileHandle file =
-      MP4CreateEx(filename_utf8.data(), 0, 1, 0, const_cast<char*>("M4B "), 0);
+      MP4CreateEx(filename_utf8.data(), 0, 1, 0, compBrands[0], 0, compBrands, 3);
   if( file == MP4_INVALID_FILE_HANDLE ) {
     return false;
   }
@@ -176,6 +183,21 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
   const MP4TrackId auTrackId =
       MP4AddAudioTrack(file, timeScale, numSamplesPerAacFrame, MP4_MPEG4_AUDIO_TYPE);
   if( auTrackId == MP4_INVALID_TRACK_ID ) {
+    MP4Close(file);
+    return false;
+  }
+
+  // (5.1) Set track's flags /////////////////////////////////////////////////
+
+  /*
+   * Flags (tkhd.flags), cf. ISO 14496-12 "8.3.2 Track Header Box":
+   *
+   * 0x1: Track_enabled
+   * 0x2: Track_in_movie
+   * 0x4: Track_in_preview
+   * 0x8: Track_size_is_aspect_ratio
+   */
+  if( !MP4SetTrackIntegerProperty(file, auTrackId, "tkhd.flags", 0xF) ) {
     MP4Close(file);
     return false;
   }
@@ -201,6 +223,30 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
   if( chTrackId == MP4_INVALID_TRACK_ID ) {
     MP4Close(file);
     return false;
+  }
+
+  // (8.1) Set track's flags /////////////////////////////////////////////////
+
+  /*
+   * Flags (tkhd.flags), cf. ISO 14496-12 "8.3.2 Track Header Box":
+   *
+   * 0x1: Track_enabled
+   * 0x2: Track_in_movie
+   * 0x4: Track_in_preview
+   * 0x8: Track_size_is_aspect_ratio
+   */
+  if( !MP4SetTrackIntegerProperty(file, chTrackId, "tkhd.flags", 0xF) ) {
+    MP4Close(file);
+    return false;
+  }
+
+  // (8.2) Set track's language //////////////////////////////////////////////
+
+  if( language.size() == 3 ) { // cf. ISO 639-2/T
+    if( !MP4SetTrackLanguage(file, chTrackId, language.data()) ) {
+      MP4Close(file);
+      return false;
+    }
   }
 
   // (9) Create chapters /////////////////////////////////////////////////////

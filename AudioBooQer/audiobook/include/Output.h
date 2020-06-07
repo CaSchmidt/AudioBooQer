@@ -35,6 +35,7 @@
 #include "BookBinder.h"
 
 bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder,
-                      const uint16_t refAsc, const uint32_t numSamplesPerAacFrame);
+                      const uint16_t refAsc, const uint32_t numSamplesPerAacFrame,
+                      const std::string& language = std::string());
 
 #endif // OUTPUT_H
