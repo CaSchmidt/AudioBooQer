@@ -171,6 +171,23 @@
              </item>
             </layout>
            </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <property name="spacing">
+              <number>4</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Language:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="languageCombo"/>
+             </item>
+            </layout>
+           </item>
           </layout>
          </widget>
         </item>
@@ -318,6 +335,7 @@
   <tabstop>chapterNoCheck</tabstop>
   <tabstop>firstChapterSpin</tabstop>
   <tabstop>numberWidthSpin</tabstop>
+  <tabstop>languageCombo</tabstop>
   <tabstop>goButton</tabstop>
  </tabstops>
  <resources/>

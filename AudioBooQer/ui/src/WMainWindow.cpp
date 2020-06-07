@@ -123,6 +123,12 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   ui->nextAction->setShortcut(Qt::CTRL+Qt::Key_4);
   connect(ui->nextAction, SIGNAL(triggered()),
           ui->playerWidget, SLOT(next()));
+
+  // Languages ///////////////////////////////////////////////////////////////
+
+  ui->languageCombo->addItem(tr("Undetermined"), QString());
+  ui->languageCombo->addItem(tr("English"), QStringLiteral("eng"));
+  ui->languageCombo->addItem(tr("German"), QStringLiteral("deu"));
 }
 
 WMainWindow::~WMainWindow()
@@ -157,7 +163,8 @@ void WMainWindow::bindBook()
     return;
   }
 
-  outputAdtsBinder(filename.toStdString(), binder, asc, format.numSamplesPerAacFrame);
+  outputAdtsBinder(filename.toStdString(), binder, asc, format.numSamplesPerAacFrame,
+                   ui->languageCombo->currentData().toString().toStdString());
 
   QMessageBox::information(this, tr("Info"), tr("Done!"),
                            QMessageBox::Ok, QMessageBox::Ok);
