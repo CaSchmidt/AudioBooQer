@@ -210,6 +210,9 @@ void WMainWindow::editTag()
   }
 
   QDir::setCurrent(QFileInfo(filename).absolutePath());
+
+  QMessageBox::information(this, tr("Info"), tr("Done!"),
+                           QMessageBox::Ok, QMessageBox::Ok);
 }
 
 void WMainWindow::openDirectory()
