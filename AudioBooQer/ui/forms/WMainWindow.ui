@@ -14,7 +14,7 @@
    <string>AudioBooQer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
     <property name="spacing">
      <number>4</number>
     </property>
@@ -70,8 +70,8 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout">
         <property name="spacing">
          <number>4</number>
         </property>
@@ -90,10 +90,7 @@
           <property name="title">
            <string>Options</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <property name="spacing">
-            <number>4</number>
-           </property>
+          <layout class="QGridLayout" name="gridLayout">
            <property name="leftMargin">
             <number>4</number>
            </property>
@@ -106,7 +103,10 @@
            <property name="bottomMargin">
             <number>4</number>
            </property>
-           <item>
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <item row="0" column="0" colspan="2">
             <widget class="QCheckBox" name="renameCheck">
              <property name="text">
               <string>Rename processed files</string>
@@ -116,77 +116,73 @@
              </property>
             </widget>
            </item>
-           <item>
+           <item row="1" column="0" colspan="2">
             <widget class="QCheckBox" name="chapterNoCheck">
              <property name="text">
               <string>Insert chapter number</string>
              </property>
             </widget>
            </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <property name="spacing">
-              <number>4</number>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>First chapter number:</string>
              </property>
-             <item>
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>First chapter number:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="firstChapterSpin">
-               <property name="minimum">
-                <number>0</number>
-               </property>
-               <property name="maximum">
-                <number>1000</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            </widget>
            </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <property name="spacing">
-              <number>4</number>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="firstChapterSpin">
+             <property name="minimum">
+              <number>0</number>
              </property>
-             <item>
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Digits of chapter numbers:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="numberWidthSpin">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>10</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
+             <property name="maximum">
+              <number>1000</number>
+             </property>
+            </widget>
            </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <property name="spacing">
-              <number>4</number>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Digits of chapter numbers:</string>
              </property>
-             <item>
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>Language:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="languageCombo"/>
-             </item>
-            </layout>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="numberWidthSpin">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Language:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QComboBox" name="languageCombo"/>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Threads:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QSpinBox" name="threadSpin">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>256</number>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -336,6 +332,7 @@
   <tabstop>firstChapterSpin</tabstop>
   <tabstop>numberWidthSpin</tabstop>
   <tabstop>languageCombo</tabstop>
+  <tabstop>threadSpin</tabstop>
   <tabstop>goButton</tabstop>
  </tabstops>
  <resources/>

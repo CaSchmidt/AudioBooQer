@@ -29,9 +29,10 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtWidgets/QApplication>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
+#include <QtCore/QThreadPool>
+#include <QtWidgets/QApplication>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
@@ -129,6 +130,11 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   ui->languageCombo->addItem(tr("Undetermined"), QString());
   ui->languageCombo->addItem(tr("English"), QStringLiteral("eng"));
   ui->languageCombo->addItem(tr("German"), QStringLiteral("deu"));
+
+  // Threads /////////////////////////////////////////////////////////////////
+
+  ui->threadSpin->setRange(1, QThread::idealThreadCount());
+  ui->threadSpin->setValue(qBound<int>(1, 2, ui->threadSpin->maximum()));
 }
 
 WMainWindow::~WMainWindow()
@@ -295,6 +301,8 @@ void WMainWindow::processJobs()
   ui->playerWidget->setFiles(model->files());
 
   // (5) Execute jobs ////////////////////////////////////////////////////////
+
+  QThreadPool::globalInstance()->setMaxThreadCount(ui->threadSpin->value());
 
   WJobInfo jobInfo(this);
   jobInfo.executeJobs(jobs);
