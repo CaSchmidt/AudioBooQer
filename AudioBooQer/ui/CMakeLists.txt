@@ -10,6 +10,7 @@ list(APPEND ui_FORMS
   )
 
 list(APPEND ui_HEADERS
+  include/AudioBuffer.h
   include/AudioJob.h
   include/BinderIO.h
   include/BookBinderModel.h
@@ -25,6 +26,7 @@ list(APPEND ui_HEADERS
   )
 
 list(APPEND ui_SOURCES
+  src/AudioBuffer.cpp
   src/AudioJob.cpp
   src/BinderIO.cpp
   src/BookBinderModel.cpp

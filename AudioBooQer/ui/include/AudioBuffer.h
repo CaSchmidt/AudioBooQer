@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2019, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2020, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,48 +29,32 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef AUDIOJOB_H
-#define AUDIOJOB_H
+#ifndef AUDIOBUFFER_H
+#define AUDIOBUFFER_H
 
-#include <QtMultimedia/QAudioDecoder>
+#include <QtCore/QBuffer>
+#include <QtCore/QFile>
 
-#include "AudioBuffer.h"
-#include "IAudioEncoder.h"
-#include "Job.h"
-
-class AudioJob : public QObject {
-  Q_OBJECT
+class AudioBuffer {
 public:
-  AudioJob(const Job& job, QObject *parent = nullptr);
-  ~AudioJob();
+  AudioBuffer();
+  ~AudioBuffer();
 
-  QString message() const;
-  uint64_t numTimeSamples() const;
-  QString outputFilePath() const;
+  operator bool() const;
+  operator QIODevice*() const;
 
-  bool start();
+  void clear();
+  bool initialize(const QString& filename);
 
-private slots:
-  void decodingBufferReady();
-  void decodingError(QAudioDecoder::Error error);
-  void decodingFinished();
+  QString fileName() const;
 
 private:
-  void appendErrorMessage(const QString& msg);
-  void appendInfoMessage(const QString& msg);
-  void renameInput();
-  bool startDecode();
+  bool fileIsBuffered() const;
 
-  QAudioDecoder _decoder;
-  AudioEncoderPtr _encoder;
-  AudioBuffer _inputBuffer;
-  Job _job;
-  QString _message;
-  uint64_t _numTimeSamples;
-  QString _outputFilePath;
-
-signals:
-  void done();
+  QBuffer _buffer;
+  QByteArray _data;
+  QIODevice *_device{nullptr};
+  QFile _file;
 };
 
-#endif // AUDIOJOB_H
+#endif // AUDIOBUFFER_H
