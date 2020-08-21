@@ -19,6 +19,8 @@ add_subdirectory(../csQt/csQt
   ${CMAKE_CURRENT_BINARY_DIR}/csQt
   )
 
+set(ENABLE_QT ON CACHE BOOL "" FORCE)
+
 add_subdirectory(../csUtil/csUtil
   ${CMAKE_CURRENT_BINARY_DIR}/csUtil
   )
