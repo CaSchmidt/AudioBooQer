@@ -318,14 +318,6 @@ void WMainWindow::processJobs()
   }
   model->deleteJobs();
 
-#if 0
-  for(Job& job : jobs) {
-    job.format        = ui->formatWidget->format();
-    job.outputDirPath = outputDirPath;
-    job.renameInput   = ui->renameCheck->isChecked();
-  }
-#endif
-
   // (4) Maintain state of audio player //////////////////////////////////////
 
   ui->playerWidget->stop();
@@ -335,7 +327,6 @@ void WMainWindow::processJobs()
 
   QThreadPool::globalInstance()->setMaxThreadCount(ui->threadSpin->value());
 
-#if 1
   csWProgressLogger dialog(this);
   dialog.setWindowTitle(QStringLiteral("Executing jobs..."));
 
@@ -349,10 +340,6 @@ void WMainWindow::processJobs()
 
   dialog.exec();
   future.waitForFinished();
-#else
-  WJobInfo jobInfo(this);
-  jobInfo.executeJobs(jobs);
-#endif
 
   // (6) (Optionally) Save to binder /////////////////////////////////////////
 
