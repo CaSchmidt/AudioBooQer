@@ -133,7 +133,7 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
 
   // Threads /////////////////////////////////////////////////////////////////
 
-  ui->threadSpin->setRange(1, QThread::idealThreadCount());
+  ui->threadSpin->setRange(1, qMax<int>(1, QThread::idealThreadCount()));
   ui->threadSpin->setValue(qBound<int>(1, 2, ui->threadSpin->maximum()));
 }
 
