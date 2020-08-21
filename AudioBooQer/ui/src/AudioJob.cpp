@@ -80,11 +80,11 @@ AudioJob::AudioJob(const Job& job, QObject *parent)
   // Signals & Slots /////////////////////////////////////////////////////////
 
   connect(&_decoder, &QAudioDecoder::bufferReady,
-          this, &AudioJob::decodingBufferReady);
+          this, &AudioJob::decodingBufferReady, Qt::DirectConnection);
   connect(&_decoder, QOverload<QAudioDecoder::Error>::of(&QAudioDecoder::error),
-          this, &AudioJob::decodingError);
+          this, &AudioJob::decodingError, Qt::DirectConnection);
   connect(&_decoder, &QAudioDecoder::finished,
-          this, &AudioJob::decodingFinished);
+          this, &AudioJob::decodingFinished, Qt::DirectConnection);
 }
 
 AudioJob::~AudioJob()
