@@ -52,7 +52,8 @@ target_include_directories(audiobook
   )
 
 target_link_libraries(audiobook
-  PRIVATE csUtil fdk-aac mp4v2
+  PRIVATE fdk-aac mp4v2
+  PUBLIC  csUtil
   )
 
 ### Tests ####################################################################
