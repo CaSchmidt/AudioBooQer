@@ -29,6 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <QtConcurrent/QtConcurrentMap>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QThreadPool>
@@ -37,6 +38,7 @@
 #include <QtWidgets/QMessageBox>
 
 #include <csQt/csQtUtil.h>
+#include <csUtil/csWProgressLogger.h>
 
 #include "WMainWindow.h"
 #include "ui_WMainWindow.h"
@@ -47,8 +49,35 @@
 #include "Mpeg4Audio.h"
 #include "Output.h"
 #include "WBookBinder.h"
-#include "WJobInfo.h"
 #include "WTagEditor.h"
+
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  void complementJobs(Jobs& jobs, const csILogger *logger, const QString& outputDirPath,
+                      const Ui::WMainWindow *ui)
+  {
+    for(Job& job : jobs) {
+      job.format        = ui->formatWidget->format();
+      job.logger        = logger;
+      job.outputDirPath = outputDirPath;
+      job.renameInput   = ui->renameCheck->isChecked();
+    }
+  }
+
+  BookBinder makeBinder(JobResults results)
+  {
+    std::sort(results.begin(), results.end());
+
+    BookBinder binder;
+    for(const JobResult& result : results) {
+      binder.emplace_back(result.title.toStdU16String(), result.outputFilePath.toStdString());
+    }
+    return binder;
+  }
+
+} // namespace priv
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -289,11 +318,13 @@ void WMainWindow::processJobs()
   }
   model->deleteJobs();
 
+#if 0
   for(Job& job : jobs) {
     job.format        = ui->formatWidget->format();
     job.outputDirPath = outputDirPath;
     job.renameInput   = ui->renameCheck->isChecked();
   }
+#endif
 
   // (4) Maintain state of audio player //////////////////////////////////////
 
@@ -304,8 +335,24 @@ void WMainWindow::processJobs()
 
   QThreadPool::globalInstance()->setMaxThreadCount(ui->threadSpin->value());
 
+#if 1
+  csWProgressLogger dialog(this);
+  dialog.setWindowTitle(QStringLiteral("Executing jobs..."));
+
+  priv::complementJobs(jobs, dialog.logger(), outputDirPath, ui);
+
+  QFutureWatcher<JobResult> watcher;
+  dialog.setFutureWatcher(&watcher);
+
+  QFuture<JobResult> future = QtConcurrent::mapped(jobs, executeJob);
+  watcher.setFuture(future);
+
+  dialog.exec();
+  future.waitForFinished();
+#else
   WJobInfo jobInfo(this);
   jobInfo.executeJobs(jobs);
+#endif
 
   // (6) (Optionally) Save to binder /////////////////////////////////////////
 
@@ -316,7 +363,7 @@ void WMainWindow::processJobs()
     const QString filename =
         QFileDialog::getSaveFileName(this, tr("Save"), QDir::currentPath(), tr("Binders (*.xml)"));
     if( !filename.isEmpty() ) {
-      const BookBinder binder = jobInfo.binder();
+      const BookBinder binder = priv::makeBinder(future.results());
       saveBinder(filename, binder);
     }
   }

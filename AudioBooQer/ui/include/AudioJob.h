@@ -44,7 +44,6 @@ public:
   AudioJob(const Job& job, QObject *parent = nullptr);
   ~AudioJob();
 
-  QString message() const;
   uint64_t numTimeSamples() const;
   QString outputFilePath() const;
 
@@ -56,7 +55,6 @@ private slots:
   void decodingFinished();
 
 private:
-  void appendErrorMessage(const QString& msg);
   void appendInfoMessage(const QString& msg);
   void renameInput();
   bool startDecode();

@@ -32,6 +32,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QEventLoop>
 
+#include <csUtil/csILogger.h>
+
 #include "Job.h"
 
 #include "AudioJob.h"
@@ -72,7 +74,7 @@ JobResult executeJob(const Job& job)
     audio = std::make_unique<AudioJob>(job);
   } catch(...) {
     audio.reset();
-    result.message = QStringLiteral("ERROR: AudioJob is <nullptr>!\n");
+    job.logger->logError("ERROR: AudioJob is <nullptr>!\n");
     return result;
   }
 
@@ -82,13 +84,10 @@ JobResult executeJob(const Job& job)
   if( audio->start() ) {
     loop.exec();
 
-    result.message        = audio->message();
     result.numTimeSamples = audio->numTimeSamples();
     result.outputFilePath = audio->outputFilePath();
     result.position       = job.position;
     result.title          = job.title;
-  } else {
-    result.message = audio->message();
   }
 
   return result;

@@ -38,6 +38,7 @@
 
 #include "AacFormat.h"
 
+class csILogger;
 class IAudioEncoder;
 
 struct Job {
@@ -47,6 +48,7 @@ struct Job {
 
   AacFormat format{};
   QStringList inputFiles{};
+  const csILogger *logger{nullptr};
   QString outputDirPath{};
   int position{};
   bool renameInput{false};
@@ -58,7 +60,6 @@ using Jobs = QList<Job>;
 struct JobResult {
   JobResult() = default;
 
-  QString message{};
   uint64_t numTimeSamples{};
   QString outputFilePath{};
   int position{};

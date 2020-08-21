@@ -4,7 +4,6 @@ list(APPEND ui_FORMS
   forms/WAudioFormat.ui
   forms/WAudioPlayer.ui
   forms/WBookBinder.ui
-  forms/WJobInfo.ui
   forms/WMainWindow.ui
   forms/WTagEditor.ui
   )
@@ -20,7 +19,6 @@ list(APPEND ui_HEADERS
   include/WAudioFormat.h
   include/WAudioPlayer.h
   include/WBookBinder.h
-  include/WJobInfo.h
   include/WMainWindow.h
   include/WTagEditor.h
   )
@@ -37,7 +35,6 @@ list(APPEND ui_SOURCES
   src/WAudioFormat.cpp
   src/WAudioPlayer.cpp
   src/WBookBinder.cpp
-  src/WJobInfo.cpp
   src/WMainWindow.cpp
   src/WTagEditor.cpp
   )

@@ -31,6 +31,8 @@
 
 #include <QtCore/QFile>
 
+#include <csUtil/csILogger.h>
+
 #include "AudioJob.h"
 
 #define HAVE_AAC
@@ -89,11 +91,6 @@ AudioJob::~AudioJob()
 {
 }
 
-QString AudioJob::message() const
-{
-  return _message;
-}
-
 uint64_t AudioJob::numTimeSamples() const
 {
   return _numTimeSamples;
@@ -110,7 +107,7 @@ bool AudioJob::start()
 
   _decoder.setAudioFormat(priv::convert(_job.format));
   if( _decoder.error() != QAudioDecoder::NoError ) {
-    appendErrorMessage(_decoder.errorString());
+    _job.logger->logError(_decoder.errorString().toStdString());
     return false;
   }
 
@@ -127,14 +124,14 @@ bool AudioJob::start()
   }
 
   if( !_encoder ) {
-    appendErrorMessage(QStringLiteral("IAudioEncoder is <nullptr>!"));
+    _job.logger->logError("IAudioEncoder is <nullptr>!");
     return false;
   }
 
   _outputFilePath = _job.outputFilePath(_encoder.get());
 
   if( !_encoder->initialize(_job.format, _outputFilePath.toStdString()) ) {
-    appendErrorMessage(QStringLiteral("IAudioEncoder::initialize() failed!"));
+    _job.logger->logError("IAudioEncoder::initialize() failed!");
     return false;
   }
 
@@ -152,7 +149,7 @@ void AudioJob::decodingBufferReady()
   const QAudioBuffer buffer = _decoder.read();
   if( !_encoder->encode(buffer.data(), buffer.byteCount()) ) {
     _decoder.stop();
-    appendErrorMessage(QStringLiteral("IAudioEncoder::encode() failed!"));
+    _job.logger->logError("IAudioEncoder::encode() failed!");
     emit done();
     return;
   } else {
@@ -163,7 +160,7 @@ void AudioJob::decodingBufferReady()
 void AudioJob::decodingError(QAudioDecoder::Error /*error*/)
 {
   _decoder.stop();
-  appendErrorMessage(_decoder.errorString());
+  _job.logger->logError(_decoder.errorString().toStdString());
   emit done();
 }
 
@@ -181,11 +178,12 @@ void AudioJob::decodingFinished()
         ? frameLength - mod
         : 0;
     if( !_encoder->flush(fill) ) {
-      appendErrorMessage(QStringLiteral("IAudioEncoder::flush() failed!"));
+      _job.logger->logError("IAudioEncoder::flush() failed!");
     } else {
       _numTimeSamples += fill;
       appendInfoMessage(QStringLiteral("= %1").arg(_outputFilePath));
     }
+    _job.logger->logText(_message.toStdString());
     emit done();
   } else {
     startDecode();
@@ -193,11 +191,6 @@ void AudioJob::decodingFinished()
 }
 
 ////// private ///////////////////////////////////////////////////////////////
-
-void AudioJob::appendErrorMessage(const QString& msg)
-{
-  _message.append(QStringLiteral("ERROR: %1\n").arg(msg));
-}
 
 void AudioJob::appendInfoMessage(const QString& msg)
 {
