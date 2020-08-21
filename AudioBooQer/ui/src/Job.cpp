@@ -49,6 +49,18 @@ QString Job::outputFilePath(IAudioEncoder *encoder) const
                                               .arg(suffix));
 }
 
+////// JobResult - public ////////////////////////////////////////////////////
+
+bool JobResult::isValid() const
+{
+  return numTimeSamples > 0;
+}
+
+bool JobResult::operator<(const JobResult& other) const
+{
+  return position < other.position;
+}
+
 ////// Public ////////////////////////////////////////////////////////////////
 
 JobResult executeJob(const Job& job)

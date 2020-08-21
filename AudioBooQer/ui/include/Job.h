@@ -64,15 +64,9 @@ struct JobResult {
   int position{};
   QString title{};
 
-  constexpr bool isValid() const
-  {
-    return numTimeSamples > 0;
-  }
+  bool isValid() const;
 
-  constexpr bool operator<(const JobResult& other) const
-  {
-    return position < other.position;
-  }
+  bool operator<(const JobResult& other) const;
 };
 
 using JobResults = QList<JobResult>;
