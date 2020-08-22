@@ -43,15 +43,13 @@ public:
 
   BookBinder binder() const;
 
-private slots:
-  void showContextMenu(const QPoint& p);
-
 private:
   static constexpr bool MOVE_DOWN = false;
   static constexpr bool MOVE_UP   = true;
 
   void moveChapter(const bool is_up);
   void onAdd();
+  void onContextMenu(const QPoint& globalPos);
   void onDown();
   void onRemove();
   void onUp();

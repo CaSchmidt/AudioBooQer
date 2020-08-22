@@ -46,17 +46,12 @@ WChapterList::WChapterList(QWidget *parent, Qt::WindowFlags f)
 {
   // User Interface //////////////////////////////////////////////////////////
 
+  setShowContextMenu(true);
+
   view()->setAlternatingRowColors(true);
   view()->setEditTriggers(QAbstractItemView::EditKeyPressed);
   view()->setSelectionBehavior(QAbstractItemView::SelectRows);
   view()->setSelectionMode(QAbstractItemView::SingleSelection);
-
-  // Context Menu ////////////////////////////////////////////////////////////
-
-  view()->setContextMenuPolicy(Qt::CustomContextMenu);
-
-  connect(view(), &QListView::customContextMenuRequested,
-          this, &WChapterList::showContextMenu);
 
   // Data Model //////////////////////////////////////////////////////////////
 
@@ -71,52 +66,6 @@ WChapterList::~WChapterList()
 BookBinder WChapterList::binder() const
 {
   return _model->binder();
-}
-
-////// private slots /////////////////////////////////////////////////////////
-
-void WChapterList::showContextMenu(const QPoint& p)
-{
-  QMenu menu;
-  QAction *open     = menu.addAction(tr("Open binder..."));
-  QAction *save     = menu.addAction(tr("Save binder..."));
-  menu.addSeparator();
-  QAction *remove   = menu.addAction(tr("Remove numbering"));
-  QAction *replace  = menu.addAction(tr("Replace underscore with space"));
-  QAction *simplify = menu.addAction(tr("Simplify"));
-  QAction *trim     = menu.addAction(tr("Trim"));
-  menu.addSeparator();
-  QAction *allOperations = menu.addAction(tr("All operations"));
-  menu.addSeparator();
-  QAction *sortChapter  = menu.addAction(tr("Sort by chapter"));
-  QAction *sortFilename = menu.addAction(tr("Sort by filename"));
-  menu.addSeparator();
-  QAction *resetChapters = menu.addAction(tr("Reset chapter titles"));
-
-  QAction *choice = menu.exec(csMapToGlobal(view(), p));
-  if(        choice == nullptr ) {
-    return;
-  } else if( choice == open ) {
-    openBinder();
-  } else if( choice == save ) {
-    saveBinder();
-  } else if( choice == remove ) {
-    _model->apply(BookBinderModel::RemoveNumbering);
-  } else if( choice == replace ) {
-    _model->apply(BookBinderModel::ReplaceUnderscore);
-  } else if( choice == simplify ) {
-    _model->apply(BookBinderModel::Simplify);
-  } else if( choice == trim ) {
-    _model->apply(BookBinderModel::Trim);
-  } else if( choice == allOperations ) {
-    _model->apply(BookBinderModel::AllStringOperations);
-  } else if( choice == sortChapter ) {
-    _model->sortByChapter();
-  } else if( choice == sortFilename ) {
-    _model->sortByFilename();
-  } else if( choice == resetChapters ) {
-    _model->resetChapters();
-  }
 }
 
 ////// private ///////////////////////////////////////////////////////////////
@@ -155,6 +104,50 @@ void WChapterList::onAdd()
   _model->appendChapters(binder);
 
   QDir::setCurrent(QFileInfo(QString::fromStdString(binder.back().second)).absolutePath());
+}
+
+void WChapterList::onContextMenu(const QPoint& globalPos)
+{
+  QMenu menu;
+  QAction *open     = menu.addAction(tr("Open binder..."));
+  QAction *save     = menu.addAction(tr("Save binder..."));
+  menu.addSeparator();
+  QAction *remove   = menu.addAction(tr("Remove numbering"));
+  QAction *replace  = menu.addAction(tr("Replace underscore with space"));
+  QAction *simplify = menu.addAction(tr("Simplify"));
+  QAction *trim     = menu.addAction(tr("Trim"));
+  menu.addSeparator();
+  QAction *allOperations = menu.addAction(tr("All operations"));
+  menu.addSeparator();
+  QAction *sortChapter  = menu.addAction(tr("Sort by chapter"));
+  QAction *sortFilename = menu.addAction(tr("Sort by filename"));
+  menu.addSeparator();
+  QAction *resetChapters = menu.addAction(tr("Reset chapter titles"));
+
+  QAction *choice = menu.exec(globalPos);
+  if(        choice == nullptr ) {
+    return;
+  } else if( choice == open ) {
+    openBinder();
+  } else if( choice == save ) {
+    saveBinder();
+  } else if( choice == remove ) {
+    _model->apply(BookBinderModel::RemoveNumbering);
+  } else if( choice == replace ) {
+    _model->apply(BookBinderModel::ReplaceUnderscore);
+  } else if( choice == simplify ) {
+    _model->apply(BookBinderModel::Simplify);
+  } else if( choice == trim ) {
+    _model->apply(BookBinderModel::Trim);
+  } else if( choice == allOperations ) {
+    _model->apply(BookBinderModel::AllStringOperations);
+  } else if( choice == sortChapter ) {
+    _model->sortByChapter();
+  } else if( choice == sortFilename ) {
+    _model->sortByFilename();
+  } else if( choice == resetChapters ) {
+    _model->resetChapters();
+  }
 }
 
 void WChapterList::onDown()
