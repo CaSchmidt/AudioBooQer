@@ -20,6 +20,7 @@ list(APPEND ui_HEADERS
   include/WAudioFormat.h
   include/WAudioPlayer.h
   include/WBookBinder.h
+  include/WChapterList.h
   include/WMainWindow.h
   include/WTagEditor.h
   )
@@ -37,6 +38,7 @@ list(APPEND ui_SOURCES
   src/WAudioFormat.cpp
   src/WAudioPlayer.cpp
   src/WBookBinder.cpp
+  src/WChapterList.cpp
   src/WMainWindow.cpp
   src/WTagEditor.cpp
   )
