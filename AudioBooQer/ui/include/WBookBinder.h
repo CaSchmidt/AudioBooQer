@@ -53,9 +53,7 @@ private slots:
   void moveChapterDown();
   void moveChapterUp();
   void removeChapter();
-
-protected:
-  bool eventFilter(QObject *watched, QEvent *event);
+  void showContextMenu(const QPoint& p);
 
 private:
   static constexpr bool MOVE_DOWN = false;
