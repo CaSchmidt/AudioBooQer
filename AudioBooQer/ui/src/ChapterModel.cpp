@@ -392,7 +392,7 @@ void ChapterModel::setPlayingFileName(const QString& fileName)
 QString ChapterModel::chapterTitle(const class ChapterNode *node) const
 {
   if( _showChapterNo ) {
-    return _L1("%1 - %2")
+    return QStringLiteral("%1 - %2")
         .arg(_firstChapterNo+node->row(), _widthChapterNo, 10, _L1C('0'))
         .arg(node->title());
   }
