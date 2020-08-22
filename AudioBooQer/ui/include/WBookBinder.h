@@ -34,7 +34,7 @@
 
 #include <QtWidgets/QDialog>
 
-#include "BookBinderModel.h"
+#include "BookBinder.h"
 
 namespace Ui {
   class WBookBinder;
@@ -48,24 +48,8 @@ public:
 
   BookBinder binder() const;
 
-private slots:
-  void addChapters();
-  void moveChapterDown();
-  void moveChapterUp();
-  void removeChapter();
-  void showContextMenu(const QPoint& p);
-
 private:
-  static constexpr bool MOVE_DOWN = false;
-  static constexpr bool MOVE_UP   = true;
-
-  void moveChapter(const bool is_up);
-  void openBinder();
-  void saveBinder();
-  QModelIndex singleSelection() const;
-
   Ui::WBookBinder *ui{nullptr};
-  BookBinderModel *_model{nullptr};
 };
 
 #endif // WBOOKBINDER_H
