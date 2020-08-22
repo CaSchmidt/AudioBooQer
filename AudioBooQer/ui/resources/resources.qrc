@@ -1,9 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/down.svg</file>
-        <file>icons/minus.svg</file>
-        <file>icons/plus.svg</file>
-        <file>icons/up.svg</file>
         <file>icons/next.svg</file>
         <file>icons/pause.svg</file>
         <file>icons/play.svg</file>
