@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2020, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,34 +29,17 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#if defined(_DEBUG)
-# include <vld.h>
-#endif
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-#include <cstdio>
-#include <cstdlib>
+namespace Settings {
 
-#include <QtCore/QLocale>
-#include <QtWidgets/QApplication>
+  extern int numThreads;
 
-#include "Settings.h"
-#include "WMainWindow.h"
+  void load();
 
-int main(int argc, char **argv)
-{
-  QApplication qapp(argc, argv);
-  QLocale::setDefault(QLocale::system());
+  void save();
 
-  Settings::load();
+} // namespace Settings
 
-  WMainWindow *mainwindow = new WMainWindow();
-  mainwindow->show();
-
-  const int result = qapp.exec();
-
-  delete mainwindow;
-
-  Settings::save();
-
-  return result;
-}
+#endif // SETTINGS_H

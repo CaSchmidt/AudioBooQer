@@ -48,6 +48,7 @@
 #include "ChapterModel.h"
 #include "Mpeg4Audio.h"
 #include "Output.h"
+#include "Settings.h"
 #include "WBookBinder.h"
 #include "WTagEditor.h"
 
@@ -163,11 +164,13 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   // Threads /////////////////////////////////////////////////////////////////
 
   ui->threadSpin->setRange(1, qMax<int>(1, QThread::idealThreadCount()));
-  ui->threadSpin->setValue(qBound<int>(1, 2, ui->threadSpin->maximum()));
+  ui->threadSpin->setValue(qBound<int>(1, Settings::numThreads, ui->threadSpin->maximum()));
 }
 
 WMainWindow::~WMainWindow()
 {
+  Settings::numThreads = ui->threadSpin->value();
+
   delete ui;
 }
 

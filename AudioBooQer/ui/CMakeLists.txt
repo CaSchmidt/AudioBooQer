@@ -16,6 +16,7 @@ list(APPEND ui_HEADERS
   include/Chapter.h
   include/ChapterModel.h
   include/Job.h
+  include/Settings.h
   include/WAudioFormat.h
   include/WAudioPlayer.h
   include/WBookBinder.h
@@ -32,6 +33,7 @@ list(APPEND ui_SOURCES
   src/ChapterModel.cpp
   src/Job.cpp
   src/main.cpp
+  src/Settings.cpp
   src/WAudioFormat.cpp
   src/WAudioPlayer.cpp
   src/WBookBinder.cpp

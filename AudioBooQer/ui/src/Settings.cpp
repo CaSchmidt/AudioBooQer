@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2014, Carsten Schmidt. All rights reserved.
+** Copyright (c) 2020, Carsten Schmidt. All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
@@ -29,34 +29,32 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#if defined(_DEBUG)
-# include <vld.h>
-#endif
-
-#include <cstdio>
-#include <cstdlib>
-
-#include <QtCore/QLocale>
-#include <QtWidgets/QApplication>
+#include <QtCore/QSettings>
 
 #include "Settings.h"
-#include "WMainWindow.h"
 
-int main(int argc, char **argv)
-{
-  QApplication qapp(argc, argv);
-  QLocale::setDefault(QLocale::system());
+namespace Settings {
 
-  Settings::load();
+  int numThreads{2};
 
-  WMainWindow *mainwindow = new WMainWindow();
-  mainwindow->show();
+  void load()
+  {
+    const QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                             QStringLiteral("csLabs"), QStringLiteral("AudioBooQer"));
 
-  const int result = qapp.exec();
+    numThreads = settings.value(QStringLiteral("global/num_threads"), numThreads).toInt();
+  }
 
-  delete mainwindow;
+  void save()
+  {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       QStringLiteral("csLabs"), QStringLiteral("AudioBooQer"));
 
-  Settings::save();
+    settings.beginGroup(QStringLiteral("global"));
+    settings.setValue(QStringLiteral("num_threads"), numThreads);
+    settings.endGroup();
 
-  return result;
-}
+    settings.sync();
+  }
+
+} // namespace Settings
