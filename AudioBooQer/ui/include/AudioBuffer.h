@@ -43,8 +43,8 @@ public:
   operator bool() const;
   operator QIODevice*() const;
 
-  void clear();
-  bool initialize(const QString& filename);
+  void close();
+  bool open(const QString& filename);
 
   QString fileName() const;
 

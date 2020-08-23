@@ -56,7 +56,7 @@ private slots:
 
 private:
   void appendInfoMessage(const QString& msg);
-  void renameInput();
+  QString closeInput();
   bool startDecode();
 
   QAudioDecoder _decoder;

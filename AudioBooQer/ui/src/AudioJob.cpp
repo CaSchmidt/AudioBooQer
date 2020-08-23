@@ -167,9 +167,8 @@ void AudioJob::decodingError(QAudioDecoder::Error /*error*/)
 void AudioJob::decodingFinished()
 {
   _decoder.stop();
-  appendInfoMessage(QStringLiteral("+ %1").arg(_inputBuffer.fileName()));
-
-  renameInput();
+  const QString filename = closeInput();
+  appendInfoMessage(QStringLiteral("+ %1").arg(filename));
 
   if( _job.inputFiles.isEmpty() ) {
     const unsigned int frameLength = _job.format.numSamplesPerAacFrame;
@@ -197,17 +196,19 @@ void AudioJob::appendInfoMessage(const QString& msg)
   _message.append(QStringLiteral("INFO: %1\n").arg(msg));
 }
 
-void AudioJob::renameInput()
+QString AudioJob::closeInput()
 {
+  const QString filename = _inputBuffer.fileName();
+  _inputBuffer.close();
   if( _job.renameInput ) {
-    const QString filename = _inputBuffer.fileName();
     QFile::rename(filename, filename + QStringLiteral(".done"));
   }
+  return filename;
 }
 
 bool AudioJob::startDecode()
 {
-  if( !_inputBuffer.initialize(_job.inputFiles.takeFirst()) ) {
+  if( !_inputBuffer.open(_job.inputFiles.takeFirst()) ) {
     return false;
   }
   _decoder.setSourceDevice(_inputBuffer);

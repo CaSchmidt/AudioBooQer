@@ -43,7 +43,7 @@ AudioBuffer::AudioBuffer()
 
 AudioBuffer::~AudioBuffer()
 {
-  clear();
+  close();
 }
 
 AudioBuffer::operator bool() const
@@ -56,7 +56,7 @@ AudioBuffer::operator QIODevice*() const
   return _device;
 }
 
-void AudioBuffer::clear()
+void AudioBuffer::close()
 {
   _buffer.close();
   _data.clear();
@@ -64,15 +64,15 @@ void AudioBuffer::clear()
   _file.close();
 }
 
-bool AudioBuffer::initialize(const QString& filename)
+bool AudioBuffer::open(const QString& filename)
 {
-  clear();
+  close();
 
   // (1) Open File ///////////////////////////////////////////////////////////
 
   _file.setFileName(filename);
   if( !_file.open(QIODevice::ReadOnly) ) {
-    clear();
+    close();
     return false;
   }
 
