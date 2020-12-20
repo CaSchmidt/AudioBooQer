@@ -47,6 +47,7 @@ public:
   QModelIndex createNewChapter(const QModelIndex& index);
   void setData(csAbstractTreeItem *data);
 
+  bool autoChapterName() const;
   bool showChapterNo() const;
   int firstChaopterNo() const;
   int widthChapterNo() const;
@@ -69,6 +70,7 @@ public:
 public slots:
   void activateNode(const QModelIndex& nodeIndex);
   void dissolveLastChapter();
+  void setAutoChapterName(bool state);
   void setFirstChapterNo(int no);
   void setShowChapterNo(bool state);
   void setWidthChapterNo(int width);
@@ -79,6 +81,7 @@ private:
   void updateChapters();
 
   csAbstractTreeItem *_root;
+  bool _autoChapterName;
   bool _showChapterNo;
   int _firstChapterNo;
   int _widthChapterNo;

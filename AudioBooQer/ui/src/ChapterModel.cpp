@@ -38,11 +38,31 @@
 
 #include "Chapter.h"
 
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  QString autoChapterName(const QStringList& files)
+  {
+    if( files.isEmpty() ) {
+      return QString();
+    }
+    QString name = QFileInfo(files.front()).completeBaseName();
+    name.remove(QRegExp(QStringLiteral("^\\s*"), Qt::CaseInsensitive));
+    name.remove(QRegExp(QStringLiteral("^cd\\s*"), Qt::CaseInsensitive));
+    name.remove(QRegExp(QStringLiteral("^\\d+\\s*"), Qt::CaseInsensitive));
+    name.remove(QRegExp(QStringLiteral("^[-_]+\\s*"), Qt::CaseInsensitive));
+    return name.trimmed();
+  }
+
+} // namespace priv
+
 ////// public ////////////////////////////////////////////////////////////////
 
 ChapterModel::ChapterModel(QObject *parent)
   : QAbstractItemModel(parent)
   , _root(nullptr)
+  , _autoChapterName(false)
   , _showChapterNo(false)
   , _firstChapterNo(1)
   , _widthChapterNo(2)
@@ -80,7 +100,15 @@ QModelIndex ChapterModel::createNewChapter(const QModelIndex& index)
   beginInsertRows(QModelIndex(), sources->row(), sources->row());
   ChapterNode *newNode = new ChapterNode(root);
   root->insert(newNode);
-  newNode->setTitle(tr("New Chapter"));
+  if( _autoChapterName ) {
+    const QString title = priv::autoChapterName(files);
+    if( !title.isEmpty() ) {
+      newNode->setTitle(title);
+    }
+  }
+  if( newNode->title().isEmpty() ) {
+    newNode->setTitle(tr("New Chapter"));
+  }
   newNode->setFiles(files);
   endInsertRows();
 
@@ -100,6 +128,11 @@ void ChapterModel::setData(csAbstractTreeItem *data)
   }
 
   endResetModel();
+}
+
+bool ChapterModel::autoChapterName() const
+{
+  return _autoChapterName;
 }
 
 bool ChapterModel::showChapterNo() const
@@ -298,7 +331,7 @@ bool ChapterModel::setData(const QModelIndex& index, const QVariant& value,
 {
   ChapterNode *node = dynamic_cast<ChapterNode*>(csTreeItem(index));
   if(     node == nullptr                     ||  node->isSource()
-      ||  value.type() != QMetaType::QString  ||  role != Qt::EditRole ) {
+          ||  value.type() != QMetaType::QString  ||  role != Qt::EditRole ) {
     return false;
   }
 
@@ -340,6 +373,11 @@ void ChapterModel::dissolveLastChapter()
   ChapterNode *sources = dynamic_cast<ChapterNode*>(csTreeItem(sourcesIndex));
   sources->insertFiles(dissolvedFiles);
   endInsertRows();
+}
+
+void ChapterModel::setAutoChapterName(bool state)
+{
+  _autoChapterName = state;
 }
 
 void ChapterModel::setFirstChapterNo(int no)

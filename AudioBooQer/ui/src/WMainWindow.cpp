@@ -93,6 +93,7 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   ChapterModel *model = new ChapterModel(ui->chaptersView);
   ui->chaptersView->setModel(model);
 
+  ui->autoChapterCheck->setChecked(model->autoChapterName());
   ui->chapterNoCheck->setChecked(model->showChapterNo());
   ui->firstChapterSpin->setValue(model->firstChaopterNo());
   ui->numberWidthSpin->setValue(model->widthChapterNo());
@@ -109,6 +110,8 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   connect(ui->playerWidget, &WAudioPlayer::fileNameChanged,
           model, &ChapterModel::setPlayingFileName);
 
+  connect(ui->autoChapterCheck, &QCheckBox::toggled,
+          model, &ChapterModel::setAutoChapterName);
   connect(ui->chapterNoCheck, SIGNAL(toggled(bool)),
           model, SLOT(setShowChapterNo(bool)));
   connect(ui->firstChapterSpin, SIGNAL(valueChanged(int)),
