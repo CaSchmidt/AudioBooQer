@@ -34,7 +34,6 @@
 
 #include <QtMultimedia/QAudioDecoder>
 
-#include "AudioBuffer.h"
 #include "IAudioEncoder.h"
 #include "Job.h"
 
@@ -57,11 +56,11 @@ private slots:
 private:
   void appendInfoMessage(const QString& msg);
   QString closeInput();
+  QString inputFileName() const;
   bool startDecode();
 
   QAudioDecoder _decoder;
   AudioEncoderPtr _encoder;
-  AudioBuffer _inputBuffer;
   Job _job;
   QString _message;
   uint64_t _numTimeSamples;

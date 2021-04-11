@@ -198,20 +198,21 @@ void AudioJob::appendInfoMessage(const QString& msg)
 
 QString AudioJob::closeInput()
 {
-  const QString filename = _inputBuffer.fileName();
-  _inputBuffer.close();
+  const QString filename = inputFileName();
   if( _job.renameInput ) {
     QFile::rename(filename, filename + QStringLiteral(".done"));
   }
   return filename;
 }
 
+QString AudioJob::inputFileName() const
+{
+  return _decoder.sourceFilename();
+}
+
 bool AudioJob::startDecode()
 {
-  if( !_inputBuffer.open(_job.inputFiles.takeFirst()) ) {
-    return false;
-  }
-  _decoder.setSourceDevice(_inputBuffer);
+  _decoder.setSourceFilename(_job.inputFiles.takeFirst());
   _decoder.start();
   return true;
 }
