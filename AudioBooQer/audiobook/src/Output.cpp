@@ -30,6 +30,7 @@
 *****************************************************************************/
 
 #include <numeric>
+#include <sstream>
 
 #include <csUtil/csFileIO.h>
 #include <csUtil/csTextConverter.h>
@@ -101,6 +102,48 @@ namespace priv {
     // Done! /////////////////////////////////////////////////////////////////
 
     return count;
+  }
+
+  std::string formatAsc(const uint16_t asc)
+  {
+    std::ostringstream output;
+
+    const uint16_t aot = mpeg4::audioObjectTypeFromASC(asc);
+    {
+      if(        aot == 0 ) {
+        output << "Null";
+      } else if( aot == 1 ) {
+        output << "AAC Main";
+      } else if( aot == 2 ) {
+        output << "AAC LC";
+      } else if( aot == 3 ) {
+        output << "AAC SSR";
+      } else if( aot == 4 ) {
+        output << "AAC LTP";
+      } else {
+        output << "???";
+      }
+    }
+    output << ", ";
+
+    const uint32_t freq = mpeg4::samplingFrequencyFromASC(asc);
+    {
+      output << freq << "Hz";
+    }
+    output << ", ";
+
+    const uint16_t ch = mpeg4::channelConfigurationFromASC(asc);
+    {
+      if(        ch == 1 ) {
+        output << "Mono";
+      } else if( ch == 2 ) {
+        output << "Stereo";
+      } else {
+        output << ch << " channels";
+      }
+    }
+
+    return output.str();
   }
 
   bool writeAdtsSample(MP4FileHandle file, const MP4TrackId trackId, const std::string& filename_utf)
