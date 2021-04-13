@@ -191,12 +191,6 @@ void WMainWindow::bindBook()
     return;
   }
 
-  const AacFormat format = ui->formatWidget->format();
-  const uint16_t     asc =
-      mpeg4::createAudioSpecificConfig(static_cast<uint16_t>(mpeg4::AudioObjectType::AAC_LC),
-                                       static_cast<uint16_t>(format.numChannels),
-                                       format.numSamplesPerSecond);
-
   const QString filename =
       QFileDialog::getSaveFileName(this, tr("Save"),
                                    QDir::currentPath(), tr("Audiobooks (*.m4b)"));
@@ -204,7 +198,7 @@ void WMainWindow::bindBook()
     return;
   }
 
-  outputAdtsBinder(filename.toStdString(), binder, asc, format.numSamplesPerAacFrame,
+  outputAdtsBinder(filename.toStdString(), binder,
                    ui->languageCombo->currentData().toString().toStdString());
 
   QMessageBox::information(this, tr("Info"), tr("Done!"),
@@ -247,13 +241,13 @@ void WMainWindow::editTag()
     if( !out.write() ) {
       QMessageBox::critical(this, tr("Error"),
                             tr("Error writing tag (Mp4Tag::write(\"%1\"))!").arg(out.filename));
+    } else {
+      QMessageBox::information(this, tr("Info"), tr("Done!"),
+                               QMessageBox::Ok, QMessageBox::Ok);
     }
   }
 
   QDir::setCurrent(QFileInfo(filename).absolutePath());
-
-  QMessageBox::information(this, tr("Info"), tr("Done!"),
-                           QMessageBox::Ok, QMessageBox::Ok);
 }
 
 void WMainWindow::openDirectory()

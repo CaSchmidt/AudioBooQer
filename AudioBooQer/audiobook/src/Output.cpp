@@ -48,8 +48,7 @@ using Durations = std::vector<MP4Duration>;
 
 namespace priv {
 
-  MP4Duration adtsDuration(const std::string& filename_utf8, const uint16_t refAsc,
-                           const uint32_t numSamplesPerAacFrame)
+  MP4Duration adtsFrameCount(const std::string& filename_utf8, uint16_t *globalAsc)
   {
     // (1) Read ADTS file ////////////////////////////////////////////////////
 
@@ -60,34 +59,48 @@ namespace priv {
 
     AdtsParser adts(std::move(buffer));
 
-    // (2) Count & validate frames ///////////////////////////////////////////
+    // (2) Initialize reference ASC //////////////////////////////////////////
 
-    MP4Duration duration{0};
+    uint16_t refAsc = globalAsc != nullptr  &&  *globalAsc != 0
+        ? *globalAsc
+        : 0;
+
+    // (3) Count & validate frames ///////////////////////////////////////////
+
+    MP4Duration count{0};
     while( adts.hasFrame() ) {
       const uint16_t asc = adts.mpeg4AudioSpecificConfig();
 
-      // (2.1) Count /////////////////////////////////////////////////////////
+      // (3.1) Set new reference /////////////////////////////////////////////
 
-      duration++;
+      if( refAsc == 0 ) {
+        refAsc = asc;
+      }
 
-      // (2.2) Validate //////////////////////////////////////////////////////
+      // (3.2) Count /////////////////////////////////////////////////////////
 
-      if( adts.aacFrameCount() != 1  ||  asc != refAsc ) {
+      count++;
+
+      // (3.3) Validate //////////////////////////////////////////////////////
+
+      if( adts.aacFrameCount() != 1  ||  refAsc == 0  ||  asc != refAsc ) {
         return 0;
       }
 
-      // (2.3) Next //////////////////////////////////////////////////////////
+      // (3.4) Next //////////////////////////////////////////////////////////
 
       adts.nextFrame();
     }
 
-    // (3) Compute total number of time samples //////////////////////////////
+    // (4) Update global ASC reference ///////////////////////////////////////
 
-    duration *= static_cast<MP4Duration>(numSamplesPerAacFrame);
+    if( globalAsc != nullptr  &&  *globalAsc == 0 ) {
+      *globalAsc = refAsc;
+    }
 
     // Done! /////////////////////////////////////////////////////////////////
 
-    return duration;
+    return count;
   }
 
   bool writeAdtsSample(MP4FileHandle file, const MP4TrackId trackId, const std::string& filename_utf)
@@ -121,25 +134,20 @@ namespace priv {
 ////// Public ////////////////////////////////////////////////////////////////
 
 bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder,
-                      const uint16_t refAsc, const uint32_t numSamplesPerAacFrame,
                       const std::string& language)
 {
+  constexpr uint32_t numSamplesPerAacFrame = 1024;
+
   // (0) Sanity check ////////////////////////////////////////////////////////
 
-  if( binder.empty()  ||  refAsc == 0  ||  numSamplesPerAacFrame != 1024 ) {
+  if( binder.empty()  ||  numSamplesPerAacFrame != 1024 ) {
     return false;
   }
 
-  // (1) Extract time scale //////////////////////////////////////////////////
+  // (1) Validate & accumulate ADTS frames ///////////////////////////////////
 
-  const uint32_t timeScale = mpeg4::samplingFrequencyFromASC(refAsc);
-  if( timeScale == 0 ) {
-    return false;
-  }
-
-  // (2) Validate & cumulate ADTS frames /////////////////////////////////////
-
-  Durations durations;
+  Durations durations{};
+  uint16_t     refAsc{};
   {
     try {
       durations.resize(static_cast<std::size_t>(binder.size()));
@@ -149,15 +157,28 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
 
     std::size_t i{0};
     for(const BookBinderChapter& chapter : binder) {
-      durations[i] = priv::adtsDuration(chapter.second, refAsc, numSamplesPerAacFrame);
+      durations[i] = priv::adtsFrameCount(chapter.second, &refAsc);
       if( durations[i] == 0 ) {
         return false;
+      } else {
+        durations[i] *= static_cast<MP4Duration>(numSamplesPerAacFrame);
       }
       i++;
+
+      if( refAsc == 0 ) {
+        return false;
+      }
     }
   } // End durations
 
   const MP4Duration duration = std::accumulate(durations.begin(), durations.end(), MP4Duration{0});
+
+  // (2) Extract & validate time scale ///////////////////////////////////////
+
+  const uint32_t timeScale = mpeg4::samplingFrequencyFromASC(refAsc);
+  if( timeScale == 0 ) {
+    return false;
+  }
 
   // (3) Create MP4 file /////////////////////////////////////////////////////
 
