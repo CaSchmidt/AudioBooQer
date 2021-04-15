@@ -38,6 +38,7 @@
 #include <QtWidgets/QMessageBox>
 
 #include <csQt/csQtUtil.h>
+#include <csUtil/csOutputContext.h>
 #include <csUtil/csWProgressLogger.h>
 
 #include "WMainWindow.h"
@@ -198,11 +199,14 @@ void WMainWindow::bindBook()
     return;
   }
 
-  outputAdtsBinder(filename.toStdString(), binder,
-                   ui->languageCombo->currentData().toString().toStdString());
+  csWProgressLogger dialog(this);
+  dialog.setWindowTitle(QStringLiteral("Binding book..."));
+  const csOutputContext ctx(dialog.logger(), true, dialog.progress(), true);
 
-  QMessageBox::information(this, tr("Info"), tr("Done!"),
-                           QMessageBox::Ok, QMessageBox::Ok);
+  dialog.show();
+  outputAdtsBinder(filename.toStdString(), binder, ctx,
+                   ui->languageCombo->currentData().toString().toStdString());
+  dialog.exec();
 }
 
 void WMainWindow::createNewChapter()

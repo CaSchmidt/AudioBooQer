@@ -34,7 +34,10 @@
 
 #include "BookBinder.h"
 
+class csOutputContext;
+
 bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder,
+                      const csOutputContext& ctx,
                       const std::string& language = std::string());
 
 #endif // OUTPUT_H
