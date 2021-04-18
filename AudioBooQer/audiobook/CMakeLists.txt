@@ -41,11 +41,10 @@ add_library(audiobook STATIC
 
 format_output_name(audiobook "audiobook")
 
-if(MSVC)
-  target_compile_options(audiobook
-    PRIVATE /std:c++latest
-    )
-endif()
+set_target_properties(audiobook PROPERTIES
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED ON
+  )
 
 target_include_directories(audiobook
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -58,4 +57,4 @@ target_link_libraries(audiobook
 
 ### Tests ####################################################################
 
-add_subdirectory(tests)
+#add_subdirectory(tests)
