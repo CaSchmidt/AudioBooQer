@@ -252,8 +252,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
       return false;
     }
 
-    std::size_t i = 0;
-    for(const BookBinderChapter& chapter : binder) {
+    for(std::size_t i = 0; const BookBinderChapter& chapter : binder) {
       durations[i] = priv::adtsFrameCount(chapter.second, &refAsc, ctx);
       if( durations[i] == 0 ) {
         return false;
@@ -341,15 +340,14 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
 
   // (7) Write chapters to MP4 file //////////////////////////////////////////
 
-  std::size_t j = 0;
-  for(const BookBinderChapter& chapter : binder) {
+  for(std::size_t i = 0; const BookBinderChapter& chapter : binder) {
     if( !priv::writeAdtsSample(file, auTrackId, chapter.second, ctx) ) {
       MP4Close(file);
       return false;
     }
-    j++;
+    i++;
 
-    ctx.setProgressValue(int(j - 1));
+    ctx.setProgressValue(int(i - 1));
   }
 
   // (8) Creater chapter track ///////////////////////////////////////////////
@@ -390,14 +388,11 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
 
   // (9) Create chapters /////////////////////////////////////////////////////
 
-  Durations::const_iterator chDuration = durations.cbegin();
-  std::size_t k = 0;
-  for(const BookBinderChapter& chapter : binder) {
-    MP4AddChapter(file, chTrackId, *chDuration, csUnicodeToUtf8(chapter.first).data());
-    ++chDuration;
-    k++;
+  for(std::size_t i = 0; const BookBinderChapter& chapter : binder) {
+    MP4AddChapter(file, chTrackId, durations[i], csUnicodeToUtf8(chapter.first).data());
+    i++;
 
-    ctx.setProgressValue(int(k));
+    ctx.setProgressValue(int(i));
   }
 
   // Done! ///////////////////////////////////////////////////////////////////
