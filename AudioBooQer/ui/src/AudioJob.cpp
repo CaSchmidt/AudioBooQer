@@ -32,6 +32,7 @@
 #include <QtCore/QFile>
 
 #include <csUtil/csILogger.h>
+#include <csUtil/csQStringUtil.h>
 
 #include "AudioJob.h"
 
@@ -107,7 +108,7 @@ bool AudioJob::start()
 
   _decoder.setAudioFormat(priv::convert(_job.format));
   if( _decoder.error() != QAudioDecoder::NoError ) {
-    _job.logger->logError(_decoder.errorString().toStdString());
+    _job.logger->logError(cs::toUtf8String(_decoder.errorString()));
     return false;
   }
 
@@ -124,14 +125,14 @@ bool AudioJob::start()
   }
 
   if( !_encoder ) {
-    _job.logger->logError("IAudioEncoder is <nullptr>!");
+    _job.logger->logError(u8"IAudioEncoder is <nullptr>!");
     return false;
   }
 
   _outputFilePath = _job.outputFilePath(_encoder.get());
 
-  if( !_encoder->initialize(_job.format, _outputFilePath.toStdString()) ) {
-    _job.logger->logError("IAudioEncoder::initialize() failed!");
+  if( !_encoder->initialize(_job.format, cs::toUtf8String(_outputFilePath)) ) {
+    _job.logger->logError(u8"IAudioEncoder::initialize() failed!");
     return false;
   }
 
@@ -149,7 +150,7 @@ void AudioJob::decodingBufferReady()
   const QAudioBuffer buffer = _decoder.read();
   if( !_encoder->encode(buffer.data(), buffer.byteCount()) ) {
     _decoder.stop();
-    _job.logger->logError("IAudioEncoder::encode() failed!");
+    _job.logger->logError(u8"IAudioEncoder::encode() failed!");
     emit done();
     return;
   } else {
@@ -160,7 +161,7 @@ void AudioJob::decodingBufferReady()
 void AudioJob::decodingError(QAudioDecoder::Error /*error*/)
 {
   _decoder.stop();
-  _job.logger->logError(_decoder.errorString().toStdString());
+  _job.logger->logError(cs::toUtf8String(_decoder.errorString()));
   emit done();
 }
 
@@ -177,12 +178,12 @@ void AudioJob::decodingFinished()
         ? frameLength - mod
         : 0;
     if( !_encoder->flush(fill) ) {
-      _job.logger->logError("IAudioEncoder::flush() failed!");
+      _job.logger->logError(u8"IAudioEncoder::flush() failed!");
     } else {
       _numTimeSamples += fill;
       appendInfoMessage(QStringLiteral("= %1").arg(_outputFilePath));
     }
-    _job.logger->logText(_message.toStdString());
+    _job.logger->logText(cs::toUtf8String(_message));
     emit done();
   } else {
     startDecode();

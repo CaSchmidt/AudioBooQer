@@ -33,6 +33,7 @@
 #include <QtCore/QEventLoop>
 
 #include <csUtil/csILogger.h>
+#include <csUtil/csQStringUtil.h>
 
 #include "Job.h"
 
@@ -42,7 +43,7 @@
 
 QString Job::outputFilePath(IAudioEncoder *encoder) const
 {
-  const QString suffix = QString::fromStdString(encoder->outputSuffix(format));
+  const QString suffix = cs::toQString(encoder->outputSuffix(format));
   QString baseName(title);
   baseName.replace(QRegExp(QStringLiteral("[^_0-9a-zA-Z]")), QStringLiteral("_"));
   return QDir(outputDirPath).absoluteFilePath(QStringLiteral("%1_%2.%3")
@@ -74,7 +75,7 @@ JobResult executeJob(const Job& job)
     audio = std::make_unique<AudioJob>(job);
   } catch(...) {
     audio.reset();
-    job.logger->logError("ERROR: AudioJob is <nullptr>!\n");
+    job.logger->logError(u8"ERROR: AudioJob is <nullptr>!\n");
     return result;
   }
 

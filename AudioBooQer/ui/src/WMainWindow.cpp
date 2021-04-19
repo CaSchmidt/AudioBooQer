@@ -39,6 +39,7 @@
 
 #include <csQt/csQtUtil.h>
 #include <csUtil/csOutputContext.h>
+#include <csUtil/csQStringUtil.h>
 #include <csUtil/csWProgressLogger.h>
 
 #include "WMainWindow.h"
@@ -74,7 +75,7 @@ namespace priv {
 
     BookBinder binder;
     for(const JobResult& result : results) {
-      binder.emplace_back(result.title.toStdU16String(), result.outputFilePath.toStdString());
+      binder.emplace_back(cs::toUtf16String(result.title), cs::toUtf8String(result.outputFilePath));
     }
     return binder;
   }
@@ -204,8 +205,8 @@ void WMainWindow::bindBook()
   const csOutputContext ctx(dialog.logger(), true, dialog.progress(), true);
 
   dialog.show();
-  outputAdtsBinder(filename.toStdString(), binder, ctx,
-                   ui->languageCombo->currentData().toString().toStdString());
+  outputAdtsBinder(cs::toUtf8String(filename), binder, ctx,
+                   cs::toUtf8String(ui->languageCombo->currentData().toString()));
   dialog.exec();
 }
 
@@ -234,7 +235,7 @@ void WMainWindow::editTag()
     return;
   }
 
-  const Mp4Tag in = Mp4Tag::read(filename.toStdString());
+  const Mp4Tag in = Mp4Tag::read(cs::toUtf8String(filename));
   if( !in.isValid() ) {
     return;
   }

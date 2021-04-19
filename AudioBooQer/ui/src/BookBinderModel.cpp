@@ -34,6 +34,8 @@
 
 #include <QtCore/QFileInfo>
 
+#include <csUtil/csQStringUtil.h>
+
 #include "BookBinderModel.h"
 
 ////// public ////////////////////////////////////////////////////////////////
@@ -53,11 +55,11 @@ QVariant BookBinderModel::data(const QModelIndex& index, int role) const
     return QVariant();
   }
   if(        role == Qt::DisplayRole ) {
-    return QString::fromStdU16String(_binder.at(index.row()).first);
+    return cs::toQString(_binder.at(index.row()).first);
   } else if( role == Qt::EditRole ) {
-    return QString::fromStdU16String(_binder.at(index.row()).first);
+    return cs::toQString(_binder.at(index.row()).first);
   } else if( role == Qt::ToolTipRole ) {
-    return QString::fromStdString(_binder.at(index.row()).second);
+    return cs::toQString(_binder.at(index.row()).second);
   }
   return QVariant();
 }
@@ -75,7 +77,7 @@ Qt::ItemFlags BookBinderModel::flags(const QModelIndex& index) const
 
 int BookBinderModel::rowCount(const QModelIndex& /*index*/) const
 {
-  return _binder.size();
+  return int(_binder.size());
 }
 
 bool BookBinderModel::setData(const QModelIndex& index, const QVariant& value, int role)
@@ -84,7 +86,7 @@ bool BookBinderModel::setData(const QModelIndex& index, const QVariant& value, i
       value.type() != QVariant::String  ||  role != Qt::EditRole ) {
     return false;
   }
-  _binder[index.row()].first = value.toString().toStdU16String();
+  _binder[index.row()].first = cs::toUtf16String(value.toString());
   emit dataChanged(index, index);
   return true;
 }
@@ -94,7 +96,7 @@ void BookBinderModel::appendChapters(const BookBinder& chapters)
   if( chapters.empty() ) {
     return;
   }
-  beginInsertRows(QModelIndex(), _binder.size(), _binder.size() + chapters.size() - 1);
+  beginInsertRows(QModelIndex(), int(_binder.size()), int(_binder.size() + chapters.size() - 1));
   std::copy(chapters.begin(), chapters.end(), std::back_inserter(_binder));
   endInsertRows();
 }
@@ -103,7 +105,7 @@ void BookBinderModel::apply(const StringOperation op)
 {
   beginResetModel();
   for(BookBinderChapter& chapter : _binder) {
-    QString title = QString::fromStdU16String(chapter.first);
+    QString title = cs::toQString(chapter.first);
     if( op == AllStringOperations  ||  op == RemoveNumbering ) {
       title.remove(QRegExp(QStringLiteral("^\\d+[_ ]")));
     }
@@ -116,7 +118,7 @@ void BookBinderModel::apply(const StringOperation op)
     if( op == AllStringOperations  ||  op == Trim ) {
       title = title.trimmed();
     }
-    chapter.first = title.toStdU16String();
+    chapter.first = cs::toUtf16String(title);
   }
   endResetModel();
 }
@@ -159,7 +161,7 @@ void BookBinderModel::resetChapters()
 {
   beginResetModel();
   for(BookBinderChapter& chapter : _binder) {
-    chapter.first = QFileInfo(QString::fromStdString(chapter.second)).completeBaseName().toStdU16String();
+    chapter.first = cs::toUtf16String(QFileInfo(cs::toQString(chapter.second)).completeBaseName());
   }
   endResetModel();
 }

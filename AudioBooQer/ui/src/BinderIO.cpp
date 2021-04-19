@@ -33,6 +33,8 @@
 #include <QtCore/QXmlStreamReader>
 #include <QtCore/QXmlStreamWriter>
 
+#include <csUtil/csQStringUtil.h>
+
 #include "BinderIO.h"
 
 #define XML_BINDER   QStringLiteral("binder")
@@ -61,8 +63,8 @@ namespace priv {
     }
 
     BookBinderChapter chapter;
-    chapter.first  = title.toStdU16String();
-    chapter.second = file.toUtf8().constData();
+    chapter.first  = cs::toUtf16String(title);
+    chapter.second = cs::toUtf8String(file);
     binder.push_back(chapter);
   }
 
@@ -118,8 +120,8 @@ bool saveBinder(const QString& filename, const BookBinder& binder)
   for(const BookBinderChapter& chapter : binder) {
     xml.writeStartElement(XML_CHAPTER); // Begin Chapter /////////////////////
 
-    xml.writeTextElement(XML_TITLE, QString::fromStdU16String(chapter.first));
-    xml.writeTextElement(XML_FILE,  QString::fromUtf8(chapter.second.data()));
+    xml.writeTextElement(XML_TITLE, cs::toQString(chapter.first));
+    xml.writeTextElement(XML_FILE,  cs::toQString(chapter.second));
 
     xml.writeEndElement(); // End Chapter ////////////////////////////////////
   }

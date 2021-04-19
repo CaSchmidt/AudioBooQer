@@ -34,6 +34,7 @@
 #include <QtWidgets/QMenu>
 
 #include <csQt/csQtUtil.h>
+#include <csUtil/csQStringUtil.h>
 
 #include "WChapterList.h"
 
@@ -97,13 +98,13 @@ void WChapterList::onAdd()
   BookBinder binder;
   for(const QString& file : files) {
     const QFileInfo info(file);
-    const BookBinderChapter chapter{info.completeBaseName().toStdU16String(), info.absoluteFilePath().toStdString()};
+    const BookBinderChapter chapter{cs::toUtf16String(info.completeBaseName()), cs::toUtf8String(info.absoluteFilePath())};
     binder.push_back(chapter);
   }
 
   _model->appendChapters(binder);
 
-  QDir::setCurrent(QFileInfo(QString::fromStdString(binder.back().second)).absolutePath());
+  QDir::setCurrent(QFileInfo(cs::toQString(binder.back().second)).absolutePath());
 }
 
 void WChapterList::onContextMenu(const QPoint& globalPos)
