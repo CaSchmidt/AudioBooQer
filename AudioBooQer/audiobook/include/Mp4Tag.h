@@ -43,7 +43,7 @@ struct Mp4Tag {
 
   bool write() const;
 
-  static Mp4Tag read(const std::string& filename_utf);
+  static Mp4Tag read(const std::u8string& filename);
 
   std::u16string filename{};
   std::u16string title{};

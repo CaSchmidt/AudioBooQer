@@ -55,11 +55,11 @@ bool Mp4Tag::write() const
   }
 
   { // Begin Conversion
-#define OUTPUT(str,meta)                              \
-  if( !str.empty() ) {                              \
-  const std::string utf8 = csUnicodeToUtf8(str);  \
-  MP4TagsSet##meta(tags, utf8.data());            \
-  }
+#define OUTPUT(str,meta)                                \
+    if( !str.empty() ) {                                \
+      const std::u8string utf8 = csUnicodeToUtf8(str);  \
+      MP4TagsSet##meta(tags, cs::CSTR(utf8.data()));    \
+    }
     OUTPUT(title,Album);
     OUTPUT(chapter,Name);
     OUTPUT(author,Artist);
@@ -105,7 +105,7 @@ bool Mp4Tag::write() const
     }
   } // End Conversion
 
-  MP4FileHandle file = MP4Modify(csUnicodeToUtf8(filename).data());
+  MP4FileHandle file = MP4Modify(cs::CSTR(csUnicodeToUtf8(filename).data()));
   if( file == MP4_INVALID_FILE_HANDLE ) {
     MP4TagsFree(tags);
     return false;
@@ -118,19 +118,22 @@ bool Mp4Tag::write() const
   return result;
 }
 
-Mp4Tag Mp4Tag::read(const std::string& filename_utf8)
+Mp4Tag Mp4Tag::read(const std::u8string& filename)
 {
-  MP4FileHandle file = MP4Read(filename_utf8.data());
+  MP4FileHandle file = MP4Read(cs::CSTR(filename.data()));
   if( file == MP4_INVALID_FILE_HANDLE ) {
     return Mp4Tag();
   }
 
   Mp4Tag result;
-  result.filename = csUtf8ToUnicode(filename_utf8);
+  result.filename = csUtf8ToUnicode(filename);
 
   const MP4Tags *tags = MP4TagsAlloc();
   if( tags != nullptr  &&  MP4TagsFetch(tags, file) ) {
-#define INPUT(meta,str)  if( tags->meta != nullptr ) { result.str = csUtf8ToUnicode(tags->meta); }
+#define INPUT(meta,str)                                   \
+    if( tags->meta != nullptr ) {                         \
+      result.str = csUtf8ToUnicode(cs::UTF8(tags->meta)); \
+    }
     INPUT(album,title);
     INPUT(name,chapter);
     INPUT(artist,author);

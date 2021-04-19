@@ -35,6 +35,7 @@
 
 #include <csUtil/csFileIO.h>
 #include <csUtil/csOutputContext.h>
+#include <csUtil/csStringUtil.h>
 #include <csUtil/csTextConverter.h>
 #include <mp4v2/mp4v2.h>
 
@@ -51,24 +52,24 @@ using Durations = std::vector<MP4Duration>;
 
 namespace priv {
 
-  inline std::string extractFileName(const std::string& fqfn)
+  inline std::u8string extractFileName(const std::u8string& fqfn)
   {
-    const std::string::size_type pos = fqfn.find_last_of('/');
-    return pos != std::string::npos
+    const std::u8string::size_type pos = fqfn.find_last_of('/');
+    return pos != std::u8string::npos
         ? fqfn.substr(pos + 1)
         : fqfn;
   }
 
-  MP4Duration adtsFrameCount(const std::string& filename_utf8, uint16_t *globalAsc,
+  MP4Duration adtsFrameCount(const std::u8string& filename, uint16_t *globalAsc,
                              const csOutputContext& ctx)
   {
-    ctx.logText(std::string("Reading ADTS file \"") + filename_utf8 + "\".");
+    ctx.logText(u8"Reading ADTS file \"" + filename + u8"\".");
 
     // (1) Read ADTS file ////////////////////////////////////////////////////
 
-    AdtsParser::Buffer buffer = csReadBinaryFile(filename_utf8);
+    AdtsParser::Buffer buffer = csReadBinaryFile(filename);
     if( buffer.empty() ) {
-      ctx.logError(std::string("Unable to read ADTS file \"") + filename_utf8 + "\"!");
+      ctx.logError(u8"Unable to read ADTS file \"" + filename + u8"\"!");
       return 0;
     }
 
@@ -99,12 +100,12 @@ namespace priv {
       // (3.3) Validate //////////////////////////////////////////////////////
 
       if( adts.aacFrameCount() != 1 ) {
-        ctx.logError("Invalid AAC frame count detected!");
+        ctx.logError(u8"Invalid AAC frame count detected!");
         return 0;
       }
 
       if( refAsc == 0  ||  asc != refAsc ) {
-        ctx.logError("Invalid AudioSpecificConfig detected!");
+        ctx.logError(u8"Invalid AudioSpecificConfig detected!");
         return 0;
       }
 
@@ -124,7 +125,7 @@ namespace priv {
     return count;
   }
 
-  std::string formatAsc(const uint16_t asc)
+  std::u8string formatAsc(const uint16_t asc)
   {
     std::ostringstream output;
 
@@ -163,7 +164,7 @@ namespace priv {
       }
     }
 
-    return output.str();
+    return cs::toUtf8String(output.str());
   }
 
   void printBinder(const BookBinder& binder,
@@ -179,28 +180,31 @@ namespace priv {
       const minutes min = std::chrono::duration_cast<minutes>(dur);
       const seconds sec = std::chrono::duration_cast<seconds>(dur % minutes(1));
 
+      const std::string filename = cs::toString(extractFileName(chapter.second));
+      const std::string    title = cs::toString(csUnicodeToUtf8(chapter.first));
+
       std::ostringstream output;
 
-      output << "Chapter #" << (i + 1) << ": " << extractFileName(chapter.second) << ", ";
-      output << "\"" << csUnicodeToUtf8(chapter.first) << "\"";
+      output << "Chapter #" << (i + 1) << ": " << filename << ", ";
+      output << "\"" << title << "\"";
       output << ", " << min.count() << "m" << sec.count() << "s";
 
       i++;
 
-      ctx.logText(output.str());
+      ctx.logText(cs::toUtf8String(output.str()));
     }
   }
 
   bool writeAdtsSample(MP4FileHandle file, const MP4TrackId trackId,
-                       const std::string& filename_utf8, const csOutputContext& ctx)
+                       const std::u8string& filename, const csOutputContext& ctx)
   {
-    ctx.logText(std::string("Writing ADTS file \"") + filename_utf8 + "\".");
+    ctx.logText(u8"Writing ADTS file \"" + filename + u8"\".");
 
     // (1) Read ADTS file ////////////////////////////////////////////////////
 
-    AdtsParser::Buffer buffer = csReadBinaryFile(filename_utf8);
+    AdtsParser::Buffer buffer = csReadBinaryFile(filename);
     if( buffer.empty() ) {
-      ctx.logError(std::string("Unable to read ADTS file \"") + filename_utf8 + "\"!");
+      ctx.logError(u8"Unable to read ADTS file \"" + filename + u8"\"!");
       return false;
     }
 
@@ -211,7 +215,7 @@ namespace priv {
     while( adts.hasFrame() ) {
       if( !MP4WriteSample(file, trackId,
                           adts.frameData(), uint32_t(adts.frameSize())) ) {
-        ctx.logError("Unable to write AAC frame!");
+        ctx.logError(u8"Unable to write AAC frame!");
         return false;
       }
 
@@ -225,16 +229,16 @@ namespace priv {
 
 ////// Public ////////////////////////////////////////////////////////////////
 
-bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder,
+bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
                       const csOutputContext& ctx,
-                      const std::string& language)
+                      const std::u8string& language)
 {
   constexpr uint32_t numSamplesPerAacFrame = 1024;
 
   // (0) Sanity check ////////////////////////////////////////////////////////
 
   if( binder.empty()  ||  numSamplesPerAacFrame != 1024 ) {
-    ctx.logWarning("Empty input!");
+    ctx.logWarning(u8"Empty input!");
     return false;
   }
 
@@ -248,7 +252,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
     try {
       durations.resize(std::size_t(binder.size()));
     } catch(...) {
-      ctx.logError("std::vector<>::resize() failed!");
+      ctx.logError(u8"std::vector<>::resize() failed!");
       return false;
     }
 
@@ -262,7 +266,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
       i++;
 
       if( refAsc == 0 ) {
-        ctx.logError("Invalid AudioSpecificConfig detected!");
+        ctx.logError(u8"Invalid AudioSpecificConfig detected!");
         return false;
       }
 
@@ -276,11 +280,11 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
 
   const uint32_t timeScale = mpeg4::samplingFrequencyFromASC(refAsc);
   if( timeScale == 0 ) {
-    ctx.logError("Invalid time scale!");
+    ctx.logError(u8"Invalid time scale!");
     return false;
   }
 
-  ctx.logText(std::string("Detected format: ") + priv::formatAsc(refAsc));
+  ctx.logText(u8"Detected format: " + priv::formatAsc(refAsc));
   priv::printBinder(binder, durations, timeScale, ctx);
 
   // (3) Create MP4 file /////////////////////////////////////////////////////
@@ -292,9 +296,9 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
   char **compBrands = const_cast<char**>(brands);
 
   const MP4FileHandle file =
-      MP4CreateEx(filename_utf8.data(), 0, 1, 0, compBrands[0], 0, compBrands, 3);
+      MP4CreateEx(cs::CSTR(filename.data()), 0, 1, 0, compBrands[0], 0, compBrands, 3);
   if( file == MP4_INVALID_FILE_HANDLE ) {
-    ctx.logError(std::string("Unable to create output file \"") + filename_utf8 + "\"!");
+    ctx.logError(u8"Unable to create output file \"" + filename + u8"\"!");
     return false;
   }
 
@@ -308,7 +312,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
   const MP4TrackId auTrackId =
       MP4AddAudioTrack(file, timeScale, numSamplesPerAacFrame, MP4_MPEG4_AUDIO_TYPE);
   if( auTrackId == MP4_INVALID_TRACK_ID ) {
-    ctx.logError("Unable to create audio track!");
+    ctx.logError(u8"Unable to create audio track!");
     MP4Close(file);
     return false;
   }
@@ -324,7 +328,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
    * 0x8: Track_size_is_aspect_ratio
    */
   if( !MP4SetTrackIntegerProperty(file, auTrackId, "tkhd.flags", 0xF) ) {
-    ctx.logError("Unable to set audio flags!");
+    ctx.logError(u8"Unable to set audio flags!");
     MP4Close(file);
     return false;
   }
@@ -333,7 +337,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
 
   if( !MP4SetTrackESConfiguration(file, auTrackId,
                                   reinterpret_cast<const uint8_t*>(&refAsc), sizeof(uint16_t)) ) {
-    ctx.logError("Unable to write AudioSpecificConfig!");
+    ctx.logError(u8"Unable to write AudioSpecificConfig!");
     MP4Close(file);
     return false;
   }
@@ -355,7 +359,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
   const MP4TrackId chTrackId =
       MP4AddChapterTextTrack(file, auTrackId);
   if( chTrackId == MP4_INVALID_TRACK_ID ) {
-    ctx.logError("Unable to create chapter track!");
+    ctx.logError(u8"Unable to create chapter track!");
     MP4Close(file);
     return false;
   }
@@ -371,7 +375,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
    * 0x8: Track_size_is_aspect_ratio
    */
   if( !MP4SetTrackIntegerProperty(file, chTrackId, "tkhd.flags", 0xF) ) {
-    ctx.logError("Unable to set chapter flags!");
+    ctx.logError(u8"Unable to set chapter flags!");
     MP4Close(file);
     return false;
   }
@@ -379,8 +383,8 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
   // (8.2) Set track's language //////////////////////////////////////////////
 
   if( language.size() == 3 ) { // cf. ISO 639-2/T
-    if( !MP4SetTrackLanguage(file, chTrackId, language.data()) ) {
-      ctx.logError("Unable to set chapter language!");
+    if( !MP4SetTrackLanguage(file, chTrackId, cs::CSTR(language.data())) ) {
+      ctx.logError(u8"Unable to set chapter language!");
       MP4Close(file);
       return false;
     }
@@ -389,7 +393,7 @@ bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder
   // (9) Create chapters /////////////////////////////////////////////////////
 
   for(std::size_t i = 0; const BookBinderChapter& chapter : binder) {
-    MP4AddChapter(file, chTrackId, durations[i], csUnicodeToUtf8(chapter.first).data());
+    MP4AddChapter(file, chTrackId, durations[i], cs::CSTR(csUnicodeToUtf8(chapter.first).data()));
     i++;
 
     ctx.setProgressValue(int(i));

@@ -45,9 +45,9 @@ public:
 
   bool encode(const void *data, const std::size_t size);
   bool flush(const unsigned int fillTimeSamples);
-  bool initialize(const AacFormat& format, const std::string& outputFileName_utf8);
+  bool initialize(const AacFormat& format, const std::u8string& outputFileName);
   uint64_t numTimeSamples() const;
-  std::string outputSuffix(const AacFormat&) const;
+  std::u8string outputSuffix(const AacFormat&) const;
 
 private:
   bool encodeBlock(const uint8_t *data, int size, bool *eof = nullptr);

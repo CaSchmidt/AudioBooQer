@@ -163,7 +163,7 @@ bool AacEncoder::flush(const unsigned int fillTimeSamples)
   return true;
 }
 
-bool AacEncoder::initialize(const AacFormat& format, const std::string& outputFileName_utf8)
+bool AacEncoder::initialize(const AacFormat& format, const std::u8string& outputFileName)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
 
@@ -248,7 +248,7 @@ bool AacEncoder::initialize(const AacFormat& format, const std::string& outputFi
 
   // (2) Create output file //////////////////////////////////////////////////
 
-  result->file = csOpenFile(outputFileName_utf8, cs::CREATE_BINARY_FILE);
+  result->file = csOpenFile(outputFileName, cs::CREATE_BINARY_FILE);
   if( !result->file.is_open() ) {
     return false;
   }
@@ -268,9 +268,9 @@ uint64_t AacEncoder::numTimeSamples() const
   return impl->numDataSamples/impl->info.inputChannels;
 }
 
-std::string AacEncoder::outputSuffix(const AacFormat&) const
+std::u8string AacEncoder::outputSuffix(const AacFormat&) const
 {
-  return "aac";
+  return u8"aac";
 }
 
 ////// private ///////////////////////////////////////////////////////////////

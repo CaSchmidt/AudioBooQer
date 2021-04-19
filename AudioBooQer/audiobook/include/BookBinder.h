@@ -36,7 +36,7 @@
 #include <utility>
 #include <vector>
 
-using BookBinderChapter = std::pair<std::u16string,std::string>;
+using BookBinderChapter = std::pair<std::u16string,std::u8string>;
 using BookBinder        = std::vector<BookBinderChapter>;
 
 #endif // BOOKBINDER_H

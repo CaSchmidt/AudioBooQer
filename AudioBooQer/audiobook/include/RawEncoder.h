@@ -42,8 +42,8 @@ public:
   ~RawEncoder();
 
   bool encode(const void *data, const std::size_t size);
-  bool initialize(const AacFormat& format, const std::string& outputFileName_utf8);
-  std::string outputSuffix(const AacFormat& format) const;
+  bool initialize(const AacFormat& format, const std::u8string& outputFileName);
+  std::u8string outputSuffix(const AacFormat& format) const;
 
 private:
   std::fstream _file;

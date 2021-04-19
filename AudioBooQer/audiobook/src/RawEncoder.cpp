@@ -29,10 +29,11 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <bit>
 #include <sstream>
-#include <type_traits> // C++20
 
 #include <csUtil/csFileIO.h>
+#include <csUtil/csStringUtil.h>
 
 #include "RawEncoder.h"
 
@@ -56,16 +57,16 @@ bool RawEncoder::encode(const void *data, const std::size_t size)
   return csWrite(_file, data, size);
 }
 
-bool RawEncoder::initialize(const AacFormat& format, const std::string& outputFileName_utf8)
+bool RawEncoder::initialize(const AacFormat& format, const std::u8string& outputFileName)
 {
   if( _file.is_open()  ||  format.numChannels > 2 ) {
     return false;
   }
-  _file = csOpenFile(outputFileName_utf8, cs::CREATE_BINARY_FILE);
+  _file = csOpenFile(outputFileName, cs::CREATE_BINARY_FILE);
   return _file.is_open();
 }
 
-std::string RawEncoder::outputSuffix(const AacFormat& format) const
+std::u8string RawEncoder::outputSuffix(const AacFormat& format) const
 {
   std::ostringstream result;
   if( format.isValid() ) {
@@ -79,5 +80,5 @@ std::string RawEncoder::outputSuffix(const AacFormat& format) const
     result        << format.numSamplesPerSecond << "Hz.";
   }
   result << "raw";
-  return result.str();
+  return cs::toUtf8String(result.str());
 }

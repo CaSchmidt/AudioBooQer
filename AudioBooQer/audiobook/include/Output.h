@@ -36,8 +36,8 @@
 
 class csOutputContext;
 
-bool outputAdtsBinder(const std::string& filename_utf8, const BookBinder& binder,
+bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
                       const csOutputContext& ctx,
-                      const std::string& language = std::string());
+                      const std::u8string& language = std::u8string());
 
 #endif // OUTPUT_H
