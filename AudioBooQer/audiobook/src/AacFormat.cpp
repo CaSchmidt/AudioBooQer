@@ -61,3 +61,13 @@ bool AacFormat::isValid() const
 
   return true;
 }
+
+unsigned int AacFormat::numBytesPerChannel() const
+{
+  return numBitsPerChannel/8;
+}
+
+unsigned int AacFormat::numBytesPerTimeSample() const
+{
+  return numBytesPerChannel()*numChannels;
+}

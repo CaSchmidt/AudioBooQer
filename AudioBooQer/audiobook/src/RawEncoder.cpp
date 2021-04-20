@@ -54,16 +54,30 @@ bool RawEncoder::encode(const void *data, const std::size_t size)
   if( !isValidData(data, size) ) {
     return false;
   }
-  return csWrite(_file, data, size);
+  if( !csWrite(_file, data, size) ) {
+    return false;
+  }
+  _numTimeSamples += uint64_t(size)/_bytesPerTimeSample;
+  return true;
 }
 
 bool RawEncoder::initialize(const AacFormat& format, const std::u8string& outputFileName)
 {
-  if( _file.is_open()  ||  format.numChannels > 2 ) {
+  if( _file.is_open()  ||  !format.isValid() ) {
     return false;
   }
   _file = csOpenFile(outputFileName, cs::CREATE_BINARY_FILE);
+  if( !_file.is_open() ) {
+    return false;
+  }
+  _bytesPerTimeSample = format.numBytesPerTimeSample();
+  _numTimeSamples     = 0;
   return _file.is_open();
+}
+
+uint64_t RawEncoder::numTimeSamples() const
+{
+  return _numTimeSamples;
 }
 
 std::u8string RawEncoder::outputSuffix(const AacFormat& format) const

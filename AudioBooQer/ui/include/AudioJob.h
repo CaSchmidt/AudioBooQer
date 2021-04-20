@@ -43,7 +43,8 @@ public:
   AudioJob(const Job& job, QObject *parent = nullptr);
   ~AudioJob();
 
-  uint64_t numTimeSamples() const;
+  const IAudioEncoder *encoder() const;
+
   QString outputFilePath() const;
 
   bool start();
@@ -63,7 +64,6 @@ private:
   AudioEncoderPtr _encoder;
   Job _job;
   QString _message;
-  uint64_t _numTimeSamples;
   QString _outputFilePath;
 
 signals:

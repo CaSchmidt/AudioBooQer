@@ -44,6 +44,9 @@ struct AacFormat {
   bool isSupportedRate(const unsigned int rate) const;
   bool isValid() const;
 
+  unsigned int numBytesPerChannel() const;
+  unsigned int numBytesPerTimeSample() const;
+
   unsigned int numBitsPerChannel{};
   unsigned int numChannels{};
   unsigned int numSamplesPerAacFrame{1024};

@@ -85,7 +85,7 @@ JobResult executeJob(const Job& job)
   if( audio->start() ) {
     loop.exec();
 
-    result.numTimeSamples = audio->numTimeSamples();
+    result.numTimeSamples = audio->encoder()->numTimeSamples();
     result.outputFilePath = audio->outputFilePath();
     result.position       = job.position;
     result.title          = job.title;

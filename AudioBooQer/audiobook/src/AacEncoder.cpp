@@ -144,19 +144,27 @@ bool AacEncoder::encode(const void *data, const std::size_t size)
   if( !isValidData(data, size) ) {
     return false;
   }
-  return encodeBlock(reinterpret_cast<const uint8_t*>(data), static_cast<int>(size));
+  return encodeBlock(reinterpret_cast<const uint8_t*>(data), int(size));
 }
 
-bool AacEncoder::flush(const unsigned int fillTimeSamples)
+bool AacEncoder::flush()
 {
-  // (1) Fill remaining frame with zeros /////////////////////////////////////
+  // (1) Compute number of samples to fill ///////////////////////////////////
 
-  if( 0 < fillTimeSamples  &&  fillTimeSamples < impl->format.numSamplesPerAacFrame  &&
-      !encodeBlock(impl->zeros, static_cast<int>(fillTimeSamples*impl->info.inputChannels*2)) ) {
+  const unsigned int frameLength = impl->format.numSamplesPerAacFrame;
+  const unsigned int  mod = static_cast<unsigned int>(numTimeSamples())%frameLength;
+  const unsigned int fill = mod > 0
+      ? frameLength - mod
+      : 0;
+
+  // (2) Fill remaining frame with zeros /////////////////////////////////////
+
+  if( 0 < fill  &&  fill < impl->format.numSamplesPerAacFrame  &&
+      !encodeBlock(impl->zeros, int(fill*impl->info.inputChannels)*numBytesPerSample) ) {
     return false;
   }
 
-  // (2) Flush data to disk //////////////////////////////////////////////////
+  // (3) Flush data to disk //////////////////////////////////////////////////
 
   bool eof = false;
   while( !eof ) {

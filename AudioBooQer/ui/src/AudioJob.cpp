@@ -75,7 +75,6 @@ AudioJob::AudioJob(const Job& job, QObject *parent)
   , _encoder()
   , _job(job)
   , _message()
-  , _numTimeSamples{0}
   , _outputFilePath()
 {
   // Signals & Slots /////////////////////////////////////////////////////////
@@ -92,9 +91,9 @@ AudioJob::~AudioJob()
 {
 }
 
-uint64_t AudioJob::numTimeSamples() const
+const IAudioEncoder *AudioJob::encoder() const
 {
-  return _numTimeSamples;
+  return _encoder.get();
 }
 
 QString AudioJob::outputFilePath() const
@@ -153,8 +152,6 @@ void AudioJob::decodingBufferReady()
     _job.logger->logError(u8"IAudioEncoder::encode() failed!");
     emit done();
     return;
-  } else {
-    _numTimeSamples += static_cast<uint64_t>(buffer.frameCount());
   }
 }
 
@@ -172,15 +169,9 @@ void AudioJob::decodingFinished()
   appendInfoMessage(QStringLiteral("+ %1").arg(filename));
 
   if( _job.inputFiles.isEmpty() ) {
-    const unsigned int frameLength = _job.format.numSamplesPerAacFrame;
-    const unsigned int  mod = static_cast<unsigned int>(_numTimeSamples)%frameLength;
-    const unsigned int fill = mod > 0
-        ? frameLength - mod
-        : 0;
-    if( !_encoder->flush(fill) ) {
+    if( !_encoder->flush() ) {
       _job.logger->logError(u8"IAudioEncoder::flush() failed!");
     } else {
-      _numTimeSamples += fill;
       appendInfoMessage(QStringLiteral("= %1").arg(_outputFilePath));
     }
     _job.logger->logText(cs::toUtf8String(_message));

@@ -43,8 +43,9 @@ public:
   virtual ~IAudioEncoder();
 
   virtual bool encode(const void *data, const std::size_t size) = 0;
-  virtual bool flush(const unsigned int fillTimeSamples);
+  virtual bool flush();
   virtual bool initialize(const AacFormat& format, const std::u8string& outputFileName) = 0;
+  virtual uint64_t numTimeSamples() const = 0;
   virtual std::u8string outputSuffix(const AacFormat& format) const = 0;
 
 protected:

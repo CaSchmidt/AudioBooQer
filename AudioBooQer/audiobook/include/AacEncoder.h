@@ -44,7 +44,7 @@ public:
   bool isNull() const;
 
   bool encode(const void *data, const std::size_t size);
-  bool flush(const unsigned int fillTimeSamples);
+  bool flush();
   bool initialize(const AacFormat& format, const std::u8string& outputFileName);
   uint64_t numTimeSamples() const;
   std::u8string outputSuffix(const AacFormat&) const;
