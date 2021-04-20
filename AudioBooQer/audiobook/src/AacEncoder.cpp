@@ -41,6 +41,10 @@
 
 ////// Implementation ////////////////////////////////////////////////////////
 
+inline constexpr int numBytesPerSample = 2;
+
+static_assert(sizeof(INT_PCM) == numBytesPerSample);
+
 /*
  * NOTE:
  * - FDK AAC seems to operate on native endian, signed 16bit integers ONLY!
@@ -174,10 +178,9 @@ bool AacEncoder::initialize(const AacFormat& format, const std::u8string& output
     mode = MODE_2;
   }
 
-  if( impl                            || // do not operate on existing instance
-      !format.isValid()               || // proper audio format passed in
-      sizeof(INT_PCM) != 2            || // explicitly check encoder config
-      mode == MODE_INVALID ) {           // support Mono/Stereo only
+  if( impl                 ||  // do not operate on an existing instance
+      !format.isValid()    ||  // proper audio format passed in
+      mode == MODE_INVALID ) { // support Mono/Stereo only
     return false;
   }
 
@@ -186,7 +189,7 @@ bool AacEncoder::initialize(const AacFormat& format, const std::u8string& output
 
   // (1) Open encoder ////////////////////////////////////////////////////////
 
-  if( aacEncOpen(&result->handle, 0, static_cast<UINT>(format.numChannels)) != AACENC_OK ) {
+  if( aacEncOpen(&result->handle, 0, UINT(format.numChannels)) != AACENC_OK ) {
     return false;
   }
 
@@ -202,11 +205,11 @@ bool AacEncoder::initialize(const AacFormat& format, const std::u8string& output
     return false;
   }
 
-  if( !result->setParam(AACENC_SAMPLERATE, static_cast<UINT>(format.numSamplesPerSecond)) ) {
+  if( !result->setParam(AACENC_SAMPLERATE, UINT(format.numSamplesPerSecond)) ) {
     return false;
   }
 
-  if( !result->setParam(AACENC_CHANNELMODE, static_cast<UINT>(mode)) ) {
+  if( !result->setParam(AACENC_CHANNELMODE, UINT(mode)) ) {
     return false;
   }
 
@@ -256,7 +259,7 @@ bool AacEncoder::initialize(const AacFormat& format, const std::u8string& output
   // (3) Store result ////////////////////////////////////////////////////////
 
   impl = std::move(result);
-  impl->inDesc.initialize(IN_AUDIO_DATA, 2);
+  impl->inDesc.initialize(IN_AUDIO_DATA, numBytesPerSample);
   impl->outDesc.initialize(OUT_BITSTREAM_DATA, 1);
   std::memset(impl->zeros, 0, sizeof(impl->zeros));
 
@@ -284,7 +287,7 @@ bool AacEncoder::encodeBlock(const uint8_t *data, int size, bool *eof)
     AACENC_InArgs in_args;
     in_args.numInSamples = size < 1
         ? -1      // Flush encoder!
-        : size/2;
+        : size/numBytesPerSample;
 
     AACENC_OutArgs out_args;
     const AACENC_ERROR error =
@@ -298,7 +301,7 @@ bool AacEncoder::encodeBlock(const uint8_t *data, int size, bool *eof)
       return false;
     }
 
-    impl->numDataSamples += static_cast<uint64_t>(out_args.numInSamples);
+    impl->numDataSamples += uint64_t(out_args.numInSamples);
 
     if( out_args.numOutBytes > 0  &&
         !csWrite(impl->file, impl->bitstream, out_args.numOutBytes) ) {
@@ -306,8 +309,8 @@ bool AacEncoder::encodeBlock(const uint8_t *data, int size, bool *eof)
     }
 
     if( in_args.numInSamples - out_args.numInSamples > 0 ) {
-      data += out_args.numInSamples*2;
-      size -= out_args.numInSamples*2;
+      data += out_args.numInSamples*numBytesPerSample;
+      size -= out_args.numInSamples*numBytesPerSample;
     } else {
       break;
     }
