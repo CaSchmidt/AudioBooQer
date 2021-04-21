@@ -39,11 +39,15 @@
 
 #include "AacEncoder.h"
 
+#include "Mpeg4Audio.h"
+
 ////// Implementation ////////////////////////////////////////////////////////
 
 inline constexpr int numBytesPerSample = 2;
 
-static_assert(sizeof(INT_PCM) == numBytesPerSample);
+static_assert(numBytesPerSample == sizeof(INT_PCM));
+
+static_assert(mpeg4::numSamplesPerAacFrame == 1024);
 
 /*
  * NOTE:
@@ -151,7 +155,7 @@ bool AacEncoder::flush()
 {
   // (1) Compute number of samples to fill ///////////////////////////////////
 
-  const unsigned int frameLength = impl->format.numSamplesPerAacFrame;
+  const unsigned int frameLength = mpeg4::numSamplesPerAacFrame;
   const unsigned int  mod = static_cast<unsigned int>(numTimeSamples())%frameLength;
   const unsigned int fill = mod > 0
       ? frameLength - mod
@@ -159,7 +163,7 @@ bool AacEncoder::flush()
 
   // (2) Fill remaining frame with zeros /////////////////////////////////////
 
-  if( 0 < fill  &&  fill < impl->format.numSamplesPerAacFrame  &&
+  if( 0 < fill  &&  fill < mpeg4::numSamplesPerAacFrame  &&
       !encodeBlock(impl->zeros, int(fill*impl->info.inputChannels)*numBytesPerSample) ) {
     return false;
   }
@@ -229,7 +233,7 @@ bool AacEncoder::initialize(const AacFormat& format, const std::u8string& output
     return false;
   }
 
-  if( !result->setParam(AACENC_GRANULE_LENGTH, format.numSamplesPerAacFrame) ) {
+  if( !result->setParam(AACENC_GRANULE_LENGTH, UINT(mpeg4::numSamplesPerAacFrame)) ) {
     return false;
   }
 

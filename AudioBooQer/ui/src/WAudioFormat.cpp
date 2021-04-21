@@ -64,12 +64,6 @@ WAudioFormat::WAudioFormat(QWidget *parent, Qt::WindowFlags f)
   ui->bitsCombo->addItem(QStringLiteral("8"),  static_cast<unsigned int>(8));
   ui->bitsCombo->addItem(QStringLiteral("16"), static_cast<unsigned int>(16));
   ui->bitsCombo->setCurrentText(QStringLiteral("16"));
-
-  // Frame ///////////////////////////////////////////////////////////////////
-
-  ui->frameCombo->clear();
-  ui->frameCombo->addItem(QStringLiteral("1024"), static_cast<unsigned int>(1024));
-  ui->frameCombo->setCurrentText(QStringLiteral("1024"));
 }
 
 WAudioFormat::~WAudioFormat()
@@ -82,7 +76,6 @@ AacFormat WAudioFormat::format() const
   AacFormat result;
   result.numBitsPerChannel     = ui->bitsCombo->currentData().toUInt();
   result.numChannels           = ui->channelsCombo->currentData().toUInt();
-  result.numSamplesPerAacFrame = ui->frameCombo->currentData().toUInt();
   result.numSamplesPerSecond   = ui->rateCombo->currentData().toUInt();
 
   return result;

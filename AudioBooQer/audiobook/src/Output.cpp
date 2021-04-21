@@ -44,6 +44,10 @@
 #include "AdtsParser.h"
 #include "Mpeg4Audio.h"
 
+////// Asserts ///////////////////////////////////////////////////////////////
+
+static_assert(mpeg4::numSamplesPerAacFrame == 1024);
+
 ////// Types /////////////////////////////////////////////////////////////////
 
 using Durations = std::vector<MP4Duration>;
@@ -233,11 +237,9 @@ bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
                       const csOutputContext& ctx,
                       const std::u8string& language)
 {
-  constexpr uint32_t numSamplesPerAacFrame = 1024;
-
   // (0) Sanity check ////////////////////////////////////////////////////////
 
-  if( binder.empty()  ||  numSamplesPerAacFrame != 1024 ) {
+  if( binder.empty() ) {
     ctx.logWarning(u8"Empty input!");
     return false;
   }
@@ -261,7 +263,7 @@ bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
       if( durations[i] == 0 ) {
         return false;
       } else {
-        durations[i] *= MP4Duration(numSamplesPerAacFrame);
+        durations[i] *= MP4Duration(mpeg4::numSamplesPerAacFrame);
       }
       i++;
 
@@ -310,7 +312,7 @@ bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
   // (5) Create audio track //////////////////////////////////////////////////
 
   const MP4TrackId auTrackId =
-      MP4AddAudioTrack(file, timeScale, numSamplesPerAacFrame, MP4_MPEG4_AUDIO_TYPE);
+      MP4AddAudioTrack(file, timeScale, mpeg4::numSamplesPerAacFrame, MP4_MPEG4_AUDIO_TYPE);
   if( auTrackId == MP4_INVALID_TRACK_ID ) {
     ctx.logError(u8"Unable to create audio track!");
     MP4Close(file);

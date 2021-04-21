@@ -38,6 +38,8 @@
 
 namespace mpeg4 {
 
+  inline constexpr uint32_t numSamplesPerAacFrame = 1024;
+
   // Audio Object Type: 5bits
   /*
    * NOTE:

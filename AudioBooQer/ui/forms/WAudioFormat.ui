@@ -80,16 +80,6 @@
       <item row="1" column="1">
        <widget class="QComboBox" name="bitsCombo"/>
       </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Samples/Frame:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QComboBox" name="frameCombo"/>
-      </item>
      </layout>
     </widget>
    </item>
@@ -99,7 +89,6 @@
   <tabstop>channelsCombo</tabstop>
   <tabstop>rateCombo</tabstop>
   <tabstop>bitsCombo</tabstop>
-  <tabstop>frameCombo</tabstop>
  </tabstops>
  <resources/>
  <connections/>

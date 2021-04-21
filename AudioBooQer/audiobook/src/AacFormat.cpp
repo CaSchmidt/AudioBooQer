@@ -51,10 +51,6 @@ bool AacFormat::isValid() const
     return false;
   }
 
-  if( numSamplesPerAacFrame != 1024 ) {
-    return false;
-  }
-
   if( !isSupportedRate(numSamplesPerSecond) ) {
     return false;
   }

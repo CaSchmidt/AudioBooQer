@@ -49,7 +49,6 @@ struct AacFormat {
 
   unsigned int numBitsPerChannel{};
   unsigned int numChannels{};
-  unsigned int numSamplesPerAacFrame{1024};
   unsigned int numSamplesPerSecond{};
 
   static constexpr unsigned int supportedRates[] = {
