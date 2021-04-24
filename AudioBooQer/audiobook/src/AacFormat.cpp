@@ -63,7 +63,7 @@ unsigned int AacFormat::numBytesPerChannel() const
   return numBitsPerChannel/8;
 }
 
-unsigned int AacFormat::numBytesPerTimeSample() const
+unsigned int AacFormat::numBytesPerPcmFrame() const
 {
   return numBytesPerChannel()*numChannels;
 }

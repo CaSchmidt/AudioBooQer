@@ -43,13 +43,13 @@ public:
 
   bool encode(const void *data, const std::size_t size);
   bool initialize(const AacFormat& format, const std::u8string& outputFileName);
-  uint64_t numTimeSamples() const;
+  uint64_t numPcmFrames() const;
   std::u8string outputSuffix(const AacFormat& format) const;
 
 private:
-  uint64_t     _bytesPerTimeSample{0};
+  uint64_t     _bytesPerPcmFrame{0};
   std::fstream _file;
-  uint64_t     _numTimeSamples{0};
+  uint64_t     _numPcmFrames{0};
 };
 
 #endif // RAWENCODER_H

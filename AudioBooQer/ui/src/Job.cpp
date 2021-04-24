@@ -56,7 +56,7 @@ QString Job::outputFilePath(IAudioEncoder *encoder) const
 
 bool JobResult::isValid() const
 {
-  return numTimeSamples > 0;
+  return numPcmFrames > 0;
 }
 
 bool JobResult::operator<(const JobResult& other) const
@@ -85,7 +85,7 @@ JobResult executeJob(const Job& job)
   if( audio->start() ) {
     loop.exec();
 
-    result.numTimeSamples = audio->encoder()->numTimeSamples();
+    result.numPcmFrames   = audio->encoder()->numPcmFrames();
     result.outputFilePath = audio->outputFilePath();
     result.position       = job.position;
     result.title          = job.title;

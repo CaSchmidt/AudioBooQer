@@ -60,7 +60,7 @@ using Jobs = QList<Job>;
 struct JobResult {
   JobResult() = default;
 
-  uint64_t numTimeSamples{};
+  uint64_t numPcmFrames{};
   QString outputFilePath{};
   int position{};
   QString title{};

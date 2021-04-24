@@ -45,7 +45,7 @@ struct AacFormat {
   bool isValid() const;
 
   unsigned int numBytesPerChannel() const;
-  unsigned int numBytesPerTimeSample() const;
+  unsigned int numBytesPerPcmFrame() const;
 
   unsigned int numBitsPerChannel{};
   unsigned int numChannels{};

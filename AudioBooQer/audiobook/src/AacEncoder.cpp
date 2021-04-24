@@ -156,7 +156,7 @@ bool AacEncoder::flush()
   // (1) Compute number of samples to fill ///////////////////////////////////
 
   const unsigned int frameLength = mpeg4::numSamplesPerAacFrame;
-  const unsigned int  mod = static_cast<unsigned int>(numTimeSamples())%frameLength;
+  const unsigned int  mod = static_cast<unsigned int>(numPcmFrames())%frameLength;
   const unsigned int fill = mod > 0
       ? frameLength - mod
       : 0;
@@ -278,7 +278,7 @@ bool AacEncoder::initialize(const AacFormat& format, const std::u8string& output
   return true;
 }
 
-uint64_t AacEncoder::numTimeSamples() const
+uint64_t AacEncoder::numPcmFrames() const
 {
   return impl->numDataSamples/impl->info.inputChannels;
 }

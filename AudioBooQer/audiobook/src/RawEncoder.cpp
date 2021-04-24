@@ -57,7 +57,7 @@ bool RawEncoder::encode(const void *data, const std::size_t size)
   if( !csWrite(_file, data, size) ) {
     return false;
   }
-  _numTimeSamples += uint64_t(size)/_bytesPerTimeSample;
+  _numPcmFrames += uint64_t(size)/_bytesPerPcmFrame;
   return true;
 }
 
@@ -70,14 +70,14 @@ bool RawEncoder::initialize(const AacFormat& format, const std::u8string& output
   if( !_file.is_open() ) {
     return false;
   }
-  _bytesPerTimeSample = format.numBytesPerTimeSample();
-  _numTimeSamples     = 0;
+  _bytesPerPcmFrame = format.numBytesPerPcmFrame();
+  _numPcmFrames     = 0;
   return _file.is_open();
 }
 
-uint64_t RawEncoder::numTimeSamples() const
+uint64_t RawEncoder::numPcmFrames() const
 {
-  return _numTimeSamples;
+  return _numPcmFrames;
 }
 
 std::u8string RawEncoder::outputSuffix(const AacFormat& format) const
