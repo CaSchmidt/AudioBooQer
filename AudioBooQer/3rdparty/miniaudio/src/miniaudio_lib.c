@@ -1,2 +1,3 @@
 #define MINIAUDIO_IMPLEMENTATION
+#define MINIAUDIO_SPEEX_RESAMPLER_IMPLEMENTATION
 #include "miniaudio_lib.h"

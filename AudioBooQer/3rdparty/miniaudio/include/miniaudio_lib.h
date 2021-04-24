@@ -8,6 +8,8 @@
 #define MA_NO_THREADING
 #define MA_NO_GENERATION
 
+#include <extras/speex_resampler/ma_speex_resampler.h>
+
 #include <miniaudio.h>
 
 #endif // MINIAUDIO_LIB_H
