@@ -15,6 +15,7 @@ list(APPEND ui_HEADERS
   include/Chapter.h
   include/ChapterModel.h
   include/Job.h
+  include/MiniJob.h
   include/Settings.h
   include/WAudioFormat.h
   include/WAudioPlayer.h
@@ -32,6 +33,7 @@ list(APPEND ui_SOURCES
   src/ChapterModel.cpp
   src/Job.cpp
   src/main.cpp
+  src/MiniJob.cpp
   src/Settings.cpp
   src/WAudioFormat.cpp
   src/WAudioPlayer.cpp
@@ -79,7 +81,7 @@ target_include_directories(ui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(ui PRIVATE ${csQt_SOURCE_DIR}/include)
 target_include_directories(ui PRIVATE ${csQt_BINARY_DIR}/include)
 
-target_link_libraries(ui audiobook csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
+target_link_libraries(ui audiobook miniaudio csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
 
 install(TARGETS ui
   ARCHIVE DESTINATION lib

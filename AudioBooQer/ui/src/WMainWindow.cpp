@@ -48,6 +48,7 @@
 #include "BinderIO.h"
 #include "Chapter.h"
 #include "ChapterModel.h"
+#include "MiniJob.h"
 #include "Mpeg4Audio.h"
 #include "Output.h"
 #include "Settings.h"
@@ -340,7 +341,9 @@ void WMainWindow::processJobs()
   QFutureWatcher<JobResult> watcher;
   dialog.setFutureWatcher(&watcher);
 
-  QFuture<JobResult> future = QtConcurrent::mapped(jobs, executeJob);
+  QFuture<JobResult> future = ui->miniaudioCheck->isChecked()
+      ? QtConcurrent::mapped(jobs, executeMiniJob)
+      : QtConcurrent::mapped(jobs, executeJob);
   watcher.setFuture(future);
 
   dialog.exec();
