@@ -145,7 +145,7 @@ JobResult executeMiniJob(const Job& job)
       QFile::rename(filename, filename + QStringLiteral(".done"));
     }
 
-    message.append(QStringLiteral("INFO: + %1").arg(filename));
+    message.append(QStringLiteral("INFO: + %1\n").arg(filename));
   }
 
   // (4) Flush Encoder ///////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ JobResult executeMiniJob(const Job& job)
   const uint64_t numPcmFrames = encoder->numPcmFrames();
   encoder.reset(); // NOTE: Set 'encoder' to <nullptr> & close output file!
 
-  message.append(QStringLiteral("INFO: = %1").arg(outputFilePath));
+  message.append(QStringLiteral("INFO: = %1\n").arg(outputFilePath));
   job.logger->logText(cs::toUtf8String(message));
 
   // (5) Done! ///////////////////////////////////////////////////////////////
