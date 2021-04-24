@@ -63,10 +63,11 @@ namespace priv {
                       const Ui::WMainWindow *ui)
   {
     for(Job& job : jobs) {
-      job.format        = ui->formatWidget->format();
-      job.logger        = logger;
-      job.outputDirPath = outputDirPath;
-      job.renameInput   = ui->renameCheck->isChecked();
+      job.format          = ui->formatWidget->format();
+      job.logger          = logger;
+      job.outputDirPath   = outputDirPath;
+      job.renameInput     = ui->renameCheck->isChecked();
+      job.speexResampling = ui->speexResamplingCheck->isChecked();
     }
   }
 

@@ -141,9 +141,12 @@
             </widget>
            </item>
            <item row="4" column="0" colspan="2">
-            <widget class="QCheckBox" name="checkBox_2">
+            <widget class="QCheckBox" name="speexResamplingCheck">
              <property name="text">
-              <string>CheckBox</string>
+              <string>Use Speex resampling (miniaudio.h)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -355,7 +358,7 @@
   <tabstop>chapterNoCheck</tabstop>
   <tabstop>autoChapterCheck</tabstop>
   <tabstop>miniaudioCheck</tabstop>
-  <tabstop>checkBox_2</tabstop>
+  <tabstop>speexResamplingCheck</tabstop>
   <tabstop>firstChapterSpin</tabstop>
   <tabstop>numberWidthSpin</tabstop>
   <tabstop>languageCombo</tabstop>

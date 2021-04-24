@@ -46,12 +46,16 @@
 
 namespace priv {
 
-  bool createDecoder(ma_decoder *decoder, const QString& filename, const AacFormat& format)
+  bool createDecoder(ma_decoder *decoder, const QString& filename, const AacFormat& format,
+                     const bool speexResampling)
   {
     ma_decoder_config config = ma_decoder_config_init(ma_format_s16,
                                                       format.numChannels,
                                                       format.numSamplesPerSecond);
-    // TODO: Configure resampler...
+    if( speexResampling ) {
+      config.resampling.algorithm     = ma_resample_algorithm_speex;
+      config.resampling.speex.quality = 10;
+    }
 
 #ifdef Q_OS_WINDOWS
     const ma_result result = ma_decoder_init_file_w(filename.toStdWString().data(), &config, decoder);
@@ -111,7 +115,7 @@ JobResult executeMiniJob(const Job& job)
     // (3.1) Create Decoder //////////////////////////////////////////////////
 
     ma_decoder decoder;
-    if( !priv::createDecoder(&decoder, filename, job.format) ) {
+    if( !priv::createDecoder(&decoder, filename, job.format, job.speexResampling) ) {
       job.logger->logError(u8"ma_decoder_init_file() failed!");
       return JobResult();
     }
