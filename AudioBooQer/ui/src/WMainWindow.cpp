@@ -102,7 +102,7 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   ui->firstChapterSpin->setValue(model->firstChaopterNo());
   ui->numberWidthSpin->setValue(model->widthChapterNo());
 
-  ui->dissolveChapterAction->setShortcut(Qt::CTRL+Qt::Key_D);
+  ui->dissolveChapterAction->setShortcut(Qt::ControlModifier + Qt::Key_D);
   connect(ui->dissolveChapterAction, SIGNAL(triggered()),
           model, SLOT(dissolveLastChapter()));
 
@@ -132,11 +132,13 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   ui->openDirAction->setShortcut(QKeySequence::Open);
   connect(ui->openDirAction, SIGNAL(triggered()), SLOT(openDirectory()));
 
+  ui->bindBookAction->setShortcut(Qt::ControlModifier + Qt::Key_B);
   connect(ui->bindBookAction, &QAction::triggered, this, &WMainWindow::bindBook);
 
+  ui->editTagAction->setShortcut(Qt::ControlModifier + Qt::Key_T);
   connect(ui->editTagAction, &QAction::triggered, this, &WMainWindow::editTag);
 
-  ui->quitAction->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_Q));
+  ui->quitAction->setShortcut(Qt::ControlModifier + Qt::Key_Q);
   connect(ui->quitAction, SIGNAL(triggered()), SLOT(close()));
 
   // Edit Menu ///////////////////////////////////////////////////////////////
@@ -146,19 +148,19 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
 
   // Playback Menu ///////////////////////////////////////////////////////////
 
-  ui->previousAction->setShortcut(Qt::CTRL+Qt::Key_1);
+  ui->previousAction->setShortcut(Qt::ControlModifier + Qt::Key_1);
   connect(ui->previousAction, SIGNAL(triggered()),
           ui->playerWidget, SLOT(previous()));
 
-  ui->stopAction->setShortcut(Qt::CTRL+Qt::Key_2);
+  ui->stopAction->setShortcut(Qt::ControlModifier + Qt::Key_2);
   connect(ui->stopAction, SIGNAL(triggered()),
           ui->playerWidget, SLOT(stop()));
 
-  ui->playAction->setShortcut(Qt::CTRL+Qt::Key_3);
+  ui->playAction->setShortcut(Qt::ControlModifier + Qt::Key_3);
   connect(ui->playAction, SIGNAL(triggered()),
           ui->playerWidget, SLOT(play()));
 
-  ui->nextAction->setShortcut(Qt::CTRL+Qt::Key_4);
+  ui->nextAction->setShortcut(Qt::ControlModifier + Qt::Key_4);
   connect(ui->nextAction, SIGNAL(triggered()),
           ui->playerWidget, SLOT(next()));
 

@@ -325,16 +325,10 @@
    <property name="text">
     <string>Edit &amp;tag...</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
-   </property>
   </action>
   <action name="bindBookAction">
    <property name="text">
     <string>&amp;Bind book...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+B</string>
    </property>
   </action>
  </widget>
