@@ -32,6 +32,7 @@
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
 #include <QtCore/QThreadPool>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QFileDialog>
@@ -173,12 +174,15 @@ WMainWindow::WMainWindow(QWidget *parent, Qt::WindowFlags flags)
   // Threads /////////////////////////////////////////////////////////////////
 
   ui->threadSpin->setRange(1, qMax<int>(1, QThread::idealThreadCount()));
-  ui->threadSpin->setValue(qBound<int>(1, Settings::numThreads, ui->threadSpin->maximum()));
+
+  // Settings ////////////////////////////////////////////////////////////////
+
+  loadSettings();
 }
 
 WMainWindow::~WMainWindow()
 {
-  Settings::numThreads = ui->threadSpin->value();
+  saveSettings();
 
   delete ui;
 }
@@ -365,4 +369,37 @@ void WMainWindow::processJobs()
       saveBinder(filename, binder);
     }
   }
+}
+
+////// private ///////////////////////////////////////////////////////////////
+
+void WMainWindow::loadSettings()
+{
+  constexpr bool enableMiniaudio{false};
+  constexpr bool enableSpeex{false};
+  constexpr int numThreads{2};
+
+  const QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                           QStringLiteral("csLabs"), QStringLiteral("AudioBooQer"));
+
+  Settings::load(settings, ui->miniaudioCheck,
+                 QStringLiteral("global/enable_miniaudio"), enableMiniaudio);
+  Settings::load(settings, ui->speexResamplingCheck,
+                 QStringLiteral("global/enable_speex"), enableSpeex);;
+  Settings::load(settings, ui->threadSpin,
+                 QStringLiteral("global/num_threads"), numThreads);
+}
+
+void WMainWindow::saveSettings() const
+{
+  QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                     QStringLiteral("csLabs"), QStringLiteral("AudioBooQer"));
+
+  settings.beginGroup(QStringLiteral("global"));
+  settings.setValue(QStringLiteral("enable_miniaudio"), ui->miniaudioCheck->isChecked());
+  settings.setValue(QStringLiteral("enable_speex"), ui->speexResamplingCheck->isChecked());
+  settings.setValue(QStringLiteral("num_threads"), ui->threadSpin->value());
+  settings.endGroup();
+
+  settings.sync();
 }

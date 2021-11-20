@@ -39,7 +39,6 @@
 #include <QtCore/QLocale>
 #include <QtWidgets/QApplication>
 
-#include "Settings.h"
 #include "WMainWindow.h"
 
 int main(int argc, char **argv)
@@ -47,16 +46,12 @@ int main(int argc, char **argv)
   QApplication qapp(argc, argv);
   QLocale::setDefault(QLocale::system());
 
-  Settings::load();
-
   WMainWindow *mainwindow = new WMainWindow();
   mainwindow->show();
 
   const int result = qapp.exec();
 
   delete mainwindow;
-
-  Settings::save();
 
   return result;
 }

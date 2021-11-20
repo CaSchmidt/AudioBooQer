@@ -32,13 +32,15 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+class QCheckBox;
+class QSettings;
+class QSpinBox;
+class QString;
+
 namespace Settings {
 
-  extern int numThreads;
-
-  void load();
-
-  void save();
+  void load(const QSettings& settings, QCheckBox *check, const QString& key, bool value = false);
+  void load(const QSettings& settings, QSpinBox *spin, const QString& key, int value = 0);
 
 } // namespace Settings
 

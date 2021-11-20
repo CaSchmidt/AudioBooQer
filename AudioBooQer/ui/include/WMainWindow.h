@@ -53,6 +53,9 @@ private slots:
 
 private:
   Ui::WMainWindow *ui;
+
+  void loadSettings();
+  void saveSettings() const;
 };
 
 #endif // WMAINWINDOW_H

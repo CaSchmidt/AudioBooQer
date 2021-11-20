@@ -30,31 +30,23 @@
 *****************************************************************************/
 
 #include <QtCore/QSettings>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QSpinBox>
 
 #include "Settings.h"
 
 namespace Settings {
 
-  int numThreads{2};
-
-  void load()
+  void load(const QSettings& settings, QCheckBox *check, const QString& key, bool value)
   {
-    const QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                             QStringLiteral("csLabs"), QStringLiteral("AudioBooQer"));
-
-    numThreads = settings.value(QStringLiteral("global/num_threads"), numThreads).toInt();
+    value = settings.value(key, value).toBool();
+    check->setChecked(value);
   }
 
-  void save()
+  void load(const QSettings& settings, QSpinBox *spin, const QString& key, int value)
   {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                       QStringLiteral("csLabs"), QStringLiteral("AudioBooQer"));
-
-    settings.beginGroup(QStringLiteral("global"));
-    settings.setValue(QStringLiteral("num_threads"), numThreads);
-    settings.endGroup();
-
-    settings.sync();
+    value = settings.value(key, value).toInt();
+    spin->setValue(qBound<int>(spin->minimum(), value, spin->maximum()));
   }
 
 } // namespace Settings
