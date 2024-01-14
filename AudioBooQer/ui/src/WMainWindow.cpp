@@ -49,7 +49,6 @@
 #include "BinderIO.h"
 #include "Chapter.h"
 #include "ChapterModel.h"
-#include "MiniJob.h"
 #include "Mpeg4Audio.h"
 #include "Output.h"
 #include "Settings.h"
@@ -68,7 +67,6 @@ namespace priv {
       job.logger          = logger;
       job.outputDirPath   = outputDirPath;
       job.renameInput     = ui->renameCheck->isChecked();
-      job.speexResampling = ui->speexResamplingCheck->isChecked();
     }
   }
 
@@ -348,9 +346,7 @@ void WMainWindow::processJobs()
   QFutureWatcher<JobResult> watcher;
   dialog.setFutureWatcher(&watcher);
 
-  QFuture<JobResult> future = ui->miniaudioCheck->isChecked()
-      ? QtConcurrent::mapped(jobs, executeMiniJob)
-      : QtConcurrent::mapped(jobs, executeJob);
+  QFuture<JobResult> future = QtConcurrent::mapped(jobs, executeJob);
   watcher.setFuture(future);
 
   dialog.exec();
@@ -375,17 +371,11 @@ void WMainWindow::processJobs()
 
 void WMainWindow::loadSettings()
 {
-  constexpr bool enableMiniaudio{false};
-  constexpr bool enableSpeex{false};
   constexpr int numThreads{2};
 
   const QSettings settings(QSettings::IniFormat, QSettings::UserScope,
                            QStringLiteral("csLabs"), QStringLiteral("AudioBooQer"));
 
-  Settings::load(settings, ui->miniaudioCheck,
-                 QStringLiteral("global/enable_miniaudio"), enableMiniaudio);
-  Settings::load(settings, ui->speexResamplingCheck,
-                 QStringLiteral("global/enable_speex"), enableSpeex);;
   Settings::load(settings, ui->threadSpin,
                  QStringLiteral("global/num_threads"), numThreads);
 }
@@ -396,8 +386,6 @@ void WMainWindow::saveSettings() const
                      QStringLiteral("csLabs"), QStringLiteral("AudioBooQer"));
 
   settings.beginGroup(QStringLiteral("global"));
-  settings.setValue(QStringLiteral("enable_miniaudio"), ui->miniaudioCheck->isChecked());
-  settings.setValue(QStringLiteral("enable_speex"), ui->speexResamplingCheck->isChecked());
   settings.setValue(QStringLiteral("num_threads"), ui->threadSpin->value());
   settings.endGroup();
 

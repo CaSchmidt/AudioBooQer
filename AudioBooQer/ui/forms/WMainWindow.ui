@@ -70,7 +70,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <layout class="QVBoxLayout" name="verticalLayout">
         <property name="spacing">
          <number>4</number>
@@ -130,34 +130,14 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0" colspan="2">
-            <widget class="QCheckBox" name="miniaudioCheck">
-             <property name="text">
-              <string>Use miniaudio.h</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="2">
-            <widget class="QCheckBox" name="speexResamplingCheck">
-             <property name="text">
-              <string>Use Speex resampling (miniaudio.h)</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="label">
              <property name="text">
               <string>First chapter number:</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="3" column="1">
             <widget class="QSpinBox" name="firstChapterSpin">
              <property name="minimum">
               <number>0</number>
@@ -167,14 +147,14 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>Digits of chapter numbers:</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
+           <item row="4" column="1">
             <widget class="QSpinBox" name="numberWidthSpin">
              <property name="minimum">
               <number>1</number>
@@ -184,24 +164,24 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="label_3">
              <property name="text">
               <string>Language:</string>
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
+           <item row="5" column="1">
             <widget class="QComboBox" name="languageCombo"/>
            </item>
-           <item row="8" column="0">
+           <item row="6" column="0">
             <widget class="QLabel" name="label_4">
              <property name="text">
               <string>Threads:</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="1">
+           <item row="6" column="1">
             <widget class="QSpinBox" name="threadSpin">
              <property name="minimum">
               <number>1</number>
@@ -348,16 +328,14 @@
  </customwidgets>
  <tabstops>
   <tabstop>chaptersView</tabstop>
+  <tabstop>goButton</tabstop>
   <tabstop>renameCheck</tabstop>
   <tabstop>chapterNoCheck</tabstop>
   <tabstop>autoChapterCheck</tabstop>
-  <tabstop>miniaudioCheck</tabstop>
-  <tabstop>speexResamplingCheck</tabstop>
   <tabstop>firstChapterSpin</tabstop>
   <tabstop>numberWidthSpin</tabstop>
   <tabstop>languageCombo</tabstop>
   <tabstop>threadSpin</tabstop>
-  <tabstop>goButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>

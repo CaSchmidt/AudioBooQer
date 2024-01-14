@@ -25,10 +25,6 @@ add_subdirectory(../csUtil/csUtil
   ${CMAKE_CURRENT_BINARY_DIR}/csUtil
   )
 
-add_subdirectory(${AudioBooQer_SOURCE_DIR}/3rdparty/miniaudio
-  ${CMAKE_CURRENT_BINARY_DIR}/miniaudio
-  )
-
 ### Project ##################################################################
 
 add_subdirectory(audiobook)

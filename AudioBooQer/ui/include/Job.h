@@ -52,7 +52,6 @@ struct Job {
   QString outputDirPath{};
   int position{};
   bool renameInput{false};
-  bool speexResampling{false};
   QString title{};
 };
 
