@@ -61,9 +61,9 @@ QVariant BookBinderModel::data(const QModelIndex& index, int role) const
     return cs::toQString(_binder.at(index.row()).first);
   } else if( role == Qt::ForegroundRole ) {
     const QString filename = cs::toQString(_binder.at(index.row()).second);
-    return QFile::exists(filename)
-        ? QBrush(Qt::black, Qt::SolidPattern)
-        : QBrush(Qt::red, Qt::SolidPattern);
+    if( !QFile::exists(filename) ) {
+      return QBrush(Qt::red, Qt::SolidPattern);
+    }
   } else if( role == Qt::ToolTipRole ) {
     return cs::toQString(_binder.at(index.row()).second);
   }
