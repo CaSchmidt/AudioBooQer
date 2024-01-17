@@ -29,8 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef BOOKBINDER_H
-#define BOOKBINDER_H
+#pragma once
 
 #include <string>
 #include <utility>
@@ -38,5 +37,3 @@
 
 using BookBinderChapter = std::pair<std::u16string,std::u8string>;
 using BookBinder        = std::vector<BookBinderChapter>;
-
-#endif // BOOKBINDER_H

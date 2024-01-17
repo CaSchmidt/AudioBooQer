@@ -29,8 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef BOOKBINDERMODEL_H
-#define BOOKBINDERMODEL_H
+#pragma once
 
 #include <QtCore/QAbstractListModel>
 
@@ -70,5 +69,3 @@ public:
 private:
   BookBinder _binder{};
 };
-
-#endif // BOOKBINDERMODEL_H
