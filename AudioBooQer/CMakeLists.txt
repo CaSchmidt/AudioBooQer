@@ -11,13 +11,9 @@ include(FormatOutputName)
 
 ### Dependencies #############################################################
 
-find_package(Qt5Widgets 5.6 REQUIRED)
-find_package(Qt5Multimedia 5.6 REQUIRED)
-find_package(Qt5Concurrent 5.6 REQUIRED)
-
-add_subdirectory(../csQt/csQt
-  ${CMAKE_CURRENT_BINARY_DIR}/csQt
-  )
+find_package(Qt5Widgets 5.12 REQUIRED)
+find_package(Qt5Multimedia 5.12 REQUIRED)
+find_package(Qt5Concurrent 5.12 REQUIRED)
 
 set(ENABLE_QT ON CACHE BOOL "" FORCE)
 
