@@ -29,24 +29,23 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef CHAPTER_H
-#define CHAPTER_H
+#pragma once
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
-#include <csQt/csAbstractTreeItem.h>
+#include <cs/Qt/AbstractTreeItem.h>
 
 class ChapterRoot;
 class ChapterNode;
 class ChapterFile;
 
-bool isRoot(csAbstractTreeItem *item);
-bool isNode(csAbstractTreeItem *item);
-bool isFile(csAbstractTreeItem *item);
+bool isRoot(cs::AbstractTreeItem *item);
+bool isNode(cs::AbstractTreeItem *item);
+bool isFile(cs::AbstractTreeItem *item);
 
-class ChapterRoot : public csAbstractTreeItem { // The Root of All Evil /////////////
+class ChapterRoot : public cs::AbstractTreeItem { // The Root of All Evil ////
 public:
   ChapterRoot();
   ~ChapterRoot();
@@ -58,9 +57,9 @@ public:
   QVariant data(int column, int role) const;
 };
 
-class ChapterNode : public csAbstractTreeItem { // One Chapter //////////////////////
+class ChapterNode : public cs::AbstractTreeItem { // One Chapter /////////////
 public:
-  ChapterNode(csAbstractTreeItem *parent, const bool isSource = false);
+  ChapterNode(cs::AbstractTreeItem *parent, const bool isSource = false);
   ~ChapterNode();
 
   bool isSource() const;
@@ -81,9 +80,9 @@ private:
   QString _title;
 };
 
-class ChapterFile : public csAbstractTreeItem { // One File in a Chapter ////////////
+class ChapterFile : public cs::AbstractTreeItem { // One File in a Chapter ///
 public:
-  ChapterFile(csAbstractTreeItem *parent);
+  ChapterFile(cs::AbstractTreeItem *parent);
   ~ChapterFile();
 
   const QString& fileName() const;
@@ -95,5 +94,3 @@ public:
 private:
   QString _fileName;
 };
-
-#endif // CHAPTER_H

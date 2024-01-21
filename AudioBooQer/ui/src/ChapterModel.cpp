@@ -32,7 +32,8 @@
 #include <QtCore/QDir>
 #include <QtGui/QColor>
 
-#include <csQt/csQtUtil.h>
+#include <cs/Core/QStringUtil.h>
+#include <cs/Qt/AbstractTreeItem.h>
 
 #include "ChapterModel.h"
 
@@ -78,7 +79,7 @@ ChapterModel::~ChapterModel()
 
 QModelIndex ChapterModel::createNewChapter(const QModelIndex& index)
 {
-  ChapterFile *file = dynamic_cast<ChapterFile*>(csTreeItem(index));
+  ChapterFile *file = dynamic_cast<ChapterFile*>(cs::treeItem(index));
   if( file == nullptr ) {
     return QModelIndex();
   }
@@ -115,7 +116,7 @@ QModelIndex ChapterModel::createNewChapter(const QModelIndex& index)
   return ChapterModel::index(newNode->row(), 0, QModelIndex());
 }
 
-void ChapterModel::setData(csAbstractTreeItem *data)
+void ChapterModel::setData(cs::AbstractTreeItem *data)
 {
   beginResetModel();
 
@@ -164,11 +165,11 @@ Jobs ChapterModel::buildJobs() const
     for(int cntFile = 0; cntFile < rowCount(nodeIndex); cntFile++) {
       const QModelIndex fileIndex = index(cntFile, 0, nodeIndex);
 
-      ChapterFile *file = dynamic_cast<ChapterFile*>(csTreeItem(fileIndex));
+      ChapterFile *file = dynamic_cast<ChapterFile*>(cs::treeItem(fileIndex));
       job.inputFiles.push_back(file->fileName());
     } // File
 
-    ChapterNode *node = dynamic_cast<ChapterNode*>(csTreeItem(nodeIndex));
+    ChapterNode *node = dynamic_cast<ChapterNode*>(cs::treeItem(nodeIndex));
     job.title = chapterTitle(node);
 
     job.outputDirPath = QFileInfo(job.inputFiles.front()).absolutePath();
@@ -200,7 +201,7 @@ QStringList ChapterModel::files(const bool source_only) const
 
   for(int i = 0; i < rowCount(QModelIndex()); i++) {
     const QModelIndex chIndex = index(i, 0, QModelIndex());
-    const ChapterNode *chapter = dynamic_cast<const ChapterNode*>(csTreeItem(chIndex));
+    const ChapterNode *chapter = dynamic_cast<const ChapterNode*>(cs::treeItem(chIndex));
 
     if( source_only  &&  !chapter->isSource() ) {
       continue;
@@ -217,7 +218,7 @@ QStringList ChapterModel::files(const bool source_only) const
 int ChapterModel::columnCount(const QModelIndex& parent) const
 {
   if( parent.isValid() ) {
-    return csTreeItem(parent)->columnCount();
+    return cs::treeItem(parent)->columnCount();
   }
   return _root->columnCount();
 }
@@ -228,9 +229,9 @@ QVariant ChapterModel::data(const QModelIndex& index, int role) const
     return QVariant();
   }
 
-  csAbstractTreeItem *item = csTreeItem(index);
+  cs::AbstractTreeItem *item = cs::treeItem(index);
   if(        role == Qt::DisplayRole ) {
-    ChapterNode *node = dynamic_cast<ChapterNode*>(csTreeItem(index));
+    ChapterNode *node = dynamic_cast<ChapterNode*>(cs::treeItem(index));
     if( node != nullptr  &&  !node->isSource() ) {
       return chapterTitle(node);
     } else {
@@ -261,7 +262,7 @@ Qt::ItemFlags ChapterModel::flags(const QModelIndex& index) const
 
   Qt::ItemFlags f(Qt::ItemIsEnabled);
 
-  csAbstractTreeItem *item = csTreeItem(index);
+  cs::AbstractTreeItem *item = cs::treeItem(index);
   ChapterNode    *nodeItem = dynamic_cast<ChapterNode*>(item);
   if( isFile(item) ) {
     f |= Qt::ItemIsSelectable;
@@ -279,14 +280,14 @@ QModelIndex ChapterModel::index(int row, int column,
     return QModelIndex();
   }
 
-  csAbstractTreeItem *parentItem(nullptr);
+  cs::AbstractTreeItem *parentItem(nullptr);
   if( !parent.isValid() ) {
     parentItem = _root;
   } else {
-    parentItem = csTreeItem(parent);
+    parentItem = cs::treeItem(parent);
   }
 
-  csAbstractTreeItem *childItem = parentItem->childItem(row);
+  cs::AbstractTreeItem *childItem = parentItem->childItem(row);
   if( childItem != nullptr ) {
     return createIndex(row, column, childItem);
   }
@@ -300,8 +301,8 @@ QModelIndex ChapterModel::parent(const QModelIndex& index) const
     return QModelIndex();
   }
 
-  csAbstractTreeItem  *childItem = csTreeItem(index);
-  csAbstractTreeItem *parentItem = childItem->parentItem();
+  cs::AbstractTreeItem  *childItem = cs::treeItem(index);
+  cs::AbstractTreeItem *parentItem = childItem->parentItem();
 
   if( parentItem == _root ) {
     return QModelIndex();
@@ -316,11 +317,11 @@ int ChapterModel::rowCount(const QModelIndex& parent) const
     return 0;
   }
 
-  csAbstractTreeItem *parentItem(nullptr);
+  cs::AbstractTreeItem *parentItem(nullptr);
   if( !parent.isValid() ) {
     parentItem = _root;
   } else {
-    parentItem = csTreeItem(parent);
+    parentItem = cs::treeItem(parent);
   }
 
   return parentItem->rowCount();
@@ -329,7 +330,7 @@ int ChapterModel::rowCount(const QModelIndex& parent) const
 bool ChapterModel::setData(const QModelIndex& index, const QVariant& value,
                            int role)
 {
-  ChapterNode *node = dynamic_cast<ChapterNode*>(csTreeItem(index));
+  ChapterNode *node = dynamic_cast<ChapterNode*>(cs::treeItem(index));
   if(     node == nullptr                     ||  node->isSource()
           ||  value.type() != QMetaType::QString  ||  role != Qt::EditRole ) {
     return false;
@@ -345,7 +346,7 @@ bool ChapterModel::setData(const QModelIndex& index, const QVariant& value,
 
 void ChapterModel::activateNode(const QModelIndex& nodeIndex)
 {
-  const ChapterFile *file = dynamic_cast<const ChapterFile*>(csTreeItem(nodeIndex));
+  const ChapterFile *file = dynamic_cast<const ChapterFile*>(cs::treeItem(nodeIndex));
   if( file != nullptr ) {
     emit playedFile(file->fileName());
   }
@@ -370,7 +371,7 @@ void ChapterModel::dissolveLastChapter()
   const QModelIndex sourcesIndex =
       index(rowCount(QModelIndex())-1, 0, QModelIndex());
   beginInsertRows(sourcesIndex, 0, dissolvedFiles.size()-1);
-  ChapterNode *sources = dynamic_cast<ChapterNode*>(csTreeItem(sourcesIndex));
+  ChapterNode *sources = dynamic_cast<ChapterNode*>(cs::treeItem(sourcesIndex));
   sources->insertFiles(dissolvedFiles);
   endInsertRows();
 }
@@ -420,7 +421,7 @@ QString ChapterModel::chapterTitle(const class ChapterNode *node) const
 {
   if( _showChapterNo ) {
     return QStringLiteral("%1 - %2")
-        .arg(_firstChapterNo + node->row(), _widthChapterNo, 10, _L1C('0'))
+        .arg(_firstChapterNo + node->row(), _widthChapterNo, 10, cs::L1C('0'))
         .arg(node->title());
   }
   return node->title();

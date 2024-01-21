@@ -33,7 +33,7 @@
 #include <QtCore/QXmlStreamReader>
 #include <QtCore/QXmlStreamWriter>
 
-#include <csUtil/csQStringUtil.h>
+#include <cs/Core/QStringUtil.h>
 
 #include "BinderIO.h"
 
@@ -63,8 +63,8 @@ namespace priv {
     }
 
     BookBinderChapter chapter;
-    chapter.first  = cs::toUtf16String(title);
-    chapter.second = cs::toUtf8String(file);
+    chapter.first  = cs::toUtf8String(title);
+    chapter.second = cs::toPath(file);
     binder.push_back(chapter);
   }
 

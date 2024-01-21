@@ -32,8 +32,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QEventLoop>
 
-#include <csUtil/csILogger.h>
-#include <csUtil/csQStringUtil.h>
+#include <cs/Core/QStringUtil.h>
+#include <cs/Logging/ILogger.h>
 
 #include "Job.h"
 

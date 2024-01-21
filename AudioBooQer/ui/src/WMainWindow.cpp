@@ -38,10 +38,9 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
-#include <csQt/csQtUtil.h>
-#include <csUtil/csOutputContext.h>
-#include <csUtil/csQStringUtil.h>
-#include <csUtil/csWProgressLogger.h>
+#include <cs/Core/QStringUtil.h>
+#include <cs/Logging/OutputContext.h>
+#include <cs/Logging/WProgressLogger.h>
 
 #include "WMainWindow.h"
 #include "ui_WMainWindow.h"
@@ -59,14 +58,14 @@
 
 namespace priv {
 
-  void complementJobs(Jobs& jobs, const csILogger *logger, const QString& outputDirPath,
+  void complementJobs(Jobs& jobs, const cs::ILogger *logger, const QString& outputDirPath,
                       const Ui::WMainWindow *ui)
   {
     for(Job& job : jobs) {
-      job.format          = ui->formatWidget->format();
-      job.logger          = logger;
-      job.outputDirPath   = outputDirPath;
-      job.renameInput     = ui->renameCheck->isChecked();
+      job.format        = ui->formatWidget->format();
+      job.logger        = logger;
+      job.outputDirPath = outputDirPath;
+      job.renameInput   = ui->renameCheck->isChecked();
     }
   }
 
@@ -76,7 +75,8 @@ namespace priv {
 
     BookBinder binder;
     for(const JobResult& result : results) {
-      binder.emplace_back(cs::toUtf16String(result.title), cs::toUtf8String(result.outputFilePath));
+      binder.emplace_back(cs::toUtf8String(result.title),
+                          cs::toPath(result.outputFilePath));
     }
     return binder;
   }
@@ -206,9 +206,9 @@ void WMainWindow::bindBook()
     return;
   }
 
-  csWProgressLogger dialog(this);
+  cs::WProgressLogger dialog(this);
   dialog.setWindowTitle(QStringLiteral("Binding book..."));
-  const csOutputContext ctx(dialog.logger(), true, dialog.progress(), true);
+  const cs::OutputContext ctx(dialog.logger(), true, dialog.progress(), true);
 
   dialog.show();
   outputAdtsBinder(cs::toUtf8String(filename), binder, ctx,
@@ -251,7 +251,7 @@ void WMainWindow::editTag()
     const Mp4Tag out = editor.get();
     if( !out.write() ) {
       QMessageBox::critical(this, tr("Error"),
-                            tr("Error writing tag (Mp4Tag::write(\"%1\"))!").arg(out.filename));
+                            tr("Error writing tag (Mp4Tag::write(\"%1\"))!").arg(cs::toQString(out.filename)));
     } else {
       QMessageBox::information(this, tr("Info"), tr("Done!"),
                                QMessageBox::Ok, QMessageBox::Ok);
@@ -338,7 +338,7 @@ void WMainWindow::processJobs()
 
   QThreadPool::globalInstance()->setMaxThreadCount(ui->threadSpin->value());
 
-  csWProgressLogger dialog(this);
+  cs::WProgressLogger dialog(this);
   dialog.setWindowTitle(QStringLiteral("Executing jobs..."));
 
   priv::complementJobs(jobs, dialog.logger(), outputDirPath, ui);

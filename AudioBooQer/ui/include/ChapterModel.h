@@ -29,14 +29,15 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef CHAPTERMODEL_H
-#define CHAPTERMODEL_H
+#pragma once
 
 #include <QtCore/QAbstractItemModel>
 
 #include "Job.h"
 
-class csAbstractTreeItem;
+namespace cs {
+  class AbstractTreeItem;
+}
 
 class ChapterModel : public QAbstractItemModel {
   Q_OBJECT
@@ -45,7 +46,7 @@ public:
   ~ChapterModel();
 
   QModelIndex createNewChapter(const QModelIndex& index);
-  void setData(csAbstractTreeItem *data);
+  void setData(cs::AbstractTreeItem *data);
 
   bool autoChapterName() const;
   bool showChapterNo() const;
@@ -80,7 +81,7 @@ private:
   QString chapterTitle(const class ChapterNode *node) const;
   void updateChapters();
 
-  csAbstractTreeItem *_root;
+  cs::AbstractTreeItem *_root;
   bool _autoChapterName;
   bool _showChapterNo;
   int _firstChapterNo;
@@ -90,5 +91,3 @@ private:
 signals:
   void playedFile(const QString& filename);
 };
-
-#endif // CHAPTERMODEL_H

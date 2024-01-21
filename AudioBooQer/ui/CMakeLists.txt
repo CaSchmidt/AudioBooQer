@@ -79,7 +79,7 @@ target_include_directories(ui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(ui PRIVATE ${csQt_SOURCE_DIR}/include)
 target_include_directories(ui PRIVATE ${csQt_BINARY_DIR}/include)
 
-target_link_libraries(ui audiobook csQt Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
+target_link_libraries(ui audiobook Qt5::Widgets Qt5::Multimedia Qt5::Concurrent)
 
 install(TARGETS ui
   ARCHIVE DESTINATION lib

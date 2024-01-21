@@ -35,9 +35,9 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QPushButton>
 
-#include <csQt/csDialogButtonBox.h>
-#include <csQt/csImageTip.h>
-#include <csUtil/csQStringUtil.h>
+#include <cs/Qt/DialogButtonBox.h>
+#include <cs/Qt/ImageTip.h>
+#include <cs/Core/QStringUtil.h>
 
 #include "WTagEditor.h"
 #include "ui_WTagEditor.h"
@@ -65,9 +65,9 @@ WTagEditor::WTagEditor(const Mp4Tag& tag, QWidget *parent, Qt::WindowFlags f)
 
   // Buttons /////////////////////////////////////////////////////////////////
 
-  csRemoveAllButtons(ui->buttonBox);
-  csAddButton(ui->buttonBox, tr("Save"),    QDialogButtonBox::AcceptRole, false, true);
-  csAddButton(ui->buttonBox, tr("Discard"), QDialogButtonBox::RejectRole);
+  cs::removeAllButtons(ui->buttonBox);
+  cs::addButton(ui->buttonBox, tr("Save"),    QDialogButtonBox::AcceptRole, false, true);
+  cs::addButton(ui->buttonBox, tr("Discard"), QDialogButtonBox::RejectRole);
 
   // Event Filter ////////////////////////////////////////////////////////////
 
@@ -92,18 +92,18 @@ Mp4Tag WTagEditor::get() const
 {
   Mp4Tag result;
 
-  result.filename    = cs::toUtf16String(_filename);
-  result.title       = cs::toUtf16String(ui->titleEdit->text());
-  result.chapter     = cs::toUtf16String(ui->chapterEdit->text());
-  result.author      = cs::toUtf16String(ui->authorEdit->text());
-  result.albumArtist = cs::toUtf16String(ui->albumArtistEdit->text());
-  result.composer    = cs::toUtf16String(ui->composerEdit->text());
-  result.genre       = cs::toUtf16String(ui->genreEdit->text());
+  result.filename    = cs::toPath(_filename);
+  result.title       = cs::toUtf8String(ui->titleEdit->text());
+  result.chapter     = cs::toUtf8String(ui->chapterEdit->text());
+  result.author      = cs::toUtf8String(ui->authorEdit->text());
+  result.albumArtist = cs::toUtf8String(ui->albumArtistEdit->text());
+  result.composer    = cs::toUtf8String(ui->composerEdit->text());
+  result.genre       = cs::toUtf8String(ui->genreEdit->text());
   result.trackIndex  = static_cast<uint16_t>(ui->trackIndexSpin->value());
   result.trackTotal  = static_cast<uint16_t>(ui->trackTotalSpin->value());
   result.diskIndex   = static_cast<uint16_t>(ui->diskIndexSpin->value());
   result.diskTotal   = static_cast<uint16_t>(ui->diskTotalSpin->value());
-  result.coverImageFilePath = cs::toUtf16String(ui->coverImageEdit->text());
+  result.coverImageFilePath = cs::toPath(ui->coverImageEdit->text());
 
   return result;
 }
@@ -137,8 +137,8 @@ bool WTagEditor::eventFilter(QObject *watched, QEvent *event)
   if( watched == ui->coverImageEdit  &&  event->type() == QEvent::ToolTip ) {
     QHelpEvent *help = dynamic_cast<QHelpEvent*>(event);
     if( help != nullptr  &&  !ui->coverImageEdit->text().isEmpty() ) {
-      csImageTip::showImage(help->globalPos(), QImage(ui->coverImageEdit->text()), this,
-                            csImageTip::DrawBorder);
+      cs::ImageTip::showImage(help->globalPos(), QImage(ui->coverImageEdit->text()), this,
+                              cs::ImageTip::DrawBorder);
     }
     return true;
   }

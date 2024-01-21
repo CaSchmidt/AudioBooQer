@@ -33,8 +33,7 @@
 #include <QtWidgets/QListView>
 #include <QtWidgets/QMenu>
 
-#include <csQt/csQtUtil.h>
-#include <csUtil/csQStringUtil.h>
+#include <cs/Core/QStringUtil.h>
 
 #include "WChapterList.h"
 
@@ -43,7 +42,7 @@
 ////// public ////////////////////////////////////////////////////////////////
 
 WChapterList::WChapterList(QWidget *parent, Qt::WindowFlags f)
-  : csWListEditor(parent, f)
+  : cs::WListEditor(parent, f)
 {
   // User Interface //////////////////////////////////////////////////////////
 
@@ -98,7 +97,8 @@ void WChapterList::onAdd()
   BookBinder binder;
   for(const QString& file : files) {
     const QFileInfo info(file);
-    const BookBinderChapter chapter{cs::toUtf16String(info.completeBaseName()), cs::toUtf8String(info.absoluteFilePath())};
+    const BookBinderChapter chapter(cs::toUtf8String(info.completeBaseName()),
+                                    cs::toPath(info.absoluteFilePath()));
     binder.push_back(chapter);
   }
 

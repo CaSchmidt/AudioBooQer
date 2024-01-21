@@ -35,17 +35,17 @@
 
 ////// Global ////////////////////////////////////////////////////////////////
 
-bool isRoot(csAbstractTreeItem *item)
+bool isRoot(cs::AbstractTreeItem *item)
 {
   return dynamic_cast<ChapterRoot*>(item) != nullptr;
 }
 
-bool isNode(csAbstractTreeItem *item)
+bool isNode(cs::AbstractTreeItem *item)
 {
   return dynamic_cast<ChapterNode*>(item) != nullptr;
 }
 
-bool isFile(csAbstractTreeItem *item)
+bool isFile(cs::AbstractTreeItem *item)
 {
   return dynamic_cast<ChapterFile*>(item) != nullptr;
 }
@@ -53,7 +53,7 @@ bool isFile(csAbstractTreeItem *item)
 ////// ChapterRoot ///////////////////////////////////////////////////////////
 
 ChapterRoot::ChapterRoot()
-  : csAbstractTreeItem(nullptr)
+  : cs::AbstractTreeItem(nullptr)
 {
 }
 
@@ -99,8 +99,8 @@ QVariant ChapterRoot::data(int /*column*/, int /*role*/) const
 
 ////// ChapterNode ///////////////////////////////////////////////////////////
 
-ChapterNode::ChapterNode(csAbstractTreeItem *parent, const bool isSource)
-  : csAbstractTreeItem(parent)
+ChapterNode::ChapterNode(cs::AbstractTreeItem *parent, const bool isSource)
+  : cs::AbstractTreeItem(parent)
   , _isSource(isSource)
   , _title()
 {
@@ -195,8 +195,8 @@ QVariant ChapterNode::data(int /*column*/, int /*role*/) const
 
 ////// ChapterItem ///////////////////////////////////////////////////////////
 
-ChapterFile::ChapterFile(csAbstractTreeItem *parent)
-  : csAbstractTreeItem(parent)
+ChapterFile::ChapterFile(cs::AbstractTreeItem *parent)
+  : cs::AbstractTreeItem(parent)
   , _fileName()
 {
 }

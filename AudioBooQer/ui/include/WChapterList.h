@@ -29,14 +29,13 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WCHAPTERLIST_H
-#define WCHAPTERLIST_H
+#pragma once
 
-#include <csQt/csWListEditor.h>
+#include <cs/Qt/WListEditor.h>
 
 #include "BookBinderModel.h"
 
-class WChapterList : public csWListEditor {
+class WChapterList : public cs::WListEditor {
 public:
   WChapterList(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
   ~WChapterList();
@@ -59,5 +58,3 @@ private:
 
   BookBinderModel *_model{nullptr};
 };
-
-#endif // WCHAPTERLIST_H

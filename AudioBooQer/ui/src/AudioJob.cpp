@@ -31,8 +31,8 @@
 
 #include <QtCore/QFile>
 
-#include <csUtil/csILogger.h>
-#include <csUtil/csQStringUtil.h>
+#include <cs/Core/QStringUtil.h>
+#include <cs/Logging/ILogger.h>
 
 #include "AudioJob.h"
 

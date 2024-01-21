@@ -32,10 +32,10 @@
 #include <algorithm>
 #include <iterator>
 
-#include <QtCore/QFileInfo>
 #include <QtGui/QBrush>
 
-#include <csUtil/csQStringUtil.h>
+#include <cs/Core/QStringUtil.h>
+#include <cs/System/FileSystem.h>
 
 #include "BookBinderModel.h"
 
@@ -60,8 +60,7 @@ QVariant BookBinderModel::data(const QModelIndex& index, int role) const
   } else if( role == Qt::EditRole ) {
     return cs::toQString(_binder.at(index.row()).first);
   } else if( role == Qt::ForegroundRole ) {
-    const QString filename = cs::toQString(_binder.at(index.row()).second);
-    if( !QFile::exists(filename) ) {
+    if( !cs::isFile(_binder.at(index.row()).second) ) {
       return QBrush(Qt::red, Qt::SolidPattern);
     }
   } else if( role == Qt::ToolTipRole ) {
@@ -92,7 +91,7 @@ bool BookBinderModel::setData(const QModelIndex& index, const QVariant& value, i
       value.type() != QVariant::String  ||  role != Qt::EditRole ) {
     return false;
   }
-  _binder[index.row()].first = cs::toUtf16String(value.toString());
+  _binder[index.row()].first = cs::toUtf8String(value.toString());
   emit dataChanged(index, index);
   return true;
 }
@@ -124,7 +123,7 @@ void BookBinderModel::apply(const StringOperation op)
     if( op == AllStringOperations  ||  op == Trim ) {
       title = title.trimmed();
     }
-    chapter.first = cs::toUtf16String(title);
+    chapter.first = cs::toUtf8String(title);
   }
   endResetModel();
 }
@@ -167,7 +166,7 @@ void BookBinderModel::resetChapters()
 {
   beginResetModel();
   for(BookBinderChapter& chapter : _binder) {
-    chapter.first = cs::toUtf16String(QFileInfo(cs::toQString(chapter.second)).completeBaseName());
+    chapter.first = chapter.second.stem().generic_u8string();
   }
   endResetModel();
 }

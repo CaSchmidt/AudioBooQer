@@ -29,8 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef JOB_H
-#define JOB_H
+#pragma once
 
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
@@ -38,7 +37,9 @@
 
 #include "AacFormat.h"
 
-class csILogger;
+namespace cs {
+  class ILogger;
+}
 class IAudioEncoder;
 
 struct Job {
@@ -48,7 +49,7 @@ struct Job {
 
   AacFormat format{};
   QStringList inputFiles{};
-  const csILogger *logger{nullptr};
+  const cs::ILogger *logger{nullptr};
   QString outputDirPath{};
   int position{};
   bool renameInput{false};
@@ -73,5 +74,3 @@ struct JobResult {
 using JobResults = QList<JobResult>;
 
 JobResult executeJob(const Job& job);
-
-#endif // JOB_H

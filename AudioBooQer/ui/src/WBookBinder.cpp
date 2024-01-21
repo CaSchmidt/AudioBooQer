@@ -34,8 +34,6 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMenu>
 
-#include <csQt/csQtUtil.h>
-
 #include "WBookBinder.h"
 #include "ui_WBookBinder.h"
 
