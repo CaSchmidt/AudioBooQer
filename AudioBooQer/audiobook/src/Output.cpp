@@ -33,11 +33,11 @@
 #include <numeric>
 #include <sstream>
 
-#include <csUtil/csFileIO.h>
-#include <csUtil/csOutputContext.h>
-#include <csUtil/csStringUtil.h>
-#include <csUtil/csTextConverter.h>
 #include <mp4v2/mp4v2.h>
+
+#include <cs/IO/File.h>
+#include <cs/Logging/OutputContext.h>
+#include <cs/Text/StringUtil.h>
 
 #include "Output.h"
 
@@ -56,24 +56,18 @@ using Durations = std::vector<MP4Duration>;
 
 namespace priv {
 
-  inline std::u8string extractFileName(const std::u8string& fqfn)
+  MP4Duration adtsFrameCount(const std::filesystem::path& filename, uint16_t *globalAsc,
+                             const cs::OutputContext& ctx)
   {
-    const std::u8string::size_type pos = fqfn.find_last_of('/');
-    return pos != std::u8string::npos
-        ? fqfn.substr(pos + 1)
-        : fqfn;
-  }
-
-  MP4Duration adtsFrameCount(const std::u8string& filename, uint16_t *globalAsc,
-                             const csOutputContext& ctx)
-  {
-    ctx.logText(u8"Reading ADTS file \"" + filename + u8"\".");
+    ctx.logText(u8"Reading ADTS file \"" + filename.generic_u8string() + u8"\".");
 
     // (1) Read ADTS file ////////////////////////////////////////////////////
 
-    AdtsParser::Buffer buffer = csReadBinaryFile(filename);
+    cs::File file;
+    file.open(filename);
+    cs::Buffer buffer = file.readAll();
     if( buffer.empty() ) {
-      ctx.logError(u8"Unable to read ADTS file \"" + filename + u8"\"!");
+      ctx.logError(u8"Unable to read ADTS file \"" + filename.generic_u8string() + u8"\"!");
       return 0;
     }
 
@@ -173,7 +167,7 @@ namespace priv {
 
   void printBinder(const BookBinder& binder,
                    const Durations& durations, const uint32_t timeScale,
-                   const csOutputContext& ctx)
+                   const cs::OutputContext& ctx)
   {
     using std::chrono::minutes;
     using std::chrono::seconds;
@@ -184,13 +178,13 @@ namespace priv {
       const minutes min = std::chrono::duration_cast<minutes>(dur);
       const seconds sec = std::chrono::duration_cast<seconds>(dur % minutes(1));
 
-      const std::string filename = cs::toString(extractFileName(chapter.second));
-      const std::string    title = cs::toString(csUnicodeToUtf8(chapter.first));
+      const std::u8string filename = chapter.second.filename().generic_u8string();
+      const std::u8string    title = chapter.first;
 
       std::ostringstream output;
 
-      output << "Chapter #" << (i + 1) << ": " << filename << ", ";
-      output << "\"" << title << "\"";
+      output << "Chapter #" << (i + 1) << ": " << cs::toString(filename) << ", ";
+      output << "\"" << cs::toString(title) << "\"";
       output << ", " << min.count() << "m" << sec.count() << "s";
 
       i++;
@@ -200,15 +194,17 @@ namespace priv {
   }
 
   bool writeAdtsSample(MP4FileHandle file, const MP4TrackId trackId,
-                       const std::u8string& filename, const csOutputContext& ctx)
+                       const std::filesystem::path& filename, const cs::OutputContext& ctx)
   {
-    ctx.logText(u8"Writing ADTS file \"" + filename + u8"\".");
+    ctx.logText(u8"Writing ADTS file \"" + filename.generic_u8string() + u8"\".");
 
     // (1) Read ADTS file ////////////////////////////////////////////////////
 
-    AdtsParser::Buffer buffer = csReadBinaryFile(filename);
+    cs::File sampleFile;
+    sampleFile.open(filename);
+    cs::Buffer buffer = sampleFile.readAll();
     if( buffer.empty() ) {
-      ctx.logError(u8"Unable to read ADTS file \"" + filename + u8"\"!");
+      ctx.logError(u8"Unable to read ADTS file \"" + filename.generic_u8string() + u8"\"!");
       return false;
     }
 
@@ -233,8 +229,8 @@ namespace priv {
 
 ////// Public ////////////////////////////////////////////////////////////////
 
-bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
-                      const csOutputContext& ctx,
+bool outputAdtsBinder(const std::filesystem::path& filename, const BookBinder& binder,
+                      const cs::OutputContext& ctx,
                       const std::u8string& language)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
@@ -298,9 +294,9 @@ bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
   char **compBrands = const_cast<char**>(brands);
 
   const MP4FileHandle file =
-      MP4CreateEx(cs::CSTR(filename.data()), 0, 1, 0, compBrands[0], 0, compBrands, 3);
+      MP4CreateEx(cs::CSTR(filename.generic_u8string()), 0, 1, 0, compBrands[0], 0, compBrands, 3);
   if( file == MP4_INVALID_FILE_HANDLE ) {
-    ctx.logError(u8"Unable to create output file \"" + filename + u8"\"!");
+    ctx.logError(u8"Unable to create output file \"" + filename.generic_u8string() + u8"\"!");
     return false;
   }
 
@@ -385,7 +381,7 @@ bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
   // (8.2) Set track's language //////////////////////////////////////////////
 
   if( language.size() == 3 ) { // cf. ISO 639-2/T
-    if( !MP4SetTrackLanguage(file, chTrackId, cs::CSTR(language.data())) ) {
+    if( !MP4SetTrackLanguage(file, chTrackId, cs::CSTR(language)) ) {
       ctx.logError(u8"Unable to set chapter language!");
       MP4Close(file);
       return false;
@@ -395,7 +391,7 @@ bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
   // (9) Create chapters /////////////////////////////////////////////////////
 
   for(std::size_t i = 0; const BookBinderChapter& chapter : binder) {
-    MP4AddChapter(file, chTrackId, durations[i], cs::CSTR(csUnicodeToUtf8(chapter.first).data()));
+    MP4AddChapter(file, chTrackId, durations[i], cs::CSTR(chapter.first));
     i++;
 
     ctx.setProgressValue(int(i));

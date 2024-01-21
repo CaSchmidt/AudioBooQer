@@ -29,10 +29,10 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <csUtil/csFileIO.h>
-#include <csUtil/csStringUtil.h>
-#include <csUtil/csTextConverter.h>
 #include <mp4v2/mp4v2.h>
+
+#include <cs/IO/File.h>
+#include <cs/Text/StringUtil.h>
 
 #include "Mp4Tag.h"
 
@@ -55,10 +55,9 @@ bool Mp4Tag::write() const
   }
 
   { // Begin Conversion
-#define OUTPUT(str,meta)                                \
-    if( !str.empty() ) {                                \
-      const std::u8string utf8 = csUnicodeToUtf8(str);  \
-      MP4TagsSet##meta(tags, cs::CSTR(utf8.data()));    \
+#define OUTPUT(str,meta)                     \
+    if( !str.empty() ) {                     \
+      MP4TagsSet##meta(tags, cs::CSTR(str)); \
     }
     OUTPUT(title,Album);
     OUTPUT(chapter,Name);
@@ -67,27 +66,32 @@ bool Mp4Tag::write() const
     OUTPUT(composer,Composer);
     OUTPUT(genre,Genre);
 #undef OUTPUT
+
     {
       MP4TagTrack track;
       track.index = trackIndex;
       track.total = trackTotal;
       MP4TagsSetTrack(tags, &track);
     }
+
     {
       MP4TagDisk disk;
       disk.index = diskIndex;
       disk.total = diskTotal;
       MP4TagsSetDisk(tags, &disk);
     }
+
     {
-      const std::vector<uint8_t> fileData = csReadBinaryFile(csUnicodeToUtf8(coverImageFilePath));
+      cs::File file;
+      file.open(coverImageFilePath);
+      const cs::Buffer fileData = file.readAll();
       if( !fileData.empty() ) {
         const bool is_jpeg =
-            cs::endsWith(coverImageFilePath.data(), cs::MAX_SIZE_T, u".jpg", cs::MAX_SIZE_T, true)
+            cs::endsWith(coverImageFilePath.generic_string(), "jpg", true)
             ||
-            cs::endsWith(coverImageFilePath.data(), cs::MAX_SIZE_T, u".jpeg", cs::MAX_SIZE_T, true);
+            cs::endsWith(coverImageFilePath.generic_string(), "jpeg", true);
         const bool is_png =
-            cs::endsWith(coverImageFilePath.data(), cs::MAX_SIZE_T,  u".png", cs::MAX_SIZE_T, true);
+            cs::endsWith(coverImageFilePath.generic_string(), "png", true);
 
         MP4TagArtwork artwork;
         artwork.type = MP4_ART_UNDEFINED;
@@ -101,11 +105,11 @@ bool Mp4Tag::write() const
           artwork.size = static_cast<uint32_t>(fileData.size());
           MP4TagsAddArtwork(tags, &artwork);
         }
-      }
+      } // Cover Data Available
     }
   } // End Conversion
 
-  MP4FileHandle file = MP4Modify(cs::CSTR(csUnicodeToUtf8(filename).data()));
+  MP4FileHandle file = MP4Modify(cs::CSTR(filename.generic_u8string()));
   if( file == MP4_INVALID_FILE_HANDLE ) {
     MP4TagsFree(tags);
     return false;
@@ -118,21 +122,21 @@ bool Mp4Tag::write() const
   return result;
 }
 
-Mp4Tag Mp4Tag::read(const std::u8string& filename)
+Mp4Tag Mp4Tag::read(const std::filesystem::path& filename)
 {
-  MP4FileHandle file = MP4Read(cs::CSTR(filename.data()));
+  MP4FileHandle file = MP4Read(cs::CSTR(filename.generic_u8string()));
   if( file == MP4_INVALID_FILE_HANDLE ) {
     return Mp4Tag();
   }
 
   Mp4Tag result;
-  result.filename = csUtf8ToUnicode(filename);
+  result.filename = filename;
 
   const MP4Tags *tags = MP4TagsAlloc();
   if( tags != nullptr  &&  MP4TagsFetch(tags, file) ) {
-#define INPUT(meta,str)                                   \
-    if( tags->meta != nullptr ) {                         \
-      result.str = csUtf8ToUnicode(cs::UTF8(tags->meta)); \
+#define INPUT(meta,str)                        \
+    if( tags->meta != nullptr ) {              \
+      result.str.assign(cs::UTF8(tags->meta)); \
     }
     INPUT(album,title);
     INPUT(name,chapter);

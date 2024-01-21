@@ -31,9 +31,9 @@
 
 #pragma once
 
-#include <string>
+#include <filesystem>
 #include <utility>
 #include <vector>
 
-using BookBinderChapter = std::pair<std::u16string,std::u8string>;
+using BookBinderChapter = std::pair<std::u8string,std::filesystem::path>;
 using BookBinder        = std::vector<BookBinderChapter>;

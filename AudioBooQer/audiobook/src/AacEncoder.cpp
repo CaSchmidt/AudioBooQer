@@ -35,7 +35,8 @@
 #include <vector>
 
 #include <aacenc_lib.h>
-#include <csUtil/csFileIO.h>
+
+#include <cs/IO/File.h>
 
 #include "AacEncoder.h"
 
@@ -108,7 +109,7 @@ public:
   bool setParam(const AACENC_PARAM param, const UINT value);
 
   uint8_t           bitstream[64*1024];
-  std::fstream      file{};
+  cs::File          file;
   AacFormat         format{};
   HANDLE_AACENCODER handle{};
   BufferDesc        inDesc{};
@@ -179,7 +180,7 @@ bool AacEncoder::flush()
   return true;
 }
 
-bool AacEncoder::initialize(const AacFormat& format, const std::u8string& outputFileName)
+bool AacEncoder::initialize(const AacFormat& format, const std::filesystem::path& outputFileName)
 {
   // (0) Sanity check ////////////////////////////////////////////////////////
 
@@ -263,8 +264,7 @@ bool AacEncoder::initialize(const AacFormat& format, const std::u8string& output
 
   // (2) Create output file //////////////////////////////////////////////////
 
-  result->file = csOpenFile(outputFileName, cs::CREATE_BINARY_FILE);
-  if( !result->file.is_open() ) {
+  if( !result->file.open(outputFileName, cs::FileOpenFlag::Write) ) {
     return false;
   }
 
@@ -283,9 +283,9 @@ uint64_t AacEncoder::numPcmFrames() const
   return impl->numDataSamples/impl->info.inputChannels;
 }
 
-std::u8string AacEncoder::outputSuffix(const AacFormat&) const
+std::filesystem::path AacEncoder::outputSuffix(const AacFormat&) const
 {
-  return u8"aac";
+  return "aac";
 }
 
 ////// private ///////////////////////////////////////////////////////////////
@@ -316,7 +316,7 @@ bool AacEncoder::encodeBlock(const uint8_t *data, int size, bool *eof)
     impl->numDataSamples += uint64_t(out_args.numInSamples);
 
     if( out_args.numOutBytes > 0  &&
-        !csWrite(impl->file, impl->bitstream, out_args.numOutBytes) ) {
+        impl->file.write(impl->bitstream, out_args.numOutBytes) != std::size_t(out_args.numOutBytes) ) {
       return false;
     }
 

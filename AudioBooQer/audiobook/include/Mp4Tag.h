@@ -29,12 +29,11 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef MP4TAG_H
-#define MP4TAG_H
+#pragma once
 
 #include <cstdint>
 
-#include <string>
+#include <filesystem>
 
 struct Mp4Tag {
   Mp4Tag() noexcept = default;
@@ -43,20 +42,18 @@ struct Mp4Tag {
 
   bool write() const;
 
-  static Mp4Tag read(const std::u8string& filename);
+  static Mp4Tag read(const std::filesystem::path& filename);
 
-  std::u16string filename{};
-  std::u16string title{};
-  std::u16string chapter{};
-  std::u16string author{};
-  std::u16string albumArtist{};
-  std::u16string composer{};
-  std::u16string genre{};
-  uint16_t       trackIndex{1};
-  uint16_t       trackTotal{1};
-  uint16_t       diskIndex{1};
-  uint16_t       diskTotal{1};
-  std::u16string coverImageFilePath{};
+  std::filesystem::path filename;
+  std::u8string         title;
+  std::u8string         chapter;
+  std::u8string         author;
+  std::u8string         albumArtist;
+  std::u8string         composer;
+  std::u8string         genre;
+  uint16_t              trackIndex{1};
+  uint16_t              trackTotal{1};
+  uint16_t              diskIndex{1};
+  uint16_t              diskTotal{1};
+  std::filesystem::path coverImageFilePath;
 };
-
-#endif // MP4TAG_H

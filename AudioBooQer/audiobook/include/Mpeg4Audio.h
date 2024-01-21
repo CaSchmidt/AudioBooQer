@@ -29,8 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef MPEG4AUDIO_H
-#define MPEG4AUDIO_H
+#pragma once
 
 #include <cstdint>
 
@@ -111,5 +110,3 @@ namespace mpeg4 {
   uint32_t samplingFrequencyFromASC(const uint16_t asc);
 
 } // namespace mpeg4
-
-#endif // MPEG4AUDIO_H

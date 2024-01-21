@@ -29,7 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <csUtil/csEndian.h>
+#include <cs/Core/Endian.h>
 
 #include "AdtsParser.h"
 
@@ -37,8 +37,8 @@
 
 ////// public ////////////////////////////////////////////////////////////////
 
-AdtsParser::AdtsParser(Buffer&& buffer)
-  : _buffer{std::move(buffer)}
+AdtsParser::AdtsParser(cs::Buffer&& buffer)
+  : _buffer(std::move(buffer))
 {
   readHeader();
 }

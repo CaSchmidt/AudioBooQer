@@ -30,10 +30,8 @@
 *****************************************************************************/
 
 #include <bit>
-#include <sstream>
 
-#include <csUtil/csFileIO.h>
-#include <csUtil/csStringUtil.h>
+#include <cs/Text/PrintUtil.h>
 
 #include "RawEncoder.h"
 
@@ -54,25 +52,24 @@ bool RawEncoder::encode(const void *data, const std::size_t size)
   if( !isValidData(data, size) ) {
     return false;
   }
-  if( !csWrite(_file, data, size) ) {
+  if( _file.write(data, size) != size ) {
     return false;
   }
   _numPcmFrames += uint64_t(size)/_bytesPerPcmFrame;
   return true;
 }
 
-bool RawEncoder::initialize(const AacFormat& format, const std::u8string& outputFileName)
+bool RawEncoder::initialize(const AacFormat& format, const std::filesystem::path& outputFileName)
 {
-  if( _file.is_open()  ||  !format.isValid() ) {
+  if( _file.isOpen()  ||  !format.isValid() ) {
     return false;
   }
-  _file = csOpenFile(outputFileName, cs::CREATE_BINARY_FILE);
-  if( !_file.is_open() ) {
+  if( !_file.open(outputFileName, cs::FileOpenFlag::Write) ) {
     return false;
   }
   _bytesPerPcmFrame = format.numBytesPerPcmFrame();
   _numPcmFrames     = 0;
-  return _file.is_open();
+  return _file.isOpen();
 }
 
 uint64_t RawEncoder::numPcmFrames() const
@@ -80,19 +77,16 @@ uint64_t RawEncoder::numPcmFrames() const
   return _numPcmFrames;
 }
 
-std::u8string RawEncoder::outputSuffix(const AacFormat& format) const
+std::filesystem::path RawEncoder::outputSuffix(const AacFormat& format) const
 {
-  std::ostringstream result;
-  if( format.isValid() ) {
-    if( std::endian::native == std::endian::big ) {
-      result << "be.";
-    } else {
-      result << "le.";
-    }
-    result        << format.numChannels         << "ch.";
-    result << "s" << format.numBitsPerChannel   << ".";
-    result        << format.numSamplesPerSecond << "Hz.";
+  if( !format.isValid() ) {
+    return std::string("raw");
   }
-  result << "raw";
-  return cs::toUtf8String(result.str());
+  return cs::sprint("%.%ch.s%.%Hz.raw",
+                    std::endian::native == std::endian::big
+                    ? "be"
+                    : "le",
+                    format.numChannels,
+                    format.numBitsPerChannel,
+                    format.numSamplesPerSecond);
 }

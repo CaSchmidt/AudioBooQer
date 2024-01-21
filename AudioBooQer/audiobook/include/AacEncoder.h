@@ -29,8 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef AACENCODER_H
-#define AACENCODER_H
+#pragma once
 
 #include "IAudioEncoder.h"
 
@@ -45,14 +44,13 @@ public:
 
   bool encode(const void *data, const std::size_t size);
   bool flush();
-  bool initialize(const AacFormat& format, const std::u8string& outputFileName);
+  bool initialize(const AacFormat& format,
+                  const std::filesystem::path& outputFileName);
   uint64_t numPcmFrames() const;
-  std::u8string outputSuffix(const AacFormat&) const;
+  std::filesystem::path outputSuffix(const AacFormat&) const;
 
 private:
   bool encodeBlock(const uint8_t *data, int size, bool *eof = nullptr);
 
   std::unique_ptr<AacEncoderImpl> impl{};
 };
-
-#endif // AACENCODER_H

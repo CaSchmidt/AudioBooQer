@@ -29,10 +29,9 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef RAWENCODER_H
-#define RAWENCODER_H
+#pragma once
 
-#include <fstream>
+#include <cs/IO/File.h>
 
 #include "IAudioEncoder.h"
 
@@ -42,14 +41,13 @@ public:
   ~RawEncoder();
 
   bool encode(const void *data, const std::size_t size);
-  bool initialize(const AacFormat& format, const std::u8string& outputFileName);
+  bool initialize(const AacFormat& format,
+                  const std::filesystem::path& outputFileName);
   uint64_t numPcmFrames() const;
-  std::u8string outputSuffix(const AacFormat& format) const;
+  std::filesystem::path outputSuffix(const AacFormat& format) const;
 
 private:
   uint64_t     _bytesPerPcmFrame{0};
-  std::fstream _file;
+  cs::File     _file;
   uint64_t     _numPcmFrames{0};
 };
-
-#endif // RAWENCODER_H

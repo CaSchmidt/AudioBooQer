@@ -29,19 +29,15 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef ADTSPARSER_H
-#define ADTSPARSER_H
+#pragma once
 
-#include <cstdint>
-
-#include <vector>
+#include <cs/Core/Buffer.h>
 
 class AdtsParser {
 public:
-  using Buffer = std::vector<uint8_t>;
-  using size_type = Buffer::size_type;
+  using size_type = cs::Buffer::size_type;
 
-  AdtsParser(Buffer&& buffer);
+  AdtsParser(cs::Buffer&& buffer);
   ~AdtsParser() noexcept = default;
 
   size_type aacFrameCount() const;
@@ -84,9 +80,7 @@ private:
   size_type numberFrames() const;
   bool readHeader();
 
-  Buffer _buffer{};
-  uint64_t _header{};
-  size_type _offset{};
+  cs::Buffer _buffer;
+  uint64_t   _header{};
+  size_type  _offset{};
 };
-
-#endif // ADTSPARSER_H

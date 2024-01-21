@@ -29,12 +29,10 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef IAUDIOENCODER_H
-#define IAUDIOENCODER_H
+#pragma once
 
+#include <filesystem>
 #include <memory>
-
-#include <string>
 
 #include "AacFormat.h"
 
@@ -44,14 +42,13 @@ public:
 
   virtual bool encode(const void *data, const std::size_t size) = 0;
   virtual bool flush();
-  virtual bool initialize(const AacFormat& format, const std::u8string& outputFileName) = 0;
+  virtual bool initialize(const AacFormat& format,
+                          const std::filesystem::path& outputFileName) = 0;
   virtual uint64_t numPcmFrames() const = 0;
-  virtual std::u8string outputSuffix(const AacFormat& format) const = 0;
+  virtual std::filesystem::path outputSuffix(const AacFormat& format) const = 0;
 
 protected:
   bool isValidData(const void *data, const std::size_t size) const;
 };
 
 using AudioEncoderPtr = std::unique_ptr<IAudioEncoder>;
-
-#endif // IAUDIOENCODER_H

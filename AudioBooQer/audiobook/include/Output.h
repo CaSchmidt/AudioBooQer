@@ -29,15 +29,14 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef OUTPUT_H
-#define OUTPUT_H
+#pragma once
 
 #include "BookBinder.h"
 
-class csOutputContext;
+namespace cs {
+  class OutputContext;
+}
 
-bool outputAdtsBinder(const std::u8string& filename, const BookBinder& binder,
-                      const csOutputContext& ctx,
+bool outputAdtsBinder(const std::filesystem::path& filename, const BookBinder& binder,
+                      const cs::OutputContext& ctx,
                       const std::u8string& language = std::u8string());
-
-#endif // OUTPUT_H

@@ -29,8 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef AACFORMAT_H
-#define AACFORMAT_H
+#pragma once
 
 /*
  * NOTE:
@@ -66,5 +65,3 @@ struct AacFormat {
     return sizeof(supportedRates)/sizeof(unsigned int);
   }
 };
-
-#endif // AACFORMAT_H
